@@ -16,7 +16,7 @@ body{
 
 .accordion {
   cursor: pointer;
-  padding: 40px;
+  padding: 20px; 
   width: 100%;
   text-align: left;
   border: none;
@@ -30,16 +30,16 @@ body{
 } 
 
 .accordion:after {
-  content: '\00ff0b'; /* Unicode character for "plus" sign (+) */
-  font-size: 25px;
+  content:"\203A";
+  font-size: 30px;
   float: right;
   margin-left: 5px;
   margin-right: 20px;
 }
 
 .active:after {
-  content: "\00ff0b"; /* Unicode character for "minus" sign (-) */
-  color: blue;
+  transform: rotate(90deg);
+  transition: 0.2s;
 }
 
 /* Style the accordion panel. Note: hidden by default */
