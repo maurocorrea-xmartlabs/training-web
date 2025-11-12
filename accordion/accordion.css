@@ -58,5 +58,9 @@ body{
 @media (max-width: 768px){
   .accordion{padding: 10px; font-size: 25px;}
   .panel{word-spacing: 10%;}
+  .accordions-div{
+    width: 85%;
+    margin-left: 6.5%;
+  }
 }
 
