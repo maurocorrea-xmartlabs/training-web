@@ -7,7 +7,7 @@ const matches = input.match(regex);
 console.log(matches);
 let accumulator = 0;
 if (matches) {
-    let enabled = true;
+    let enabled = true; //if it finds a 'don't()', stops counting until finding a 'do()'
     for (const elem of matches) {
         if (elem === 'do()'){
             enabled = true
