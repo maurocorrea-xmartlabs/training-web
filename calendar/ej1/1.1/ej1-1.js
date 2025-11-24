@@ -11,7 +11,6 @@ for (let i=0; i<parsedData[0].length; i++){ //vamos recorriendo los arrays orden
     result+= Math.abs(id1 - id2);
 }
 
-console.log(result);
 
 fs.writeFileSync('output.txt', String(result));
 
