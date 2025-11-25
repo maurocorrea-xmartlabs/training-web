@@ -2,27 +2,19 @@
 const fs = require('fs');
 const data = fs.readFileSync('input.txt', 'utf8');
 
-const parsedData = parseData(data); //parseamos data a un array con los dos arrays de números
+const parsedData = parseData(data); //parse data to a two arrays of numbers
 
-let result = 0;
-for (let i=0; i<parsedData[0].length; i++){ //vamos recorriendo los arrays ordenados ascendentemente a la par y sumando las diferencias
-    const id1 = parsedData[0][i];
+const result = parsedData[0].reduce((accumulator, id1, i) => {
     const id2 = parsedData[1][i];
-    result+= Math.abs(id1 - id2);
-}
-
-console.log(result);
+    return accumulator + Math.abs(id1 - id2);
+}, 0);
 
 fs.writeFileSync('output.txt', String(result));
 
 function parseData(data){
     let parsedData = data.split('\n').map(str => str.split('   '));
-    const firstArray = [];
-    const secondArray = [];
-    for(const elem of parsedData){ //vamos poniendo los datos en 2 arrays distintos para poder ordenarlos
-        firstArray.push(Number(elem[0]));
-        secondArray.push(Number(elem[1]));
-    }
-    parsedData = [firstArray.sort(), secondArray.sort()];
+    const firstArray = parsedData.map((d) => Number(d[0])).sort();
+    const secondArray = parsedData.map((d) => Number(d[1])).sort();
+    parsedData = [firstArray, secondArray];
     return parsedData;
 }
