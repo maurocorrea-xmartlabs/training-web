@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const fs = require('fs');
 const data = fs.readFileSync('input.txt', 'utf8');
 
@@ -17,7 +17,6 @@ for(let i = 0; i<parsedData[0].length; i++){ //vamos chequeando cuantas veces ap
     result+= currentValue1 * counter;
 }
 
-console.log(result);
 
 fs.writeFileSync('output.txt', String(result));
 
