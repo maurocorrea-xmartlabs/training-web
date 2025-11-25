@@ -44,25 +44,42 @@ fs.writeFileSync('output.txt', String(result));
 function processUpdates(ruleMap, updates) {
     let result = 0;
     for (let i = 0; i < updates.length; i++) { //we iterate over updates
-        let valid = true;
         //we iterate over each element in the current update
-        for (let j = 0; j < updates[i].length && valid; j++) {
+        let valid = true;
+        for (let j = 0; j < updates[i].length; j++) {
             const current = updates[i][j];
             const afterCurrent = ruleMap[current];
             const previousElements = updates[i].slice(0, j);
             //we iterate over every ruleMap element and check if it's in the previous elements of the update (shouldn't be)
-            for (let k = 0; k < afterCurrent.length && valid; k++) {
-                //if the previous elements include one that should only come after the current we mark this update as invalid and stop iterating over it
-                if (previousElements.length !== 0 && previousElements.includes(afterCurrent[k])) {
-                    valid = false;
+            if (afterCurrent) {
+                for (let k = 0; k < afterCurrent.length; k++) {
+                    //if the previous elements include one that should only come after the current we sort it and start iterating again
+                    if (previousElements.length !== 0 && previousElements.includes(afterCurrent[k])) {
+                        const indexOfAfter = previousElements.indexOf(afterCurrent[k]);
+                        array_move(updates[i], j, indexOfAfter);
+                        j = 0;
+                        valid = false;
+                        break;
+                    }
                 }
             }
         }
-        //if the update is VALID we add the value in the middle of the update to our result
-        if (valid) {
+        //add the middle value to the result ONLY if the update is invalid
+        if (!valid) {
             var middleValue = updates[i][Math.floor(updates[i].length / 2)];
             result += middleValue;
         }
     }
     return result;
+}
+
+
+function array_move(arr, old_index, new_index) {
+    if (new_index < 0) {
+        const value = arr[old_index];
+        arr.splice(old_index, 1);
+        arr.unshift(value);
+    } else {
+        arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+    }
 }
