@@ -8,7 +8,7 @@ let counter = 0;
 
 for (const report of input) {
     const isSafe = checkIfSafe(parseLine(report)); // checking each report to see if it's safe
-    if (isSafe) {                                  // if it's, we add 1 to the counter
+    if (isSafe) {                                  // if it is, we add 1 to the counter
         counter++;
     }
 }
