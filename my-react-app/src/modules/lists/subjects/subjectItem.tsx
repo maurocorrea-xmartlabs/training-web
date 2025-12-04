@@ -1,30 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Subject } from "../../../types/subject/subject";
 import type { Project } from "../../../types/project/project";
 import ProjectList from "../projects/projectList";
 import AddProjectForm from "../../forms/addProjectForm";
+import ProjectController from "../../../controllers/projectController";
+import type { NewProject } from "../../../types/project/newProject";
 
 type SubjectItemProps = {
   subject: Subject;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 };
 
 export default function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const projectController = new ProjectController();
 
-  function handleAddProject(name: string, weight: number) {
-    const nextId = projects.length;
-    const newProject: Project = {
-      id: nextId,
+  async function loadProjects() {
+    const newProjectList = await projectController.getProjectsBySubjectId(
+      subject.id,
+    );
+    setProjects(newProjectList!);
+  }
+
+  useEffect(() => {
+    loadProjects();
+  });
+
+  async function handleAddProject(name: string, weight: number) {
+    const newProject: NewProject = {
       name: name,
       weight: weight,
       subjectId: subject.id,
     };
-    setProjects((projects) => [...projects, newProject]);
+
+    await projectController.postProject(newProject);
+    loadProjects();
   }
 
-  function handleDeleteProject(id: number) {
-    setProjects(projects.filter((p) => p.id !== id));
+  async function handleDeleteProject(id: string) {
+    await projectController.deleteProject(id);
+    loadProjects();
   }
 
   return (

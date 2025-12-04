@@ -1,0 +1,30 @@
+{
+  "subjects": [
+    {
+      "id": "166034",
+      "name": "Algoritmos 1",
+      "monthlyCost": 50
+    },
+    {
+      "id": "481198",
+      "name": "Materia 2",
+      "monthlyCost": 100
+    }
+  ],
+  "projects": [
+    {
+      "id": "721097",
+      "name": "Project 1",
+      "weight": 50,
+      "subjectId": "166034"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "889751",
+      "name": "Task 1",
+      "description": "Sapeee",
+      "projectId": "721097"
+    }
+  ]
+}

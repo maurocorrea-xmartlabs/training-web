@@ -1,5 +1,4 @@
-export type Project = {
-  id: string;
+export type NewProject = {
   name: string;
   weight: number;
   subjectId: string;

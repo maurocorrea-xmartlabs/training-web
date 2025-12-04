@@ -1,30 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Project } from "../../../types/project/project";
 import type { Task } from "../../../types/task/task";
 import TaskList from "../tasks/taskList";
 import AddTaskForm from "../../forms/addTaskForm";
+import type { NewTask } from "../../../types/task/newTask";
+import TaskController from "../../../controllers/taskController";
 
 type ProjectItemProps = {
   project: Project;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 };
 
 export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>();
+  const taskController = new TaskController();
 
-  function handleAddTask(name: string, description: string) {
-    const nextId = tasks.length;
-    const newTask: Task = {
-      id: nextId,
+  useEffect(() => {
+    loadTasks();
+  });
+
+  async function loadTasks() {
+    const newTasks = await taskController.getTasksByProjectId(project.id);
+    setTasks(newTasks!);
+  }
+
+  async function handleAddTask(name: string, description: string) {
+    const newTask: NewTask = {
       name: name,
       description: description,
       projectId: project.id,
     };
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+
+    await taskController.postTask(newTask);
+    loadTasks();
   }
 
-  function handleDeleteTask(id: number) {
-    setTasks((tasks) => tasks.filter((t) => t.id !== id));
+  async function handleDeleteTask(id: string) {
+    await taskController.deleteTask(id);
+    loadTasks();
   }
 
   return (
@@ -44,7 +57,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
         </div>
 
         <strong> Tasks </strong>
-        <TaskList tasks={tasks} onDeleteTask={handleDeleteTask} />
+        <TaskList tasks={tasks!} onDeleteTask={handleDeleteTask} />
       </div>
     </div>
   );

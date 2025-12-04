@@ -1,5 +1,4 @@
-export type Subject = {
-  id: string;
+export type NewSubject = {
   name: string;
   monthlyCost: number;
 };
