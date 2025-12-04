@@ -20,7 +20,7 @@ export default function SubjectItem({ subject, onDelete }: SubjectItemProps) {
       weight: weight,
       subjectId: subject.id,
     };
-    setProjects([...projects, newProject]);
+    setProjects((projects) => [...projects, newProject]);
   }
 
   function handleDeleteProject(id: number) {

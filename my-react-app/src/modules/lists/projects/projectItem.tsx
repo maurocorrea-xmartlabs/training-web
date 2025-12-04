@@ -24,7 +24,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   }
 
   function handleDeleteTask(id: number) {
-    setTasks(tasks.filter((t) => t.id !== id));
+    setTasks((tasks) => tasks.filter((t) => t.id !== id));
   }
 
   return (
@@ -34,7 +34,11 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
           <strong>{project.name}</strong>
           <div>Weight: {project.weight}</div>
           <AddTaskForm onAddTask={handleAddTask} />
-          <button className="delete" onClick={() => onDelete(project.id)}>
+          <button
+            type="button"
+            className="delete"
+            onClick={() => onDelete(project.id)}
+          >
             Delete
           </button>
         </div>
