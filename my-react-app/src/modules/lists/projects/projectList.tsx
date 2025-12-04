@@ -3,7 +3,7 @@ import ProjectItem from "./projectItem";
 
 type ProjectListProps = {
   projects: Project[];
-  onDeleteProject: (id: number) => void;
+  onDeleteProject: (id: string) => void;
 };
 
 export default function SubjectList({

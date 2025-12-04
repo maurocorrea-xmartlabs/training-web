@@ -2,22 +2,20 @@ import type { Task } from "../../../types/task/task";
 
 type TaskItemProps = {
   task: Task;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 };
 
 export default function TaskItem({ task, onDelete }: TaskItemProps) {
   return (
-    <div>
+    <div className="taskItemDiv">
       <div>
-        <div>
-          <strong>{task.name}</strong>
-          <div>description: {task.description}</div>
-        </div>
-
-        <button className="delete" onClick={() => onDelete(task.id)}>
-          Delete
-        </button>
+        <strong>{task.name}</strong>
+        <div>description: {task.description}</div>
       </div>
+
+      <button className="delete" onClick={() => onDelete(task.id)}>
+        Delete
+      </button>
     </div>
   );
 }
