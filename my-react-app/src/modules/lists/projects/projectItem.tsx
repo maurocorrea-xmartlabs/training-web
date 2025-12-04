@@ -32,7 +32,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
       <div>
         <div>
           <strong>{project.name}</strong>
-          <div>Weight: {project.weight}</div>
+          <p>Weight: {project.weight}</p>
           <AddTaskForm onAddTask={handleAddTask} />
           <button className="delete" onClick={() => onDelete(project.id)}>
             Delete
