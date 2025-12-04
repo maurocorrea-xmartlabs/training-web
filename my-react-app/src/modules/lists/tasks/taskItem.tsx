@@ -11,7 +11,7 @@ export default function TaskItem({ task, onDelete }: TaskItemProps) {
       <div>
         <div>
           <strong>{task.name}</strong>
-          <div>description: {task.description}</div>
+          <p>description: {task.description}</p>
         </div>
 
         <button className="delete" onClick={() => onDelete(task.id)}>
