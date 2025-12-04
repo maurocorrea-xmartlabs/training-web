@@ -1,5 +1,6 @@
 import type { Project } from "../types/project/project";
 import type { NewProject } from "../types/project/newProject";
+import { ProjectsArraySchema } from "../types/project/project";
 
 export default class ProjectController {
   baseUrl: string;
@@ -18,7 +19,12 @@ export default class ProjectController {
     try {
       const response = await fetch(url);
       const projectsData: Project[] = await response.json();
-      return projectsData;
+      const parsed = ProjectsArraySchema.safeParse(projectsData);
+      if (!parsed.success) {
+        console.error("Invalid projects response", parsed.error);
+        throw new Error("Invalid projects response");
+      }
+      return parsed.data;
     } catch (error) {
       console.error("Fetch error:" + error);
     }

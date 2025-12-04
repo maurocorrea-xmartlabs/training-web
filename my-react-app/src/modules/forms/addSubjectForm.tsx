@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SubjectFormSchema } from "../../types/subject/subjectFormSchema";
 
 type AddSubjectFormProps = {
   onAddSubject: (name: string, monthlyCost: number) => void;
@@ -15,6 +16,15 @@ export default function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
 
     if (!subjectName.trim()) {
       setError("Subject must have a name");
+    }
+
+    const result = SubjectFormSchema.safeParse({
+      name: subjectName,
+      monthlyCost: subjectCost,
+    });
+
+    if (!result.success) {
+      setError(result.error.issues[0].message);
       return;
     }
 
@@ -37,6 +47,7 @@ export default function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
 
   return (
     <>
+      {error && <p className="error">{error}</p>}
       <div className="formDiv">
         <form onSubmit={handleSubmit}>
           <div className="formFieldDiv">

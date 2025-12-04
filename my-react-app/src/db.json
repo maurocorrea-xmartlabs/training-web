@@ -17,13 +17,19 @@
       "name": "Project 1",
       "weight": 50,
       "subjectId": "166034"
+    },
+    {
+      "id": "108975",
+      "name": "Proyecto 2",
+      "weight": 10,
+      "subjectId": "166034"
     }
   ],
   "tasks": [
     {
       "id": "889751",
       "name": "Task 1",
-      "description": "Sapeee",
+      "description": "Sape",
       "projectId": "721097"
     }
   ]
