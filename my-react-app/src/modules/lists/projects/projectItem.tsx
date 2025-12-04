@@ -20,7 +20,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
       description: description,
       projectId: project.id,
     };
-    setTasks([...tasks, newTask]);
+    setTasks((prevTasks) => [...prevTasks, newTask]);
   }
 
   function handleDeleteTask(id: number) {
