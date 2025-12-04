@@ -1,5 +1,6 @@
 import type { Task } from "../types/task/task";
 import type { NewTask } from "../types/task/newTask";
+import { TaskArraySchema } from "../types/task/task";
 
 export default class TaskController {
   baseUrl: string;
@@ -18,7 +19,12 @@ export default class TaskController {
     try {
       const response = await fetch(url);
       const tasksData: Task[] = await response.json();
-      return tasksData;
+      const parsed = TaskArraySchema.safeParse(tasksData);
+      if (!parsed.success) {
+        console.error("Invalid tasks response", parsed.error);
+        throw new Error("Invalid tasks response");
+      }
+      return parsed.data;
     } catch (error) {
       console.error("Fetch error:" + error);
     }

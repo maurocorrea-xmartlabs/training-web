@@ -1,5 +1,6 @@
 import type { Subject } from "../types/subject/subject";
 import type { NewSubject } from "../types/subject/newSubject";
+import { SubjectArraySchema } from "../types/subject/subject";
 
 export default class SubjectController {
   baseUrl: string;
@@ -18,7 +19,12 @@ export default class SubjectController {
     try {
       const response = await fetch(url);
       const subjectsData: Subject[] = await response.json();
-      return subjectsData;
+      const parsed = SubjectArraySchema.safeParse(subjectsData);
+      if (!parsed.success) {
+        console.error("Invalid subjects response", parsed.error);
+        throw new Error("Invalid subjects response");
+      }
+      return parsed.data;
     } catch (error) {
       console.error("Fetch error:" + error);
     }

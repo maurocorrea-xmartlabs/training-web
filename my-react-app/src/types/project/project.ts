@@ -1,6 +1,11 @@
-export type Project = {
-  id: string;
-  name: string;
-  weight: number;
-  subjectId: string;
-};
+import { z } from "zod";
+
+export const ProjectSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  weight: z.number(),
+  subjectId: z.string(),
+});
+
+export type Project = z.infer<typeof ProjectSchema>;
+export const ProjectsArraySchema = z.array(ProjectSchema);
