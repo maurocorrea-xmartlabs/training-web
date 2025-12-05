@@ -15,13 +15,13 @@
     {
       "id": "721097",
       "name": "Project 1",
-      "weight": 50,
+      "credits": 50,
       "subjectId": "166034"
     },
     {
       "id": "108975",
       "name": "Proyecto 2",
-      "weight": 10,
+      "credits": 10,
       "subjectId": "166034"
     }
   ],

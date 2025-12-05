@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Project } from "../../../types/project/project";
 import type { Task } from "../../../types/task/task";
-import TaskList from "../tasks/taskList";
-import AddTaskForm from "../../forms/addTaskForm";
+import {TaskList} from "../tasks/taskList";
+import {AddTaskForm} from "../../forms/addTaskForm";
 import type { NewTask } from "../../../types/task/newTask";
 import TaskController from "../../../controllers/taskController";
 
@@ -41,18 +41,34 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   }
 
   return (
-    <div className="projectItemDiv">
-      <div>
+    <div className="rounded-lg border bg-gray-50 p-4 space-y-4">
+      <div className="flex items-start justify-between">
         <div>
-          <strong>{project.name}</strong>
-          <div>Weight: {project.weight}</div>
-          <AddTaskForm onAddTask={handleAddTask} />
-          <button className="delete" onClick={() => onDelete(project.id)}>
-            Delete
-          </button>
+          <h4 className="font-semibold">{project.name}</h4>
+          <p className="text-sm text-gray-500">Credits: {project.credits}</p>
         </div>
 
-        <strong> Tasks </strong>
+        <button
+          onClick={() => onDelete(project.id)}
+          type="button"
+          className="
+            text-sm text-red-600
+            border border-red-200
+            rounded-md
+            px-3 py-1
+            hover:bg-red-50
+            active:scale-95
+            transition
+          "
+        >
+          Delete
+        </button>
+      </div>
+
+      <AddTaskForm onAddTask={handleAddTask} />
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-gray-700">Tasks</p>
         <TaskList tasks={tasks!} onDeleteTask={handleDeleteTask} />
       </div>
     </div>

@@ -1,5 +1,5 @@
 export type NewProject = {
   name: string;
-  weight: number;
+  credits: number;
   subjectId: string;
 };

@@ -3,7 +3,7 @@ import { z } from "zod";
 export const ProjectSchema = z.object({
   id: z.string(),
   name: z.string(),
-  weight: z.number(),
+  credits: z.number(),
   subjectId: z.string(),
 });
 
