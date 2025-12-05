@@ -1,0 +1,76 @@
+import { useEffect, useState } from "react";
+import type { Project } from "../../../types/project/project";
+import type { Task } from "../../../types/task/task";
+import { TaskList } from "../tasks/taskList";
+import { AddTaskForm } from "../../forms/addTaskForm";
+import type { NewTask } from "../../../types/task/newTask";
+import { TaskController } from "../../../controllers/taskController";
+
+type ProjectItemProps = {
+  project: Project;
+  onDelete: (id: string) => void;
+};
+
+export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
+  const [tasks, setTasks] = useState<Task[]>();
+  const taskController = new TaskController();
+
+  useEffect(() => {
+    loadTasks();
+  });
+
+  async function loadTasks() {
+    const newTasks = await taskController.getTasksByProjectId(project.id);
+    setTasks(newTasks!);
+  }
+
+  async function handleAddTask(name: string, description: string) {
+    const newTask: NewTask = {
+      name: name,
+      description: description,
+      projectId: project.id,
+    };
+
+    await taskController.postTask(newTask);
+    loadTasks();
+  }
+
+  async function handleDeleteTask(id: string) {
+    await taskController.deleteTask(id);
+    loadTasks();
+  }
+
+  return (
+    <div className="rounded-lg border bg-gray-50 p-4 space-y-4">
+      <div className="flex items-start justify-between">
+        <div>
+          <h4 className="font-semibold">{project.name}</h4>
+          <p className="text-sm text-gray-500">Credits: {project.credits}</p>
+        </div>
+
+        <button
+          onClick={() => onDelete(project.id)}
+          type="button"
+          className="
+            text-sm text-red-600
+            border border-red-200
+            rounded-md
+            px-3 py-1
+            hover:bg-red-50
+            active:scale-95
+            transition
+          "
+        >
+          Delete
+        </button>
+      </div>
+
+      <AddTaskForm onAddTask={handleAddTask} />
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-gray-700">Tasks</p>
+        <TaskList tasks={tasks!} onDeleteTask={handleDeleteTask} />
+      </div>
+    </div>
+  );
+}
