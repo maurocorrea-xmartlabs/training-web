@@ -2,7 +2,7 @@ import type { Subject } from "../types/subject/subject";
 import type { NewSubject } from "../types/subject/newSubject";
 import { SubjectArraySchema } from "../types/subject/subject";
 
-export default class SubjectController {
+export class SubjectController {
   baseUrl: string;
 
   constructor() {

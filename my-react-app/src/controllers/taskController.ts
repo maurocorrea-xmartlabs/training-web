@@ -2,7 +2,7 @@ import type { Task } from "../types/task/task";
 import type { NewTask } from "../types/task/newTask";
 import { TaskArraySchema } from "../types/task/task";
 
-export default class TaskController {
+export class TaskController {
   baseUrl: string;
 
   constructor() {

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import type { Subject } from "../../../types/subject/subject";
 import type { Project } from "../../../types/project/project";
-import {ProjectList} from "../projects/projectList";
+import { ProjectList } from "../projects/projectList";
 import { AddProjectForm } from "../../forms/addProjectForm";
-import ProjectController from "../../../controllers/projectController";
+import { ProjectController } from "../../../controllers/projectController";
 import type { NewProject } from "../../../types/project/newProject";
 
 type SubjectItemProps = {

@@ -1,8 +1,8 @@
-import type { Project } from "../types/project/project";
-import type { NewProject } from "../types/project/newProject";
-import { ProjectsArraySchema } from "../types/project/project";
+import type { Exam } from "../types/exam/exam";
+import type { NewExam } from "../types/exam/newExam";
+import { ExamArraySchema } from "../types/exam/exam";
 
-export class ProjectController {
+export class ExamController {
   baseUrl: string;
 
   constructor() {
@@ -14,15 +14,15 @@ export class ProjectController {
     return random;
   }
 
-  public async getProjectsBySubjectId(subjectId: string) {
-    const url = `${this.baseUrl}/projects/?subjectId=${subjectId}`;
+  public async getExams() {
+    const url = `${this.baseUrl}/exams`;
     try {
       const response = await fetch(url);
-      const projectsData: Project[] = await response.json();
-      const parsed = ProjectsArraySchema.safeParse(projectsData);
+      const examsData: Exam[] = await response.json();
+      const parsed = ExamArraySchema.safeParse(examsData);
       if (!parsed.success) {
-        console.error("Invalid projects response", parsed.error);
-        throw new Error("Invalid projects response");
+        console.error("Invalid exams response", parsed.error);
+        throw new Error("Invalid exams response");
       }
       return parsed.data;
     } catch (error) {
@@ -30,21 +30,22 @@ export class ProjectController {
     }
   }
 
-  public async postProject(project: NewProject) {
-    const projectWithId: Project = {
+  public async postExam(exam: NewExam) {
+    const examWithId: Exam = {
       id: String(await this.generateRandomId()),
-      name: project.name,
-      credits: project.credits,
-      subjectId: project.subjectId,
+      minScore: exam.minScore,
+      maxScore: exam.maxScore,
+      date: exam.date,
+      subjectId: exam.subjectId,
     };
-    const url = `${this.baseUrl}/projects`;
+    const url = `${this.baseUrl}/exams`;
     try {
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(projectWithId),
+        body: JSON.stringify(examWithId),
       });
       const data = await response.json();
       return data;
@@ -53,8 +54,8 @@ export class ProjectController {
     }
   }
 
-  public async deleteProject(projectId: string) {
-    const url = `${this.baseUrl}/projects/${projectId}`;
+  public async deleteExam(examId: string) {
+    const url = `${this.baseUrl}/exams/${examId}`;
     try {
       const response = await fetch(url, {
         method: "DELETE",
