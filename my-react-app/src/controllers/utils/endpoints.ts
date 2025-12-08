@@ -3,7 +3,7 @@ export const API_BASE = "http://localhost:8000";
 export const API_ENDPOINTS = {
   POST_PROJECT: `${API_BASE}/projects`,
   GET_PROJECT_BY_SUBJECT: (subjectId: string) =>
-    `${API_BASE}/projects/${subjectId}`,
+    `${API_BASE}/projects/?${subjectId}`,
   DELETE_PROJECT: (projectId: string) => `${API_BASE}/projects/${projectId}`,
 
   GET_SUBJECTS: `${API_BASE}/subjects`,

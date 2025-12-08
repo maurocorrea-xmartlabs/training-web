@@ -1,6 +1,6 @@
 import type { Subject } from "../types/subject/subject";
 import type { NewSubject } from "../types/subject/newSubject";
-import { API_BASE, API_ENDPOINTS } from "./utils/endpoints";
+import { API_ENDPOINTS } from "./utils/endpoints";
 import { generateRandomId } from "./utils/idGenerator";
 
 export default class SubjectController {

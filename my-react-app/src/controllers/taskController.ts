@@ -1,6 +1,6 @@
 import type { Task } from "../types/task/task";
 import type { NewTask } from "../types/task/newTask";
-import { API_BASE, API_ENDPOINTS } from "./utils/endpoints";
+import { API_ENDPOINTS } from "./utils/endpoints";
 import { generateRandomId } from "./utils/idGenerator";
 
 export default class TaskController {
