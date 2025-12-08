@@ -8,13 +8,28 @@ export default function AddTaskForm({ onAddTask }: AddTaskFormProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!taskName.trim() || !taskDescription) return;
+    if (!taskName.trim() || !taskDescription) {
+      setError("Must specify a task name and description");
+      return;
+    }
 
-    onAddTask(taskName, taskDescription);
+    try {
+      onAddTask(taskName, taskDescription);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unknown error occurred");
+      }
+      return;
+    }
+
+    setError("");
     setTaskName("");
     setTaskDescription("");
     setShowPopup(false);
@@ -22,6 +37,7 @@ export default function AddTaskForm({ onAddTask }: AddTaskFormProps) {
 
   return (
     <>
+      {error && <p className="error">{error}</p>}
       {!showPopup && <button onClick={() => setShowPopup(true)}>+</button>}
       {showPopup && (
         <div className="formDiv">

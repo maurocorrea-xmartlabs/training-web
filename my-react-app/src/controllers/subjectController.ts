@@ -20,7 +20,8 @@ export default class SubjectController {
       const subjectsData: Subject[] = await response.json();
       return subjectsData;
     } catch (error) {
-      console.error("Fetch error:" + error);
+      console.error("Error getting subjects: " + error);
+      throw new Error("Error getting subjects, please try again");
     }
   }
 
@@ -42,7 +43,8 @@ export default class SubjectController {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Fetch POST error: " + error);
+      console.error("Error posting subject: " + error);
+      throw new Error("Error posting subject, please try again");
     }
   }
 
@@ -55,7 +57,8 @@ export default class SubjectController {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Fetch POST error: " + error);
+      console.error("Error deleting subject " + error);
+      throw new Error("Error deleting subject, please try again");
     }
   }
 }

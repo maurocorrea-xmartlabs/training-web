@@ -8,13 +8,28 @@ export default function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [subjectCost, setSubjectCost] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!subjectName.trim()) return;
+    if (!subjectName.trim()) {
+      setError("Must specify a task name");
+      return;
+    }
 
-    onAddSubject(subjectName, subjectCost);
+    try {
+      onAddSubject(subjectName, subjectCost);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unexpected error occurred");
+      }
+      return;
+    }
+
+    setError("");
     setSubjectName("");
     setSubjectCost(0);
     setShowPopup(false);
@@ -22,6 +37,7 @@ export default function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
 
   return (
     <>
+      {error && <p className="error">{error}</p>}
       {!showPopup && <button onClick={() => setShowPopup(true)}>+</button>}
       {showPopup && (
         <div className="formDiv">

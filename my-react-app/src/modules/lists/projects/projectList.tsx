@@ -6,7 +6,7 @@ type ProjectListProps = {
   onDeleteProject: (id: string) => void;
 };
 
-export default function SubjectList({
+export default function ProjectList({
   projects,
   onDeleteProject,
 }: ProjectListProps) {

@@ -14,13 +14,15 @@ export default class TaskController {
   }
 
   public async getTasksByProjectId(projectId: string) {
-    const url = `${this.baseUrl}/tasks/?projectId=${projectId}`;
+    const searchParams = new URLSearchParams(`projectId=${projectId}`);
+    const url = `${this.baseUrl}/tasks/?${searchParams.toString()}`;
     try {
       const response = await fetch(url);
       const tasksData: Task[] = await response.json();
       return tasksData;
     } catch (error) {
-      console.error("Fetch error:" + error);
+      console.error("Error getting tasks by project Id:" + error);
+      throw new Error("Error getting tasks, please try again");
     }
   }
 
@@ -43,7 +45,8 @@ export default class TaskController {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Fetch POST error: " + error);
+      console.error("Error creating task: " + error);
+      throw new Error("Error creating task, please try again");
     }
   }
 
@@ -56,7 +59,8 @@ export default class TaskController {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Fetch POST error: " + error);
+      console.error("Error deleting task: " + error);
+      throw new Error("Error deleting task, please try again");
     }
   }
 }

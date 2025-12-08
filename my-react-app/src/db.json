@@ -17,6 +17,12 @@
       "name": "Project 1",
       "weight": 50,
       "subjectId": "166034"
+    },
+    {
+      "id": "14987",
+      "name": "Obligatorio 1",
+      "weight": 50,
+      "subjectId": "166034"
     }
   ],
   "tasks": [

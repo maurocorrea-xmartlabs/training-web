@@ -7,11 +7,22 @@ import SubjectController from "../../../controllers/subjectController";
 
 export default function SubjectList() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const subjectController = new SubjectController();
 
   async function loadSubjects() {
-    const newSubjectList = await subjectController.getSubjects();
-    setSubjects(newSubjectList!);
+    try {
+      const newSubjectList = await subjectController.getSubjects();
+      setSubjects(newSubjectList!);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unexpected error occurred");
+      }
+      return;
+    }
+    setError("");
   }
 
   useEffect(() => {
@@ -36,6 +47,7 @@ export default function SubjectList() {
   return (
     <div>
       <h2>Subjects</h2>
+      {error && <p className="error">{error}</p>}
       <AddSubjectForm onAddSubject={handleAddSubject} />
       {subjects.map((subject) => (
         <SubjectItem

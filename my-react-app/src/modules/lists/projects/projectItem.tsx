@@ -14,14 +14,39 @@ type ProjectItemProps = {
 export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   const [tasks, setTasks] = useState<Task[]>();
   const taskController = new TaskController();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadTasks();
   });
 
   async function loadTasks() {
-    const newTasks = await taskController.getTasksByProjectId(project.id);
-    setTasks(newTasks!);
+    try {
+      const newTasks = await taskController.getTasksByProjectId(project.id);
+      setTasks(newTasks!);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unexpected error occurred");
+      }
+      return;
+    }
+    setError("");
+  }
+
+  async function deleteProject() {
+    try {
+      onDelete(project.id);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unknown error occurred");
+      }
+      return;
+    }
+    setError("");
   }
 
   async function handleAddTask(name: string, description: string) {
@@ -44,10 +69,11 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
     <div className="projectItemDiv">
       <div>
         <div>
+          {error && <p className="error">{error}</p>}
           <strong>{project.name}</strong>
           <div>Weight: {project.weight}</div>
           <AddTaskForm onAddTask={handleAddTask} />
-          <button className="delete" onClick={() => onDelete(project.id)}>
+          <button className="delete" onClick={() => deleteProject()}>
             Delete
           </button>
         </div>

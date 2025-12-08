@@ -8,13 +8,28 @@ export default function AddProjectForm({ onAddProject }: AddProjectFormProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projectWeight, setProjectWeight] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!projectName.trim() || !projectWeight) return;
+    if (!projectName.trim() || !projectWeight) {
+      setError("Must specify a name and weight");
+      return;
+    }
 
-    onAddProject(projectName, projectWeight);
+    try {
+      onAddProject(projectName, projectWeight);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unexpected error occurred");
+      }
+      return;
+    }
+
+    setError("");
     setProjectName("");
     setProjectWeight(0);
     setShowPopup(false);
@@ -22,6 +37,7 @@ export default function AddProjectForm({ onAddProject }: AddProjectFormProps) {
 
   return (
     <>
+      {error && <p className="error">{error}</p>}
       {!showPopup && <button onClick={() => setShowPopup(true)}>+</button>}
       {showPopup && (
         <div className="formDiv">

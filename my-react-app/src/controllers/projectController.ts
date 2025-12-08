@@ -14,13 +14,15 @@ export default class ProjectController {
   }
 
   public async getProjectsBySubjectId(subjectId: string) {
-    const url = `${this.baseUrl}/projects/?subjectId=${subjectId}`;
+    const searchParams = new URLSearchParams(`subjectId=${subjectId}`);
+    const url = `${this.baseUrl}/projects/?${searchParams.toString()}`;
     try {
       const response = await fetch(url);
       const projectsData: Project[] = await response.json();
       return projectsData;
     } catch (error) {
-      console.error("Fetch error:" + error);
+      console.error("Error getting projects: " + error);
+      throw new Error("Error getting projects, please try again");
     }
   }
 
@@ -43,7 +45,8 @@ export default class ProjectController {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Fetch POST error: " + error);
+      console.error("Error creating project: " + error);
+      throw new Error("Error creating project, please try again");
     }
   }
 
@@ -56,7 +59,8 @@ export default class ProjectController {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Fetch POST error: " + error);
+      console.error("Delete error: " + error);
+      throw new Error("Error deleting project, please try again");
     }
   }
 }
