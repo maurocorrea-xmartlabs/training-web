@@ -23,7 +23,7 @@ export default function AddProjectForm({ onAddProject }: AddProjectFormProps) {
       return;
     }
 
-    if (isNaN(projectWeight)) {
+    if (typeof projectWeight === "number" && !Number.isNaN(projectWeight)) {
       setError("Project weight must be a number");
       return;
     }
