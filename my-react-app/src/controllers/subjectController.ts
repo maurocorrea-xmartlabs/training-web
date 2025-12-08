@@ -1,22 +1,12 @@
 import type { Subject } from "../types/subject/subject";
 import type { NewSubject } from "../types/subject/newSubject";
+import { API_BASE, API_ENDPOINTS } from "./utils/endpoints";
+import { generateRandomId } from "./utils/idGenerator";
 
 export default class SubjectController {
-  baseUrl: string;
-
-  constructor() {
-    this.baseUrl = "http://localhost:8000";
-  }
-
-  public async generateRandomId() {
-    const random = Math.floor(Math.random() * 1_000_000) + 1;
-    return random;
-  }
-
   public async getSubjects() {
-    const url = `${this.baseUrl}/subjects`;
     try {
-      const response = await fetch(url);
+      const response = await fetch(API_ENDPOINTS.GET_SUBJECTS);
       const subjectsData: Subject[] = await response.json();
       return subjectsData;
     } catch (error) {
@@ -27,13 +17,12 @@ export default class SubjectController {
 
   public async postSubject(subject: NewSubject) {
     const subjectWithId: Subject = {
-      id: String(await this.generateRandomId()),
+      id: String(await generateRandomId()),
       name: subject.name,
       monthlyCost: subject.monthlyCost,
     };
-    const url = `${this.baseUrl}/subjects`;
     try {
-      const response = await fetch(url, {
+      const response = await fetch(API_ENDPOINTS.POST_SUBJECT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,9 +38,8 @@ export default class SubjectController {
   }
 
   public async deleteSubject(subjectId: string) {
-    const url = `${this.baseUrl}/subjects/${subjectId}`;
     try {
-      const response = await fetch(url, {
+      const response = await fetch(API_ENDPOINTS.DELETE_SUBJECT(subjectId), {
         method: "DELETE",
       });
       const data = await response.json();

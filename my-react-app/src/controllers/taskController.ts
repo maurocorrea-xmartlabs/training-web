@@ -1,21 +1,12 @@
 import type { Task } from "../types/task/task";
 import type { NewTask } from "../types/task/newTask";
+import { API_BASE, API_ENDPOINTS } from "./utils/endpoints";
+import { generateRandomId } from "./utils/idGenerator";
 
 export default class TaskController {
-  baseUrl: string;
-
-  constructor() {
-    this.baseUrl = "http://localhost:8000";
-  }
-
-  public async generateRandomId() {
-    const random = Math.floor(Math.random() * 1_000_000) + 1;
-    return random;
-  }
-
   public async getTasksByProjectId(projectId: string) {
     const searchParams = new URLSearchParams(`projectId=${projectId}`);
-    const url = `${this.baseUrl}/tasks/?${searchParams.toString()}`;
+    const url = API_ENDPOINTS.GET_TASKS_BY_PROJECT(searchParams.toString());
     try {
       const response = await fetch(url);
       const tasksData: Task[] = await response.json();
@@ -28,14 +19,13 @@ export default class TaskController {
 
   public async postTask(task: NewTask) {
     const taskWithId: Task = {
-      id: String(await this.generateRandomId()),
+      id: String(await generateRandomId()),
       name: task.name,
       description: task.description,
       projectId: task.projectId,
     };
-    const url = `${this.baseUrl}/tasks`;
     try {
-      const response = await fetch(url, {
+      const response = await fetch(API_ENDPOINTS.POST_TASK, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,9 +41,8 @@ export default class TaskController {
   }
 
   public async deleteTask(taskId: string) {
-    const url = `${this.baseUrl}/tasks/${taskId}`;
     try {
-      const response = await fetch(url, {
+      const response = await fetch(API_ENDPOINTS.DELETE_TASK(taskId), {
         method: "DELETE",
       });
       const data = await response.json();
