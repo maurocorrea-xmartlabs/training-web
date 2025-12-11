@@ -19,8 +19,19 @@ export default function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
     }
 
     setError(null);
+    
+    try {
+      onAddSubject(subjectName, subjectCost);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unexpected error occurred");
+      }
+      return;
+    }
 
-    onAddSubject(subjectName, subjectCost);
+    setError("");
     setSubjectName("");
     setSubjectCost(0);
     setShowPopup(false);

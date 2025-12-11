@@ -1,5 +1,4 @@
-export type Task = {
-  id: string;
+export type NewTask = {
   name: string;
   description: string;
   projectId: string;

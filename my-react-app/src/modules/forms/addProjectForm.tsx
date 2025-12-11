@@ -29,8 +29,19 @@ export default function AddProjectForm({ onAddProject }: AddProjectFormProps) {
     }
 
     setError(null);
+    
+    try {
+      onAddProject(projectName, projectWeight);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unexpected error occurred");
+      }
+      return;
+    }
 
-    onAddProject(projectName, projectWeight);
+    setError("");
     setProjectName("");
     setProjectWeight(0);
     setShowPopup(false);

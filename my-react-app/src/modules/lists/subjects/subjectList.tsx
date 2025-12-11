@@ -1,28 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Subject } from "../../../types/subject/subject";
 import AddSubjectForm from "../../forms/addSubjectForm";
 import SubjectItem from "./subjectItem";
+import type { NewSubject } from "../../../types/subject/newSubject";
+import SubjectController from "../../../controllers/subjectController";
 
 export default function SubjectList() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const subjectController = new SubjectController();
 
-  function handleAddSubject(name: string, monthlyCost: number) {
-    const nextId = subjects.length + 1;
-    const newSubject: Subject = {
-      id: nextId,
+  async function loadSubjects() {
+    try {
+      const newSubjectList = await subjectController.getSubjects();
+      setSubjects(newSubjectList!);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unexpected error occurred");
+      }
+      return;
+    }
+    setError("");
+  }
+
+  useEffect(() => {
+    loadSubjects();
+  });
+
+  async function handleAddSubject(name: string, monthlyCost: number) {
+    const newSubject: NewSubject = {
       name: name,
       monthlyCost: monthlyCost,
     };
-    setSubjects([...subjects, newSubject]);
+
+    await subjectController.postSubject(newSubject);
+    loadSubjects();
   }
 
-  function handleDeleteSubject(id: number) {
-    setSubjects(subjects.filter((s) => s.id !== id));
+  async function handleDeleteSubject(id: string) {
+    await subjectController.deleteSubject(id);
+    loadSubjects();
   }
 
   return (
     <div>
       <h2>Subjects</h2>
+      {error && <p className="error">{error}</p>}
       <AddSubjectForm onAddSubject={handleAddSubject} />
       {subjects.map((subject) => (
         <SubjectItem

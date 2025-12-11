@@ -1,0 +1,42 @@
+{
+  "subjects": [
+    {
+      "id": "166034",
+      "name": "Algoritmos 1",
+      "monthlyCost": 50
+    },
+    {
+      "id": "481198",
+      "name": "Algoritmos 2",
+      "monthlyCost": 100
+    }
+  ],
+  "projects": [
+    {
+      "id": "721097",
+      "name": "Project 1",
+      "weight": 50,
+      "subjectId": "166034"
+    },
+    {
+      "id": "492525",
+      "name": "Project 2",
+      "weight": 20,
+      "subjectId": "481198"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "889751",
+      "name": "Task 1",
+      "description": "Sape",
+      "projectId": "721097"
+    },
+    {
+      "id": "663383",
+      "name": "Task 2",
+      "description": "Task 2 for Project 2",
+      "projectId": "492525"
+    }
+  ]
+}

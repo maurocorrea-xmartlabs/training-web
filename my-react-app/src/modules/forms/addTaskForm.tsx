@@ -25,7 +25,18 @@ export default function AddTaskForm({ onAddTask }: AddTaskFormProps) {
 
     setError(null);
 
-    onAddTask(taskName, taskDescription);
+    try {
+      onAddTask(taskName, taskDescription);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unknown error occurred");
+      }
+      return;
+    }
+
+    setError("");
     setTaskName("");
     setTaskDescription("");
     setShowPopup(false);
