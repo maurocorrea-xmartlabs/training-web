@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { SubjectFormSchema } from "../../types/subject/subjectFormSchema";
+import { usePopupForm } from "../hooks/usePopupForm";
+import { PopupForm } from "../utils/popupForm";
+import { useSubjects } from "../../contexts/subjectsContexts";
 
-type AddSubjectFormProps = {
-  onAddSubject: (name: string, monthlyCost: number) => void;
-};
+export function AddSubjectForm() {
+  const { addSubject } = useSubjects();
+  const { showPopup, open, close, error, setError } = usePopupForm();
 
-export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
-  const [showPopup, setShowPopup] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [subjectCost, setSubjectCost] = useState(0);
-  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const result = SubjectFormSchema.safeParse({
@@ -26,10 +26,11 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
 
     setError(null);
 
-    onAddSubject(subjectName, subjectCost);
+    addSubject(subjectName, subjectCost);
+
     setSubjectName("");
     setSubjectCost(0);
-    setShowPopup(false);
+    close();
   }
 
   if (!showPopup) {
@@ -38,7 +39,7 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
         {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
         <button
           type="button"
-          onClick={() => setShowPopup(true)}
+          onClick={open}
           className="px-3 py-1 rounded-md bg-black text-white hover:bg-gray-800"
         >
           + Subject
@@ -48,56 +49,25 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
   }
 
   return (
-    <div
-      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 transition-opacity duration-200"
-      onClick={() => setShowPopup(false)}
-    >
-      <form
-        onSubmit={handleSubmit}
-        onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4 transition-all duration-200 scale-95 opacity-0 animate-modal-in"
-      >
-        <h3 className="text-lg font-semibold">New subject</h3>
+    <PopupForm title="New Subject" onClose={close} onSubmit={handleSubmit}>
+      {error && <p className="text-sm text-red-500">{error}</p>}
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+      <div>
+        <label>Subject name</label>
+        <input
+          value={subjectName}
+          onChange={(e) => setSubjectName(e.target.value)}
+        />
+      </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Subject name</label>
-          <input
-            type="text"
-            placeholder="Algorithms 2"
-            value={subjectName}
-            onChange={(e) => setSubjectName(e.target.value)}
-            className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Monthly cost</label>
-          <input
-            type="number"
-            value={subjectCost}
-            onChange={(e) => setSubjectCost(Number(e.target.value))}
-            className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
-
-        <div className="flex justify-end gap-2 pt-2">
-          <button
-            type="button"
-            onClick={() => setShowPopup(false)}
-            className="px-4 py-2 text-sm rounded-md border hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 text-sm rounded-md bg-black text-white hover:bg-gray-800"
-          >
-            Add
-          </button>
-        </div>
-      </form>
-    </div>
+      <div>
+        <label>Monthly cost</label>
+        <input
+          type="number"
+          value={subjectCost}
+          onChange={(e) => setSubjectCost(Number(e.target.value))}
+        />
+      </div>
+    </PopupForm>
   );
 }

@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import type { Subject } from "../../../types/subject/subject";
 import { AddSubjectForm } from "../../forms/addSubjectForm";
 import { SubjectItem } from "./subjectItem";
-import type { NewSubject } from "../../../types/subject/newSubject";
 import {
   getSubjects,
-  postSubject,
   deleteSubject,
 } from "../../../controllers/subjectController";
 
@@ -21,16 +19,6 @@ export function SubjectList() {
     loadSubjects();
   });
 
-  async function handleAddSubject(name: string, monthlyCost: number) {
-    const newSubject: NewSubject = {
-      name: name,
-      monthlyCost: monthlyCost,
-    };
-
-    await postSubject(newSubject);
-    loadSubjects();
-  }
-
   async function handleDeleteSubject(id: string) {
     await deleteSubject(id);
     loadSubjects();
@@ -40,7 +28,7 @@ export function SubjectList() {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Subjects</h2>
-        <AddSubjectForm onAddSubject={handleAddSubject} />
+        <AddSubjectForm />
       </div>
 
       <div className="space-y-4">
