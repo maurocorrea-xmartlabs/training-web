@@ -55,7 +55,6 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
       description: description,
       projectId: project.id,
     };
-
     await taskController.postTask(newTask);
     loadTasks();
   }
@@ -71,9 +70,13 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
         <div>
           {error && <p className="error">{error}</p>}
           <strong>{project.name}</strong>
-          <div>Weight: {project.weight}</div>
+          <p>Weight: {project.weight}</p>
           <AddTaskForm onAddTask={handleAddTask} />
-          <button className="delete" onClick={() => deleteProject()}>
+          <button
+            type="button"
+            className="delete"
+            onClick={() => onDelete(project.id)}
+          >
             Delete
           </button>
         </div>

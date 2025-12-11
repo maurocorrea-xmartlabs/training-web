@@ -13,11 +13,23 @@ export default function AddProjectForm({ onAddProject }: AddProjectFormProps) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!projectName.trim() || !projectWeight) {
-      setError("Must specify a name and weight");
+    if (!projectName.trim()) {
+      setError("Project must have a name");
       return;
     }
 
+    if (!projectWeight) {
+      setError("Project must have a weight");
+      return;
+    }
+
+    if (typeof projectWeight === "number" && !Number.isNaN(projectWeight)) {
+      setError("Project weight must be a number");
+      return;
+    }
+
+    setError(null);
+    
     try {
       onAddProject(projectName, projectWeight);
     } catch (error) {
@@ -35,38 +47,44 @@ export default function AddProjectForm({ onAddProject }: AddProjectFormProps) {
     setShowPopup(false);
   }
 
+  if (!showPopup) {
+    return (
+      <>
+        {error && <p className="error">{error}</p>}
+        <button onClick={() => setShowPopup(true)}>+</button>
+      </>
+    );
+  }
+
   return (
     <>
       {error && <p className="error">{error}</p>}
-      {!showPopup && <button onClick={() => setShowPopup(true)}>+</button>}
-      {showPopup && (
-        <div className="formDiv">
-          <form onSubmit={handleSubmit}>
-            <div className="formFieldDiv">
-              <label htmlFor="projectName">Project Name</label>
-              <input
-                id="projectName"
-                type="text"
-                placeholder="Obligatorio 1"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-              />
-            </div>
-            <div className="formFieldDiv">
-              <label htmlFor="projectWeight">Weight</label>
-              <input
-                id="projectWeight"
-                type="number"
-                placeholder="200"
-                value={projectWeight}
-                onChange={(e) => setProjectWeight(Number(e.target.value))}
-              ></input>
-            </div>
-            <button type="submit">Add Project</button>
-            <button onClick={() => setShowPopup(false)}>Cancel</button>
-          </form>
-        </div>
-      )}
+      <div className="formDiv">
+        <form onSubmit={handleSubmit}>
+          <div className="formFieldDiv">
+            <label htmlFor="projectName">Project Name</label>
+            <input
+              id="projectName"
+              type="text"
+              placeholder="Obligatorio 1"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+            />
+          </div>
+          <div className="formFieldDiv">
+            <label htmlFor="projectWeight">Weight</label>
+            <input
+              id="projectWeight"
+              type="number"
+              placeholder="200"
+              value={projectWeight}
+              onChange={(e) => setProjectWeight(Number(e.target.value))}
+            ></input>
+          </div>
+          <button type="submit">Add Project</button>
+          <button onClick={() => setShowPopup(false)}>Cancel</button>
+        </form>
+      </div>
     </>
   );
 }
