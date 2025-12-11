@@ -4,7 +4,11 @@ import type { Task } from "../../../types/task/task";
 import { TaskList } from "../tasks/taskList";
 import { AddTaskForm } from "../../forms/addTaskForm";
 import type { NewTask } from "../../../types/task/newTask";
-import { TaskController } from "../../../controllers/taskController";
+import {
+  getTasksByProjectId,
+  postTask,
+  deleteTask,
+} from "../../../controllers/taskController";
 
 type ProjectItemProps = {
   project: Project;
@@ -13,14 +17,13 @@ type ProjectItemProps = {
 
 export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   const [tasks, setTasks] = useState<Task[]>();
-  const taskController = new TaskController();
 
   useEffect(() => {
     loadTasks();
   });
 
   async function loadTasks() {
-    const newTasks = await taskController.getTasksByProjectId(project.id);
+    const newTasks = await getTasksByProjectId(project.id);
     setTasks(newTasks!);
   }
 
@@ -31,12 +34,12 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
       projectId: project.id,
     };
 
-    await taskController.postTask(newTask);
+    await postTask(newTask);
     loadTasks();
   }
 
   async function handleDeleteTask(id: string) {
-    await taskController.deleteTask(id);
+    await deleteTask(id);
     loadTasks();
   }
 

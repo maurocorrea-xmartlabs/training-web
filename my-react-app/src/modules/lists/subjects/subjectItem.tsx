@@ -3,7 +3,11 @@ import type { Subject } from "../../../types/subject/subject";
 import type { Project } from "../../../types/project/project";
 import { ProjectList } from "../projects/projectList";
 import { AddProjectForm } from "../../forms/addProjectForm";
-import { ProjectController } from "../../../controllers/projectController";
+import {
+  getProjectsBySubjectId,
+  postProject,
+  deleteProject,
+} from "../../../controllers/projectController";
 import type { NewProject } from "../../../types/project/newProject";
 
 type SubjectItemProps = {
@@ -13,12 +17,9 @@ type SubjectItemProps = {
 
 export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   const [projects, setProjects] = useState<Project[]>([]);
-  const projectController = new ProjectController();
 
   async function loadProjects() {
-    const newProjectList = await projectController.getProjectsBySubjectId(
-      subject.id,
-    );
+    const newProjectList = await getProjectsBySubjectId(subject.id);
     setProjects(newProjectList!);
   }
 
@@ -33,12 +34,12 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
       subjectId: subject.id,
     };
 
-    await projectController.postProject(newProject);
+    await postProject(newProject);
     loadProjects();
   }
 
   async function handleDeleteProject(id: string) {
-    await projectController.deleteProject(id);
+    await deleteProject(id);
     loadProjects();
   }
 

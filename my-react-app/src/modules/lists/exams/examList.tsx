@@ -3,23 +3,25 @@ import type { Exam } from "../../../types/exam/exam";
 import { AddExamForm } from "../../forms/addExamForm";
 import { ExamItem } from "./examItem";
 import type { NewExam } from "../../../types/exam/newExam";
-import { ExamController } from "../../../controllers/examController";
+import {
+  getExams,
+  postExam,
+  deleteExam,
+} from "../../../controllers/examController";
 import type { Subject } from "../../../types/subject/subject";
-import { SubjectController } from "../../../controllers/subjectController";
+import { getSubjects } from "../../../controllers/subjectController";
 
 export function ExamList() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const examController = new ExamController();
-  const subjectController = new SubjectController();
 
   async function loadExams() {
-    const newExamList = await examController.getExams();
+    const newExamList = await getExams();
     setExams(newExamList!);
   }
 
   async function loadSubjects() {
-    const newSubjectList = await subjectController.getSubjects();
+    const newSubjectList = await getSubjects();
     setSubjects(newSubjectList!);
   }
 
@@ -41,12 +43,12 @@ export function ExamList() {
       subjectId: subjectId,
     };
 
-    await examController.postExam(newExam);
+    await postExam(newExam);
     loadExams();
   }
 
   async function handleDeleteExam(id: string) {
-    await examController.deleteExam(id);
+    await deleteExam(id);
     loadExams();
   }
 
