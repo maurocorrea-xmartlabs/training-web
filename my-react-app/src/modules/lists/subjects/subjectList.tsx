@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import type { Subject } from "../../../types/subject/subject";
+import type { Subject } from "../../../types/subject";
 import AddSubjectForm from "../../forms/addSubjectForm";
 import SubjectItem from "./subjectItem";
-import type { NewSubject } from "../../../types/subject/newSubject";
+import type { NewSubject } from "../../../types/subject";
 import SubjectController from "../../../controllers/subjectController";
 
 export default function SubjectList() {

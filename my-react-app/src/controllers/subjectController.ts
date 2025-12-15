@@ -1,6 +1,7 @@
-import type { Subject } from "../types/subject/subject";
-import type { NewSubject } from "../types/subject/newSubject";
-import { SubjectArraySchema } from "../types/subject/subject";
+import z from "zod";
+import type { Subject } from "../types/subject";
+import type { NewSubject } from "../types/subject";
+import { SubjectSchema } from "../types/subject";
 
 export default class SubjectController {
   baseUrl: string;
@@ -19,7 +20,7 @@ export default class SubjectController {
     try {
       const response = await fetch(url);
       const subjectsData: Subject[] = await response.json();
-      const parsed = SubjectArraySchema.safeParse(subjectsData);
+      const parsed = z.array(SubjectSchema).safeParse(subjectsData);
       if (!parsed.success) {
         console.error("Invalid subjects response", parsed.error);
         throw new Error("Invalid subjects response");

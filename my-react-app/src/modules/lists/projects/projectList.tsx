@@ -1,4 +1,4 @@
-import type { Project } from "../../../types/project/project";
+import type { Project } from "../../../types/project";
 import ProjectItem from "./projectItem";
 
 type ProjectListProps = {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SubjectFormSchema } from "../../types/subject/subjectFormSchema";
+import { SubjectFormSchema } from "../../types/subject";
 
 type AddSubjectFormProps = {
   onAddSubject: (name: string, monthlyCost: number) => void;

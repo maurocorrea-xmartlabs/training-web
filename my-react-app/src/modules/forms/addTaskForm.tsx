@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TaskFormSchema } from "../../types/task/taskFormSchema";
+import { TaskFormSchema } from "../../types/task";
 
 type AddTaskFormProps = {
   onAddTask: (name: string, description: string) => void;

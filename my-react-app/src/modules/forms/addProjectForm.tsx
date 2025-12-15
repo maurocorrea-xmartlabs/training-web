@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProjectFormSchema } from "../../types/project/projectFormSchema";
+import { ProjectFormSchema } from "../../types/project";
 
 type AddProjectFormProps = {
   onAddProject: (name: string, monthlyCost: number) => void;

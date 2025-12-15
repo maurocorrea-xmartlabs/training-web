@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import type { Project } from "../../../types/project/project";
-import type { Task } from "../../../types/task/task";
+import type { Project } from "../../../types/project";
+import type { Task } from "../../../types/task";
 import TaskList from "../tasks/taskList";
 import AddTaskForm from "../../forms/addTaskForm";
-import type { NewTask } from "../../../types/task/newTask";
+import type { NewTask } from "../../../types/task";
 import TaskController from "../../../controllers/taskController";
 
 type ProjectItemProps = {
