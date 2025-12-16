@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ProjectFormSchema } from "../../types/project/projectFormSchema";
 import styles from "./formAnimations.module.css";
+import { ProjectFormSchema } from "../../types/project";
 
 type AddProjectFormProps = {
   onAddProject: (name: string, monthlyCost: number) => void;
