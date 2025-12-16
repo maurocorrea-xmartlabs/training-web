@@ -35,7 +35,7 @@ export default class ProjectController {
     const projectWithId: Project = {
       id: String(await this.generateRandomId()),
       name: project.name,
-      weight: project.weight,
+      credits: project.credits,
       subjectId: project.subjectId,
     };
     const url = `${this.baseUrl}/projects`;

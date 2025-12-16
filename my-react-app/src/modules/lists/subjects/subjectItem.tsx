@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Subject } from "../../../types/subject";
 import type { Project } from "../../../types/project";
-import ProjectList from "../projects/projectList";
-import AddProjectForm from "../../forms/addProjectForm";
+import {ProjectList} from "../projects/projectList";
+import {AddProjectForm} from "../../forms/addProjectForm";
 import ProjectController from "../../../controllers/projectController";
 import type { NewProject } from "../../../types/project";
 
@@ -11,7 +11,7 @@ type SubjectItemProps = {
   onDelete: (id: string) => void;
 };
 
-export default function SubjectItem({ subject, onDelete }: SubjectItemProps) {
+export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const projectController = new ProjectController();
 
@@ -24,12 +24,12 @@ export default function SubjectItem({ subject, onDelete }: SubjectItemProps) {
 
   useEffect(() => {
     loadProjects();
-  }, []);
+  });
 
-  async function handleAddProject(name: string, weight: number) {
+  async function handleAddProject(name: string, credits: number) {
     const newProject: NewProject = {
       name: name,
-      weight: weight,
+      credits: credits,
       subjectId: subject.id,
     };
 
@@ -43,17 +43,36 @@ export default function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   }
 
   return (
-    <div className="subjectItemDiv">
-      <div>
+    <div className="bg-white rounded-xl shadow-sm border p-5 space-y-4">
+      <div className="flex items-start justify-between">
         <div>
-          <strong>{subject.name}</strong>
-          <div>Monthly cost: {subject.monthlyCost}</div>
-          <AddProjectForm onAddProject={handleAddProject} />
-          <button className="delete" onClick={() => onDelete(subject.id)}>
-            Delete
-          </button>
+          <h3 className="text-lg font-semibold">{subject.name}</h3>
+          <p className="text-sm text-gray-500">
+            Monthly cost: ${subject.monthlyCost}
+          </p>
         </div>
 
+        <button
+          onClick={() => onDelete(subject.id)}
+          type="button"
+          className="
+    text-sm
+    text-red-600
+    border border-red-200
+    rounded-md
+    px-3 py-1.5
+    hover:bg-red-50 hover:border-red-300
+    active:scale-95
+    transition
+  "
+        >
+          Delete
+        </button>
+      </div>
+
+      <AddProjectForm onAddProject={handleAddProject} />
+
+      <div>
         <ProjectList
           projects={projects}
           onDeleteProject={handleDeleteProject}

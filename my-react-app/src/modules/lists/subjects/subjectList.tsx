@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import type { Subject } from "../../../types/subject";
-import AddSubjectForm from "../../forms/addSubjectForm";
-import SubjectItem from "./subjectItem";
+import { AddSubjectForm } from "../../forms/addSubjectForm";
+import { SubjectItem } from "./subjectItem";
 import type { NewSubject } from "../../../types/subject";
 import SubjectController from "../../../controllers/subjectController";
 
-export default function SubjectList() {
+export function SubjectList() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const subjectController = new SubjectController();
 
@@ -34,16 +34,21 @@ export default function SubjectList() {
   }
 
   return (
-    <div>
-      <h2>Subjects</h2>
-      <AddSubjectForm onAddSubject={handleAddSubject} />
-      {subjects.map((subject) => (
-        <SubjectItem
-          key={subject.id}
-          subject={subject}
-          onDelete={handleDeleteSubject}
-        />
-      ))}
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold">Subjects</h2>
+        <AddSubjectForm onAddSubject={handleAddSubject} />
+      </div>
+
+      <div className="space-y-4">
+        {subjects.map((subject) => (
+          <SubjectItem
+            key={subject.id}
+            subject={subject}
+            onDelete={handleDeleteSubject}
+          />
+        ))}
+      </div>
     </div>
   );
 }

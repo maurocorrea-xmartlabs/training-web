@@ -1,11 +1,12 @@
 import { useState } from "react";
+import styles from "./formAnimations.module.css";
 import { SubjectFormSchema } from "../../types/subject";
 
 type AddSubjectFormProps = {
   onAddSubject: (name: string, monthlyCost: number) => void;
 };
 
-export default function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
+export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [subjectCost, setSubjectCost] = useState(0);
@@ -13,10 +14,6 @@ export default function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
-    if (!subjectName.trim()) {
-      setError("Subject must have a name");
-    }
 
     const result = SubjectFormSchema.safeParse({
       name: subjectName,
@@ -39,41 +36,68 @@ export default function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
   if (!showPopup) {
     return (
       <>
-        {error && <p className="error">{error}</p>}
-        <button onClick={() => setShowPopup(true)}>+</button>
+        {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
+        <button
+          type="button"
+          onClick={() => setShowPopup(true)}
+          className="px-3 py-1 rounded-md bg-black text-white hover:bg-gray-800"
+        >
+          + Subject
+        </button>
       </>
     );
   }
 
   return (
-    <>
-      {error && <p className="error">{error}</p>}
-      <div className="formDiv">
-        <form onSubmit={handleSubmit}>
-          <div className="formFieldDiv">
-            <label htmlFor="subjectName"> Subject Name </label>
-            <input
-              id="subjectName"
-              type="text"
-              placeholder="Algorithms 2"
-              value={subjectName}
-              onChange={(e) => setSubjectName(e.target.value)}
-            />
-          </div>
-          <div className="formFieldDiv">
-            <label htmlFor="subjectCost"> Monthly Cost </label>
-            <input
-              id="subjectCost"
-              type="number"
-              placeholder="Monthly "
-              value={subjectCost}
-              onChange={(e) => setSubjectCost(Number(e.target.value))}
-            ></input>
-          </div>
-          <button type="submit">Add Subject</button>
-          <button onClick={() => setShowPopup(false)}>Cancel</button>
-        </form>
-      </div>
-    </>
+    <div
+      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 transition-opacity duration-200"
+      onClick={() => setShowPopup(false)}
+    >
+      <form
+        onSubmit={handleSubmit}
+        className={`bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4 transition-all duration-200 scale-95 opacity-0 ${styles.animateModalIn}`}
+      >
+        <h3 className="text-lg font-semibold">New subject</h3>
+
+        {error && <p className="text-sm text-red-500">{error}</p>}
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Subject name</label>
+          <input
+            type="text"
+            placeholder="Algorithms 2"
+            value={subjectName}
+            onChange={(e) => setSubjectName(e.target.value)}
+            className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Monthly cost</label>
+          <input
+            type="number"
+            value={subjectCost}
+            onChange={(e) => setSubjectCost(Number(e.target.value))}
+            className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          />
+        </div>
+
+        <div className="flex justify-end gap-2 pt-2">
+          <button
+            type="button"
+            onClick={() => setShowPopup(false)}
+            className="px-4 py-2 text-sm rounded-md border hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 text-sm rounded-md bg-black text-white hover:bg-gray-800"
+          >
+            Add
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
