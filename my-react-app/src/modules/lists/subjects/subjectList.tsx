@@ -11,12 +11,12 @@ export default function SubjectList() {
 
   async function loadSubjects() {
     const newSubjectList = await subjectController.getSubjects();
-    setSubjects(newSubjectList!);
+    setSubjects(newSubjectList || []);
   }
 
   useEffect(() => {
     loadSubjects();
-  });
+  }, []);
 
   async function handleAddSubject(name: string, monthlyCost: number) {
     const newSubject: NewSubject = {

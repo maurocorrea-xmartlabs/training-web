@@ -19,12 +19,12 @@ export default function SubjectItem({ subject, onDelete }: SubjectItemProps) {
     const newProjectList = await projectController.getProjectsBySubjectId(
       subject.id,
     );
-    setProjects(newProjectList!);
+    setProjects(newProjectList || []);
   }
 
   useEffect(() => {
     loadProjects();
-  });
+  }, []);
 
   async function handleAddProject(name: string, weight: number) {
     const newProject: NewProject = {

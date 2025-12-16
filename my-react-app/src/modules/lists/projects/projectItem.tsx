@@ -17,11 +17,11 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
 
   useEffect(() => {
     loadTasks();
-  });
+  }, []);
 
   async function loadTasks() {
     const newTasks = await taskController.getTasksByProjectId(project.id);
-    setTasks(newTasks!);
+    setTasks(newTasks || []);
   }
 
   async function handleAddTask(name: string, description: string) {
@@ -57,7 +57,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
         </div>
 
         <strong> Tasks </strong>
-        <TaskList tasks={tasks!} onDeleteTask={handleDeleteTask} />
+        <TaskList tasks={tasks || []} onDeleteTask={handleDeleteTask} />
       </div>
     </div>
   );
