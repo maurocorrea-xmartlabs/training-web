@@ -4,7 +4,7 @@ import { AddExamForm } from "../../forms/addExamForm";
 import { ExamItem } from "./examItem";
 import type { NewExam } from "../../../types/exam/newExam";
 import { ExamController } from "../../../controllers/examController";
-import type { Subject } from "../../../types/subject/subject";
+import type { Subject } from "../../../types/subject";
 import { SubjectController } from "../../../controllers/subjectController";
 
 export function ExamList() {
@@ -15,18 +15,18 @@ export function ExamList() {
 
   async function loadExams() {
     const newExamList = await examController.getExams();
-    setExams(newExamList!);
+    setExams(newExamList || []);
   }
 
   async function loadSubjects() {
     const newSubjectList = await subjectController.getSubjects();
-    setSubjects(newSubjectList!);
+    setSubjects(newSubjectList || []);
   }
 
   useEffect(() => {
     loadExams();
     loadSubjects();
-  });
+  }, []);
 
   async function handleAddExam(
     minScore: number,

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import type { Subject } from "../../../types/subject/subject";
-import {AddSubjectForm} from "../../forms/addSubjectForm";
-import {SubjectItem} from "./subjectItem";
-import type { NewSubject } from "../../../types/subject/newSubject";
+import type { Subject } from "../../../types/subject";
+import { AddSubjectForm } from "../../forms/addSubjectForm";
+import { SubjectItem } from "./subjectItem";
+import type { NewSubject } from "../../../types/subject";
 import {SubjectController} from "../../../controllers/subjectController";
 
 export function SubjectList() {
@@ -11,12 +11,12 @@ export function SubjectList() {
 
   async function loadSubjects() {
     const newSubjectList = await subjectController.getSubjects();
-    setSubjects(newSubjectList!);
+    setSubjects(newSubjectList || []);
   }
 
   useEffect(() => {
     loadSubjects();
-  });
+  }, []);
 
   async function handleAddSubject(name: string, monthlyCost: number) {
     const newSubject: NewSubject = {

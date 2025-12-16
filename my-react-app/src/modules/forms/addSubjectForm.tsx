@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { SubjectFormSchema } from "../../types/subject/subjectFormSchema";
+import styles from "./formAnimations.module.css";
+import { SubjectFormSchema } from "../../types/subject";
 
 type AddSubjectFormProps = {
   onAddSubject: (name: string, monthlyCost: number) => void;
@@ -55,7 +56,7 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
       <form
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4 transition-all duration-200 scale-95 opacity-0 animate-modal-in"
+        className={`bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4 transition-all duration-200 scale-95 opacity-0 ${styles.animateModalIn}`}
       >
         <h3 className="text-lg font-semibold">New subject</h3>
 

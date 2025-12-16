@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import type { Project } from "../../../types/project/project";
-import type { Task } from "../../../types/task/task";
-import { TaskList } from "../tasks/taskList";
+import type { Project } from "../../../types/project";
+import type { Task } from "../../../types/task";
 import { AddTaskForm } from "../../forms/addTaskForm";
-import type { NewTask } from "../../../types/task/newTask";
-import { TaskController } from "../../../controllers/taskController";
+import { TaskList } from "../tasks/taskList";
+import type { NewTask } from "../../../types/task";
+import {TaskController} from "../../../controllers/taskController";
 
 type ProjectItemProps = {
   project: Project;
@@ -17,11 +17,11 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
 
   useEffect(() => {
     loadTasks();
-  });
+  }, []);
 
   async function loadTasks() {
     const newTasks = await taskController.getTasksByProjectId(project.id);
-    setTasks(newTasks!);
+    setTasks(newTasks || []);
   }
 
   async function handleAddTask(name: string, description: string) {

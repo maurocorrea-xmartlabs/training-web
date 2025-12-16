@@ -1,6 +1,7 @@
-import type { Project } from "../types/project/project";
-import type { NewProject } from "../types/project/newProject";
-import { ProjectsArraySchema } from "../types/project/project";
+import z from "zod";
+import type { Project } from "../types/project";
+import type { NewProject } from "../types/project";
+import { ProjectSchema } from "../types/project";
 
 export class ProjectController {
   baseUrl: string;
@@ -19,7 +20,7 @@ export class ProjectController {
     try {
       const response = await fetch(url);
       const projectsData: Project[] = await response.json();
-      const parsed = ProjectsArraySchema.safeParse(projectsData);
+      const parsed = z.array(ProjectSchema).safeParse(projectsData);
       if (!parsed.success) {
         console.error("Invalid projects response", parsed.error);
         throw new Error("Invalid projects response");

@@ -1,6 +1,6 @@
-import type { Task } from "../types/task/task";
-import type { NewTask } from "../types/task/newTask";
-import { TaskArraySchema } from "../types/task/task";
+import z from "zod";
+import { TaskSchema, type Task } from "../types/task";
+import type { NewTask } from "../types/task";
 
 export class TaskController {
   baseUrl: string;
@@ -19,7 +19,7 @@ export class TaskController {
     try {
       const response = await fetch(url);
       const tasksData: Task[] = await response.json();
-      const parsed = TaskArraySchema.safeParse(tasksData);
+      const parsed = z.array(TaskSchema).safeParse(tasksData);
       if (!parsed.success) {
         console.error("Invalid tasks response", parsed.error);
         throw new Error("Invalid tasks response");
