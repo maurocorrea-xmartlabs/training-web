@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ProjectFormSchema } from "../../types/project";
 
 type AddProjectFormProps = {
   onAddProject: (name: string, monthlyCost: number) => void;
@@ -25,6 +26,15 @@ export default function AddProjectForm({ onAddProject }: AddProjectFormProps) {
 
     if (typeof projectWeight === "number" && !Number.isNaN(projectWeight)) {
       setError("Project weight must be a number");
+    }
+
+    const result = ProjectFormSchema.safeParse({
+      name: projectName,
+      weight: projectWeight,
+    });
+
+    if (!result.success) {
+      setError(result.error.issues[0].message);
       return;
     }
 

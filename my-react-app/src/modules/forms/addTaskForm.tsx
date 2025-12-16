@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TaskFormSchema } from "../../types/task";
 
 type AddTaskFormProps = {
   onAddTask: (name: string, description: string) => void;
@@ -20,6 +21,14 @@ export default function AddTaskForm({ onAddTask }: AddTaskFormProps) {
 
     if (!taskDescription.trim()) {
       setError("Task must have a description");
+    }
+    const result = TaskFormSchema.safeParse({
+      name: taskName,
+      description: taskDescription,
+    });
+
+    if (!result.success) {
+      setError(result.error.issues[0].message);
       return;
     }
 
@@ -42,6 +51,7 @@ export default function AddTaskForm({ onAddTask }: AddTaskFormProps) {
 
   return (
     <>
+      {error && <p className="error">{error}</p>}
       <div className="formDiv">
         <form onSubmit={handleSubmit}>
           <div className="formFieldDiv">

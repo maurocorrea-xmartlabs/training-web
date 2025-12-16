@@ -1,13 +1,13 @@
-import type { Task } from "../../../types/task/task";
+import type { Task } from "../../../types/task";
 import TaskItem from "./taskItem";
 
 type TaskListProps = {
   tasks: Task[];
-  onDeleteTask: (id: number) => void;
+  onDeleteTask: (id: string) => void;
 };
 
 export default function TaskList({ tasks, onDeleteTask }: TaskListProps) {
-  if (tasks.length === 0) {
+  if (!tasks || tasks.length === 0) {
     return <p>No tasks yet</p>;
   }
 
