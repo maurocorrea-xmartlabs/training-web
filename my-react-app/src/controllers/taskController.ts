@@ -9,7 +9,7 @@ export class TaskController {
     this.baseUrl = "http://localhost:8000";
   }
 
-  public async generateRandomId() {
+  public generateRandomId() {
     const random = Math.floor(Math.random() * 1_000_000) + 1;
     return random;
   }
@@ -32,10 +32,8 @@ export class TaskController {
 
   public async postTask(task: NewTask) {
     const taskWithId: Task = {
-      id: String(await this.generateRandomId()),
-      name: task.name,
-      description: task.description,
-      projectId: task.projectId,
+      id: String(this.generateRandomId()),
+      ...task,
     };
     const url = `${this.baseUrl}/tasks`;
     try {

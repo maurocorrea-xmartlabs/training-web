@@ -9,7 +9,7 @@ export class ExamController {
     this.baseUrl = "http://localhost:8000";
   }
 
-  public async generateRandomId() {
+  public generateRandomId() {
     const random = Math.floor(Math.random() * 1_000_000) + 1;
     return random;
   }
@@ -32,11 +32,8 @@ export class ExamController {
 
   public async postExam(exam: NewExam) {
     const examWithId: Exam = {
-      id: String(await this.generateRandomId()),
-      minScore: exam.minScore,
-      maxScore: exam.maxScore,
-      date: exam.date,
-      subjectId: exam.subjectId,
+      id: String(this.generateRandomId()),
+      ...exam,
     };
     const url = `${this.baseUrl}/exams`;
     try {
