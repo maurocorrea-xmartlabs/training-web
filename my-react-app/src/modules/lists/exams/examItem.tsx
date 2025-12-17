@@ -15,10 +15,10 @@ export function ExamItem({ exam, subjectName, onDelete }: ExamItemProps) {
             Exam for subject: {subjectName}
           </h3>
           <p className="text-sm text-gray-500">
-            Minimum score: ${exam.minScore}
+            Minimum score: {exam.minScore}
           </p>
           <p className="text-sm text-gray-500">
-            Maximum score: ${exam.maxScore}
+            Maximum score: {exam.maxScore}
           </p>
           <p className="text-sm text-gray-500">
             Date: {String(exam.date.toLocaleDateString())}
