@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { Exam } from "../../../types/exam/exam";
+import styles from "../listsAnimations.module.css";
 
 type ExamItemProps = {
   exam: Exam;
@@ -7,8 +9,19 @@ type ExamItemProps = {
 };
 
 export function ExamItem({ exam, subjectName, onDelete }: ExamItemProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  function handleDelete() {
+    setIsDeleting(true);
+    setTimeout(() => {
+      onDelete(exam.id);
+    }, 150);
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-5 space-y-4">
+    <div
+      className={`bg-white rounded-xl shadow-sm border p-5 space-y-4 ${isDeleting ? styles.animateItemOut : ""}`}
+    >
       <div className="flex items-start justify-between">
         <div>
           <h3 className="text-lg font-semibold">
@@ -26,7 +39,7 @@ export function ExamItem({ exam, subjectName, onDelete }: ExamItemProps) {
         </div>
 
         <button
-          onClick={() => onDelete(exam.id)}
+          onClick={() => handleDelete()}
           type="button"
           className="
     text-sm

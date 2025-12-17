@@ -4,7 +4,8 @@ import type { Task } from "../../../types/task";
 import { AddTaskForm } from "../../forms/addTaskForm";
 import { TaskList } from "../tasks/taskList";
 import type { NewTask } from "../../../types/task";
-import {TaskController} from "../../../controllers/taskController";
+import { TaskController } from "../../../controllers/taskController";
+import styles from "../listsAnimations.module.css";
 
 type ProjectItemProps = {
   project: Project;
@@ -14,6 +15,7 @@ type ProjectItemProps = {
 export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   const [tasks, setTasks] = useState<Task[]>();
   const taskController = new TaskController();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     loadTasks();
@@ -35,13 +37,22 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
     loadTasks();
   }
 
+  function handleDelete() {
+    setIsDeleting(true);
+    setTimeout(() => {
+      onDelete(project.id);
+    }, 150);
+  }
+
   async function handleDeleteTask(id: string) {
     await taskController.deleteTask(id);
     loadTasks();
   }
 
   return (
-    <div className="rounded-lg border bg-gray-50 p-4 space-y-4">
+    <div
+      className={`bg-white rounded-xl shadow-sm border p-5 space-y-4 ${isDeleting ? styles.animateItemOut : ""}`}
+    >
       <div className="flex items-start justify-between">
         <div>
           <h4 className="font-semibold">{project.name}</h4>
@@ -49,7 +60,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
         </div>
 
         <button
-          onClick={() => onDelete(project.id)}
+          onClick={() => handleDelete()}
           type="button"
           className="
             text-sm text-red-600
