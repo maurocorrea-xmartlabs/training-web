@@ -21,6 +21,7 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
   const [date, setDate] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isHidingButton, setIsHidingButton] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,7 +45,7 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
     setMinScore(0);
     setMaxScore(1);
     setDate(String(new Date()));
-    setShowPopup(false);
+    closeForm();
   }
 
   function handleShowForm() {
@@ -52,6 +53,14 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
     setTimeout(() => {
       setShowPopup(true);
       setIsHidingButton(false);
+    }, 150);
+  }
+
+  function closeForm() {
+    setIsClosing(true);
+    setTimeout(() => {
+      setShowPopup(false);
+      setIsClosing(false);
     }, 150);
   }
 
@@ -81,12 +90,12 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
   return (
     <div
       className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 transition-opacity duration-200 m-0"
-      onClick={() => setShowPopup(false)}
+      onClick={closeForm}
     >
       <form
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className={`bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4 transition-all duration-200 scale-95 opacity-0 ${styles.animateModalIn}`}
+        className={`bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4 transition-all duration-200 scale-95 opacity-0 ${isClosing ? styles.animateModalOut : styles.animateModalIn}`}
       >
         <h3 className="text-lg font-semibold">New exam</h3>
 
@@ -145,7 +154,7 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
         <div className="flex justify-end gap-2 pt-2">
           <button
             type="button"
-            onClick={() => setShowPopup(false)}
+            onClick={closeForm}
             className="px-4 py-2 text-sm rounded-md border hover:bg-gray-100"
           >
             Cancel
