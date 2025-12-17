@@ -11,6 +11,7 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
   const [subjectName, setSubjectName] = useState("");
   const [subjectCost, setSubjectCost] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isHidingButton, setIsHidingButton] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,14 +34,30 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
     setShowPopup(false);
   }
 
+  function handleShowForm() {
+    setIsHidingButton(true);
+    setTimeout(() => {
+      setShowPopup(true);
+      setIsHidingButton(false);
+    }, 150);
+  }
+
   if (!showPopup) {
     return (
       <>
-        {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
+        {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="button"
-          onClick={() => setShowPopup(true)}
-          className="px-3 py-1 rounded-md bg-black text-white hover:bg-gray-800"
+          onClick={handleShowForm}
+          className={`
+          text-sm
+          bg-black text-white
+          rounded-md
+          px-3 py-1.5
+          hover:bg-gray-800
+          transition
+          ${isHidingButton ? styles.animateButtonOut : ""}
+        `}
         >
           + Subject
         </button>

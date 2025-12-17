@@ -11,6 +11,7 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isHidingButton, setIsHidingButton] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,28 +34,36 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
     setShowPopup(false);
   }
 
+  function handleShowForm() {
+    setIsHidingButton(true);
+    setTimeout(() => {
+      setShowPopup(true);
+      setIsHidingButton(false);
+    }, 150);
+  }
+
   if (!showPopup) {
     return (
       <>
         {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="button"
-          onClick={() => setShowPopup(true)}
-          className="
-            text-sm
-            bg-black text-white
-            rounded-md
-            px-3 py-1.5
-            hover:bg-gray-800
-            transition
-          "
+          onClick={handleShowForm}
+          className={`
+          text-sm
+          bg-black text-white
+          rounded-md
+          px-3 py-1.5
+          hover:bg-gray-800
+          transition
+          ${isHidingButton ? styles.animateButtonOut : ""}
+        `}
         >
           + Task
         </button>
       </>
     );
   }
-
   return (
     <div
       className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 transition-opacity duration-200 m-0"

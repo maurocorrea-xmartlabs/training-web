@@ -11,6 +11,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
   const [projectName, setProjectName] = useState("");
   const [projectCredits, setProjectCredits] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isHidingButton, setIsHidingButton] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,21 +34,30 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
     setShowPopup(false);
   }
 
+  function handleShowForm() {
+    setIsHidingButton(true);
+    setTimeout(() => {
+      setShowPopup(true);
+      setIsHidingButton(false);
+    }, 150);
+  }
+
   if (!showPopup) {
     return (
       <>
         {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="button"
-          onClick={() => setShowPopup(true)}
-          className="
-            text-sm
-            bg-black text-white
-            rounded-md
-            px-3 py-1.5
-            hover:bg-gray-800
-            transition
-          "
+          onClick={handleShowForm}
+          className={`
+          text-sm
+          bg-black text-white
+          rounded-md
+          px-3 py-1.5
+          hover:bg-gray-800
+          transition
+          ${isHidingButton ? styles.animateButtonOut : ""}
+        `}
         >
           + Project
         </button>
