@@ -16,18 +16,18 @@ export function ExamList() {
 
   async function loadExams() {
     const newExamList = await getExams();
-    setExams(newExamList!);
+    setExams(newExamList || []);
   }
 
   async function loadSubjects() {
     const newSubjectList = await getSubjects();
-    setSubjects(newSubjectList!);
+    setSubjects(newSubjectList || []);
   }
 
   useEffect(() => {
     loadExams();
     loadSubjects();
-  });
+  }, []);
 
   async function handleAddExam(
     minScore: number,
@@ -54,7 +54,7 @@ export function ExamList() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Subjects</h2>
+        <h2 className="text-2xl font-semibold">Exams</h2>
         <AddExamForm subjects={subjects} onAddExam={handleAddExam} />
       </div>
 

@@ -4,6 +4,7 @@ import type { Subject } from "../../types/subject";
 import { usePopupForm } from "../hooks/usePopupForm";
 import { PopupForm } from "../utils/popupForm";
 import { withErrorHandlingVoid } from "../../controllers/utils/withErrorHandlingVoid";
+import styles from "./formAnimations.module.css";
 
 type AddExamFormProps = {
   subjects: Subject[];
@@ -17,20 +18,20 @@ type AddExamFormProps = {
 
 export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
-
   const [subjectId, setSubjectId] = useState("");
   const [minScore, setMinScore] = useState(0);
   const [maxScore, setMaxScore] = useState(1);
   const [date, setDate] = useState("");
+  const [isHidingButton, setIsHidingButton] = useState(false);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     const result = NewExamSchema.safeParse({
-      minScore,
-      maxScore,
+      minScore: minScore,
+      maxScore: maxScore,
       date: new Date(date),
-      subjectId,
+      subjectId: subjectId,
     });
 
     if (!result.success) {
@@ -55,15 +56,30 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
     close();
   }
 
+  function handleShowForm() {
+    setIsHidingButton(true);
+    setTimeout(() => {
+      open();
+      setIsHidingButton(false);
+    }, 150);
+  }
+
   if (!showPopup) {
     return (
       <>
-        {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
-
+        {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="button"
-          onClick={open}
-          className="px-3 py-1 rounded-md bg-black text-white hover:bg-gray-800 transition"
+          onClick={handleShowForm}
+          className={`
+          text-sm
+          bg-black text-white
+          rounded-md
+          px-3 py-1.5
+          hover:bg-gray-800
+          transition
+          ${isHidingButton ? styles.animateButtonOut : ""}
+        `}
         >
           + Exam
         </button>
@@ -72,7 +88,7 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
   }
 
   return (
-    <PopupForm title="New exam" onClose={close} onSubmit={handleSubmit}>
+    <PopupForm title="New exam" onRequestClose={close} onSubmit={handleSubmit}>
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       <div className="space-y-1">

@@ -4,12 +4,14 @@ import { usePopupForm } from "../hooks/usePopupForm";
 import { PopupForm } from "../utils/popupForm";
 import { useSubjects } from "../../contexts/subjectsContexts";
 import { withErrorHandlingVoid } from "../../controllers/utils/withErrorHandlingVoid";
+import styles from "../utils/formAnimations.module.css";
 
 export function AddSubjectForm() {
   const { addSubject } = useSubjects();
   const { showPopup, open, close, error, setError } = usePopupForm();
   const [subjectName, setSubjectName] = useState("");
   const [subjectCost, setSubjectCost] = useState(0);
+  const [isHidingButton, setIsHidingButton] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,14 +39,30 @@ export function AddSubjectForm() {
     close();
   }
 
+  function handleShowForm() {
+    setIsHidingButton(true);
+    setTimeout(() => {
+      open();
+      setIsHidingButton(false);
+    }, 150);
+  }
+
   if (!showPopup) {
     return (
       <>
-        {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
+        {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="button"
-          onClick={open}
-          className="px-3 py-1 rounded-md bg-black text-white hover:bg-gray-800 transition"
+          onClick={handleShowForm}
+          className={`
+          text-sm
+          bg-black text-white
+          rounded-md
+          px-3 py-1.5
+          hover:bg-gray-800
+          transition
+          ${isHidingButton ? styles.animateButtonOut : ""}
+        `}
         >
           + Subject
         </button>
@@ -53,7 +71,11 @@ export function AddSubjectForm() {
   }
 
   return (
-    <PopupForm title="New Subject" onClose={close} onSubmit={handleSubmit}>
+    <PopupForm
+      title="New Subject"
+      onRequestClose={close}
+      onSubmit={handleSubmit}
+    >
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       <div className="space-y-1">

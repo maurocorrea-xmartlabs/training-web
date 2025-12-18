@@ -9,6 +9,7 @@ import type { Project, NewProject } from "../../../types/project";
 import { ProjectList } from "../projects/projectList";
 import { AddProjectForm } from "../../forms/addProjectForm";
 import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
+import styles from "../listsAnimations.module.css";
 
 type SubjectItemProps = {
   subject: Subject;
@@ -18,6 +19,7 @@ type SubjectItemProps = {
 export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function loadProjects() {
     const newProjectList = await withErrorHandling(
@@ -43,13 +45,22 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
     loadProjects();
   }
 
+  function handleDelete() {
+    setIsDeleting(true);
+    setTimeout(() => {
+      onDelete(subject.id);
+    }, 150);
+  }
+
   async function handleDeleteProject(id: string) {
     await withErrorHandling(() => deleteProject(id), setError);
     loadProjects();
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-5 space-y-4">
+    <div
+      className={`bg-white rounded-xl shadow-sm border p-5 space-y-4 ${isDeleting ? styles.animateItemOut : ""}`}
+    >
       <div className="flex items-start justify-between">
         <div>
           {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
@@ -60,7 +71,7 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
         </div>
 
         <button
-          onClick={() => onDelete(subject.id)}
+          onClick={() => handleDelete()}
           type="button"
           className="
     text-sm

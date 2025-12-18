@@ -3,6 +3,7 @@ import { usePopupForm } from "../hooks/usePopupForm";
 import { PopupForm } from "../utils/popupForm";
 import { ProjectFormSchema } from "../../types/project";
 import { withErrorHandlingVoid } from "../../controllers/utils/withErrorHandlingVoid";
+import styles from "../utils/formAnimations.module.css";
 
 type AddProjectFormProps = {
   onAddProject: (name: string, monthlyCost: number) => void;
@@ -12,6 +13,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
   const [projectName, setProjectName] = useState("");
   const [projectCredits, setProjectCredits] = useState(0);
+  const [isHidingButton, setIsHidingButton] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,21 +41,30 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
     close();
   }
 
+  function handleShowForm() {
+    setIsHidingButton(true);
+    setTimeout(() => {
+      open();
+      setIsHidingButton(false);
+    }, 150);
+  }
+
   if (!showPopup) {
     return (
       <>
         {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="button"
-          onClick={open}
-          className="
-            text-sm
-            bg-black text-white
-            rounded-md
-            px-3 py-1.5
-            hover:bg-gray-800
-            transition
-          "
+          onClick={handleShowForm}
+          className={`
+          text-sm
+          bg-black text-white
+          rounded-md
+          px-3 py-1.5
+          hover:bg-gray-800
+          transition
+          ${isHidingButton ? styles.animateButtonOut : ""}
+        `}
         >
           + Project
         </button>
@@ -62,7 +73,11 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
   }
 
   return (
-    <PopupForm title="New project" onClose={close} onSubmit={handleSubmit}>
+    <PopupForm
+      title="New project"
+      onRequestClose={close}
+      onSubmit={handleSubmit}
+    >
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       <div className="space-y-1">
