@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+import {
+  getProjectsBySubjectId,
+  postProject,
+  deleteProject,
+} from "../../../controllers/projectController";
 import type { Subject } from "../../../types/subject";
-import type { Project } from "../../../types/project";
+import type { Project, NewProject } from "../../../types/project";
 import { ProjectList } from "../projects/projectList";
 import { AddProjectForm } from "../../forms/addProjectForm";
-import { ProjectController } from "../../../controllers/projectController";
-import type { NewProject } from "../../../types/project";
+import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
 import styles from "../listsAnimations.module.css";
 
 type SubjectItemProps = {
@@ -14,19 +18,21 @@ type SubjectItemProps = {
 
 export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   const [projects, setProjects] = useState<Project[]>([]);
-  const projectController = new ProjectController();
+  const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   async function loadProjects() {
-    const newProjectList = await projectController.getProjectsBySubjectId(
-      subject.id,
+    const newProjectList = await withErrorHandling(
+      () => getProjectsBySubjectId(subject.id),
+      setError,
     );
+
     setProjects(newProjectList || []);
   }
 
   useEffect(() => {
     loadProjects();
-  });
+  }, []);
 
   async function handleAddProject(name: string, credits: number) {
     const newProject: NewProject = {
@@ -35,7 +41,7 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
       subjectId: subject.id,
     };
 
-    await projectController.postProject(newProject);
+    await withErrorHandling(() => postProject(newProject), setError);
     loadProjects();
   }
 
@@ -47,7 +53,7 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   }
 
   async function handleDeleteProject(id: string) {
-    await projectController.deleteProject(id);
+    await withErrorHandling(() => deleteProject(id), setError);
     loadProjects();
   }
 
@@ -57,6 +63,7 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
     >
       <div className="flex items-start justify-between">
         <div>
+          {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
           <h3 className="text-lg font-semibold">{subject.name}</h3>
           <p className="text-sm text-gray-500">
             Monthly cost: ${subject.monthlyCost}

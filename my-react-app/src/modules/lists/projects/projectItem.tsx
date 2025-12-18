@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+import {
+  getTasksByProjectId,
+  postTask,
+  deleteTask,
+} from "../../../controllers/taskController";
 import type { Project } from "../../../types/project";
-import type { Task } from "../../../types/task";
+import type { Task, NewTask } from "../../../types/task";
 import { AddTaskForm } from "../../forms/addTaskForm";
 import { TaskList } from "../tasks/taskList";
-import type { NewTask } from "../../../types/task";
-import { TaskController } from "../../../controllers/taskController";
+import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
 import styles from "../listsAnimations.module.css";
 
 type ProjectItemProps = {
@@ -14,7 +18,7 @@ type ProjectItemProps = {
 
 export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   const [tasks, setTasks] = useState<Task[]>();
-  const taskController = new TaskController();
+  const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -22,7 +26,10 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   }, []);
 
   async function loadTasks() {
-    const newTasks = await taskController.getTasksByProjectId(project.id);
+    const newTasks = await withErrorHandling(
+      () => getTasksByProjectId(project.id),
+      setError,
+    );
     setTasks(newTasks || []);
   }
 
@@ -33,7 +40,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
       projectId: project.id,
     };
 
-    await taskController.postTask(newTask);
+    await postTask(newTask);
     loadTasks();
   }
 
@@ -45,7 +52,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   }
 
   async function handleDeleteTask(id: string) {
-    await taskController.deleteTask(id);
+    await deleteTask(id);
     loadTasks();
   }
 
@@ -55,6 +62,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
     >
       <div className="flex items-start justify-between">
         <div>
+          {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
           <h4 className="font-semibold">{project.name}</h4>
           <p className="text-sm text-gray-500">Credits: {project.credits}</p>
         </div>

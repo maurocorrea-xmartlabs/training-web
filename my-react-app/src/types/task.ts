@@ -19,4 +19,3 @@ export const TaskFormSchema = z.object({
 });
 
 export type Task = z.infer<typeof TaskSchema>;
-export const TaskArraySchema = z.array(TaskSchema);
