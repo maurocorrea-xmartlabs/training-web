@@ -4,7 +4,7 @@ import type { Subject } from "../../types/subject";
 import { usePopupForm } from "../hooks/usePopupForm";
 import { PopupForm } from "../utils/popupForm";
 import { withErrorHandlingVoid } from "../../controllers/utils/withErrorHandlingVoid";
-import styles from "./formAnimations.module.css";
+import styles from "../utils/formAnimations.module.css";
 
 type AddExamFormProps = {
   subjects: Subject[];
