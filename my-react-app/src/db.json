@@ -32,5 +32,14 @@
       "description": "Sape",
       "projectId": "721097"
     }
+  ],
+  "exams": [
+    {
+      "id": "1",
+      "minScore": 0,
+      "maxScore": 25,
+      "date": "2025-06-20",
+      "subjectId": "166034"
+    }
   ]
 }

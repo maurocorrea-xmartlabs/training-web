@@ -1,8 +1,8 @@
-import z from "zod";
-import { TaskSchema, type Task } from "../types/task";
-import type { NewTask } from "../types/task";
+import type { Exam } from "../types/exam/exam";
+import type { NewExam } from "../types/exam/newExam";
+import { ExamArraySchema } from "../types/exam/exam";
 
-export class TaskController {
+export class ExamController {
   baseUrl: string;
 
   constructor() {
@@ -14,15 +14,15 @@ export class TaskController {
     return random;
   }
 
-  public async getTasksByProjectId(projectId: string) {
-    const url = `${this.baseUrl}/tasks/?projectId=${projectId}`;
+  public async getExams() {
+    const url = `${this.baseUrl}/exams`;
     try {
       const response = await fetch(url);
-      const tasksData: Task[] = await response.json();
-      const parsed = z.array(TaskSchema).safeParse(tasksData);
+      const examsData: Exam[] = await response.json();
+      const parsed = ExamArraySchema.safeParse(examsData);
       if (!parsed.success) {
-        console.error("Invalid tasks response", parsed.error);
-        throw new Error("Invalid tasks response");
+        console.error("Invalid exams response", parsed.error);
+        throw new Error("Invalid exams response");
       }
       return parsed.data;
     } catch (error) {
@@ -30,19 +30,19 @@ export class TaskController {
     }
   }
 
-  public async postTask(task: NewTask) {
-    const taskWithId: Task = {
+  public async postExam(exam: NewExam) {
+    const examWithId: Exam = {
       id: String(this.generateRandomId()),
-      ...task,
+      ...exam,
     };
-    const url = `${this.baseUrl}/tasks`;
+    const url = `${this.baseUrl}/exams`;
     try {
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(taskWithId),
+        body: JSON.stringify(examWithId),
       });
       const data = await response.json();
       return data;
@@ -51,8 +51,8 @@ export class TaskController {
     }
   }
 
-  public async deleteTask(taskId: string) {
-    const url = `${this.baseUrl}/tasks/${taskId}`;
+  public async deleteExam(examId: string) {
+    const url = `${this.baseUrl}/exams/${examId}`;
     try {
       const response = await fetch(url, {
         method: "DELETE",

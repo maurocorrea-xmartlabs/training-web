@@ -3,7 +3,7 @@ import type { Subject } from "../../../types/subject";
 import { AddSubjectForm } from "../../forms/addSubjectForm";
 import { SubjectItem } from "./subjectItem";
 import type { NewSubject } from "../../../types/subject";
-import SubjectController from "../../../controllers/subjectController";
+import {SubjectController} from "../../../controllers/subjectController";
 
 export function SubjectList() {
   const [subjects, setSubjects] = useState<Subject[]>([]);

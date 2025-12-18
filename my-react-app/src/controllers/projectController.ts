@@ -3,14 +3,14 @@ import type { Project } from "../types/project";
 import type { NewProject } from "../types/project";
 import { ProjectSchema } from "../types/project";
 
-export default class ProjectController {
+export class ProjectController {
   baseUrl: string;
 
   constructor() {
     this.baseUrl = "http://localhost:8000";
   }
 
-  public async generateRandomId() {
+  public generateRandomId() {
     const random = Math.floor(Math.random() * 1_000_000) + 1;
     return random;
   }
@@ -33,10 +33,8 @@ export default class ProjectController {
 
   public async postProject(project: NewProject) {
     const projectWithId: Project = {
-      id: String(await this.generateRandomId()),
-      name: project.name,
-      credits: project.credits,
-      subjectId: project.subjectId,
+      id: String(this.generateRandomId()),
+      ...project,
     };
     const url = `${this.baseUrl}/projects`;
     try {

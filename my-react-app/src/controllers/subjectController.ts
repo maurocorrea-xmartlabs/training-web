@@ -3,14 +3,14 @@ import type { Subject } from "../types/subject";
 import type { NewSubject } from "../types/subject";
 import { SubjectSchema } from "../types/subject";
 
-export default class SubjectController {
+export class SubjectController {
   baseUrl: string;
 
   constructor() {
     this.baseUrl = "http://localhost:8000";
   }
 
-  public async generateRandomId() {
+  public generateRandomId() {
     const random = Math.floor(Math.random() * 1_000_000) + 1;
     return random;
   }
@@ -33,9 +33,8 @@ export default class SubjectController {
 
   public async postSubject(subject: NewSubject) {
     const subjectWithId: Subject = {
-      id: String(await this.generateRandomId()),
-      name: subject.name,
-      monthlyCost: subject.monthlyCost,
+      id: String(this.generateRandomId()),
+      ...subject,
     };
     const url = `${this.baseUrl}/subjects`;
     try {

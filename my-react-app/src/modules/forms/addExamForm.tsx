@@ -1,15 +1,24 @@
 import { useState } from "react";
 import styles from "./formAnimations.module.css";
-import { SubjectFormSchema } from "../../types/subject";
+import { NewExamSchema } from "../../types/exam/newExam";
+import type { Subject } from "../../types/subject";
 
-type AddSubjectFormProps = {
-  onAddSubject: (name: string, monthlyCost: number) => void;
+type AddExamFormProps = {
+  subjects: Subject[];
+  onAddExam: (
+    minScore: number,
+    maxScore: number,
+    date: string,
+    subjectId: string,
+  ) => void;
 };
 
-export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
+export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
   const [showPopup, setShowPopup] = useState(false);
-  const [subjectName, setSubjectName] = useState("");
-  const [subjectCost, setSubjectCost] = useState(0);
+  const [subjectId, setSubjectId] = useState("");
+  const [minScore, setMinScore] = useState(0);
+  const [maxScore, setMaxScore] = useState(1);
+  const [date, setDate] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isHidingButton, setIsHidingButton] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -17,9 +26,11 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const result = SubjectFormSchema.safeParse({
-      name: subjectName,
-      monthlyCost: subjectCost,
+    const result = NewExamSchema.safeParse({
+      minScore: minScore,
+      maxScore: maxScore,
+      date: new Date(date),
+      subjectId: subjectId,
     });
 
     if (!result.success) {
@@ -29,9 +40,11 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
 
     setError(null);
 
-    onAddSubject(subjectName, subjectCost);
-    setSubjectName("");
-    setSubjectCost(0);
+    onAddExam(minScore, maxScore, date, subjectId);
+    setSubjectId("");
+    setMinScore(0);
+    setMaxScore(1);
+    setDate(String(new Date()));
     closeForm();
   }
 
@@ -68,7 +81,7 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
           ${isHidingButton ? styles.animateButtonOut : ""}
         `}
         >
-          + Subject
+          + Exam
         </button>
       </>
     );
@@ -84,27 +97,56 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
         onClick={(e) => e.stopPropagation()}
         className={`bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4 transition-all duration-200 scale-95 opacity-0 ${isClosing ? styles.animateModalOut : styles.animateModalIn}`}
       >
-        <h3 className="text-lg font-semibold">New subject</h3>
+        <h3 className="text-lg font-semibold">New exam</h3>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <div className="space-y-1">
-          <label className="text-sm font-medium">Subject name</label>
+          <label className="text-sm font-medium">Select a subject</label>
+
+          <select
+            value={subjectId}
+            onChange={(e) => setSubjectId(e.target.value)}
+            className="w-full rounded-md border px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-black"
+          >
+            <option value="" disabled>
+              Select a subject
+            </option>
+
+            {subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Minimum score</label>
           <input
-            type="text"
-            placeholder="Algorithms 2"
-            value={subjectName}
-            onChange={(e) => setSubjectName(e.target.value)}
+            type="number"
+            value={minScore}
+            onChange={(e) => setMinScore(Number(e.target.value))}
             className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium">Monthly cost</label>
+          <label className="text-sm font-medium">Maximum score</label>
           <input
             type="number"
-            value={subjectCost}
-            onChange={(e) => setSubjectCost(Number(e.target.value))}
+            value={maxScore}
+            onChange={(e) => setMaxScore(Number(e.target.value))}
+            className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Date</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
             className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
