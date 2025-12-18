@@ -1,4 +1,4 @@
-import type { Exam } from "../../../types/exam/exam";
+import type { Exam } from "../../../types/exam";
 
 type ExamItemProps = {
   exam: Exam;

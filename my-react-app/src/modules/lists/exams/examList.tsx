@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import type { Exam } from "../../../types/exam/exam";
+import type { Exam, NewExam } from "../../../types/exam";
 import { AddExamForm } from "../../forms/addExamForm";
 import { ExamItem } from "./examItem";
-import type { NewExam } from "../../../types/exam/newExam";
 import {
   getExams,
   postExam,
   deleteExam,
 } from "../../../controllers/examController";
-import type { Subject } from "../../../types/subject/subject";
+import type { Subject } from "../../../types/subject";
 import { getSubjects } from "../../../controllers/subjectController";
 
 export function ExamList() {

@@ -1,4 +1,4 @@
-import type { Task } from "../../../types/task/task";
+import type { Task } from "../../../types/task";
 
 type TaskItemProps = {
   task: Task;

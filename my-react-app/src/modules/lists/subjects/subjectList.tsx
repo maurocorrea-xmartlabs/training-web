@@ -1,27 +1,12 @@
-import { useEffect, useState } from "react";
-import type { Subject } from "../../../types/subject/subject";
 import { AddSubjectForm } from "../../forms/addSubjectForm";
 import { SubjectItem } from "./subjectItem";
-import {
-  getSubjects,
-  deleteSubject,
-} from "../../../controllers/subjectController";
+import { useSubjects } from "../../../contexts/subjectsContexts";
 
 export function SubjectList() {
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-
-  async function loadSubjects() {
-    const newSubjectList = await getSubjects();
-    setSubjects(newSubjectList!);
-  }
-
-  useEffect(() => {
-    loadSubjects();
-  });
+  const { subjects, deleteSubject } = useSubjects();
 
   async function handleDeleteSubject(id: string) {
     await deleteSubject(id);
-    loadSubjects();
   }
 
   return (

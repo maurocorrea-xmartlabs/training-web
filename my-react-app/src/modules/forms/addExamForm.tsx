@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { NewExamSchema } from "../../types/exam/newExam";
-import type { Subject } from "../../types/subject/subject";
+import { NewExamSchema } from "../../types/exam";
+import type { Subject } from "../../types/subject";
 import { usePopupForm } from "../hooks/usePopupForm";
 import { PopupForm } from "../utils/popupForm";
+import { withErrorHandlingVoid } from "../../controllers/utils/withErrorHandlingVoid";
 
 type AddExamFormProps = {
   subjects: Subject[];
@@ -37,9 +38,14 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
       return;
     }
 
-    setError(null);
+    const success = withErrorHandlingVoid(
+      () => onAddExam(minScore, maxScore, date, subjectId),
+      setError,
+    );
 
-    onAddExam(minScore, maxScore, date, subjectId);
+    if (!success) return;
+
+    setError(null);
 
     setSubjectId("");
     setMinScore(0);
@@ -57,7 +63,7 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
         <button
           type="button"
           onClick={open}
-          className="px-3 py-1 rounded-md bg-black text-white hover:bg-gray-800"
+          className="px-3 py-1 rounded-md bg-black text-white hover:bg-gray-800 transition"
         >
           + Exam
         </button>

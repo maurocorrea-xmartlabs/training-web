@@ -1,40 +1,34 @@
-import type { Project } from "../types/project/project";
-import type { NewProject } from "../types/project/newProject";
-import { ProjectsArraySchema } from "../types/project/project";
-
-const BASE_URL = import.meta.env.VITE_BASE_URL;
-
-async function generateRandomId() {
-  const random = Math.floor(Math.random() * 1_000_000) + 1;
-  return random;
-}
+import z from "zod";
+import { ProjectSchema, type Project } from "../types/project";
+import type { NewProject } from "../types/project";
+import { API_ENDPOINTS } from "./utils/endpoints";
+import { generateRandomId } from "./utils/randomId";
 
 export async function getProjectsBySubjectId(subjectId: string) {
-  const url = `${BASE_URL}/projects/?subjectId=${subjectId}`;
+  const searchParams = new URLSearchParams(`subjectId=${subjectId}`);
+  const url = API_ENDPOINTS.GET_PROJECT_BY_SUBJECT(searchParams.toString());
   try {
     const response = await fetch(url);
     const projectsData: Project[] = await response.json();
-    const parsed = ProjectsArraySchema.safeParse(projectsData);
+    const parsed = z.array(ProjectSchema).safeParse(projectsData);
     if (!parsed.success) {
       console.error("Invalid projects response", parsed.error);
       throw new Error("Invalid projects response");
     }
     return parsed.data;
   } catch (error) {
-    console.error("Fetch error:" + error);
+    console.error("Error getting projects: " + error);
+    throw new Error("Error getting projects, please try again");
   }
 }
 
 export async function postProject(project: NewProject) {
   const projectWithId: Project = {
     id: String(await generateRandomId()),
-    name: project.name,
-    credits: project.credits,
-    subjectId: project.subjectId,
+    ...project,
   };
-  const url = `${BASE_URL}/projects`;
   try {
-    const response = await fetch(url, {
+    const response = await fetch(API_ENDPOINTS.POST_PROJECT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,19 +38,20 @@ export async function postProject(project: NewProject) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Fetch POST error: " + error);
+    console.error("Error creating project: " + error);
+    throw new Error("Error creating project, please try again");
   }
 }
 
 export async function deleteProject(projectId: string) {
-  const url = `${BASE_URL}/projects/${projectId}`;
   try {
-    const response = await fetch(url, {
+    const response = await fetch(API_ENDPOINTS.DELETE_PROJECT(projectId), {
       method: "DELETE",
     });
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Fetch POST error: " + error);
+    console.error("Delete error: " + error);
+    throw new Error("Error deleting project, please try again");
   }
 }

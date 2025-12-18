@@ -1,41 +1,32 @@
-import type { Exam } from "../types/exam/exam";
-import type { NewExam } from "../types/exam/newExam";
-import { ExamArraySchema } from "../types/exam/exam";
-
-const BASE_URL = import.meta.env.VITE_BASE_URL;
-
-async function generateRandomId() {
-  const random = Math.floor(Math.random() * 1_000_000) + 1;
-  return random;
-}
+import z from "zod";
+import { ExamSchema, type Exam } from "../types/exam";
+import type { NewExam } from "../types/exam";
+import { generateRandomId } from "./utils/randomId";
+import { API_ENDPOINTS } from "./utils/endpoints";
 
 export async function getExams() {
-  const url = `${BASE_URL}/exams`;
   try {
-    const response = await fetch(url);
+    const response = await fetch(API_ENDPOINTS.GET_EXAMS);
     const examsData: Exam[] = await response.json();
-    const parsed = ExamArraySchema.safeParse(examsData);
+    const parsed = z.array(ExamSchema).safeParse(examsData);
     if (!parsed.success) {
       console.error("Invalid exams response", parsed.error);
       throw new Error("Invalid exams response");
     }
     return parsed.data;
   } catch (error) {
-    console.error("Fetch error:" + error);
+    console.error("Error getting exams: " + error);
+    throw new Error("Error getting exams, please try again");
   }
 }
 
 export async function postExam(exam: NewExam) {
   const examWithId: Exam = {
-    id: String(await generateRandomId()),
-    minScore: exam.minScore,
-    maxScore: exam.maxScore,
-    date: exam.date,
-    subjectId: exam.subjectId,
+    id: String(generateRandomId()),
+    ...exam,
   };
-  const url = `${BASE_URL}/exams`;
   try {
-    const response = await fetch(url, {
+    const response = await fetch(API_ENDPOINTS.POST_EXAM, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -45,19 +36,20 @@ export async function postExam(exam: NewExam) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Fetch POST error: " + error);
+    console.error("Error creating exam: " + error);
+    throw new Error("Error creating exam, please try again");
   }
 }
 
 export async function deleteExam(examId: string) {
-  const url = `${BASE_URL}/exams/${examId}`;
   try {
-    const response = await fetch(url, {
+    const response = await fetch(API_ENDPOINTS.DELETE_EXAM(examId), {
       method: "DELETE",
     });
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Fetch POST error: " + error);
+    console.error("Delete error: " + error);
+    throw new Error("Error deleting exam, please try again");
   }
 }

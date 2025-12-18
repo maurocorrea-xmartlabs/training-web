@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import type { Project } from "../../../types/project/project";
-import type { Task } from "../../../types/task/task";
-import { TaskList } from "../tasks/taskList";
-import { AddTaskForm } from "../../forms/addTaskForm";
-import type { NewTask } from "../../../types/task/newTask";
 import {
   getTasksByProjectId,
   postTask,
   deleteTask,
 } from "../../../controllers/taskController";
+import type { Project } from "../../../types/project";
+import type { Task, NewTask } from "../../../types/task";
+import { AddTaskForm } from "../../forms/addTaskForm";
+import { TaskList } from "../tasks/taskList";
+import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
 
 type ProjectItemProps = {
   project: Project;
@@ -17,14 +17,18 @@ type ProjectItemProps = {
 
 export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   const [tasks, setTasks] = useState<Task[]>();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadTasks();
-  });
+  }, []);
 
   async function loadTasks() {
-    const newTasks = await getTasksByProjectId(project.id);
-    setTasks(newTasks!);
+    const newTasks = await withErrorHandling(
+      () => getTasksByProjectId(project.id),
+      setError,
+    );
+    setTasks(newTasks || []);
   }
 
   async function handleAddTask(name: string, description: string) {
@@ -47,6 +51,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
     <div className="rounded-lg border bg-gray-50 p-4 space-y-4">
       <div className="flex items-start justify-between">
         <div>
+          {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
           <h4 className="font-semibold">{project.name}</h4>
           <p className="text-sm text-gray-500">Credits: {project.credits}</p>
         </div>

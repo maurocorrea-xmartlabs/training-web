@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Subject } from "../types/subject/subject";
+import type { Subject } from "../types/subject";
 import {
   getSubjects,
   postSubject,

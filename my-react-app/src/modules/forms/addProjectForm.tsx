@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ProjectFormSchema } from "../../types/project/projectFormSchema";
 import { usePopupForm } from "../hooks/usePopupForm";
 import { PopupForm } from "../utils/popupForm";
+import { ProjectFormSchema } from "../../types/project";
+import { withErrorHandlingVoid } from "../../controllers/utils/withErrorHandlingVoid";
 
 type AddProjectFormProps = {
   onAddProject: (name: string, monthlyCost: number) => void;
@@ -9,11 +10,10 @@ type AddProjectFormProps = {
 
 export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
-
   const [projectName, setProjectName] = useState("");
   const [projectCredits, setProjectCredits] = useState(0);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     const result = ProjectFormSchema.safeParse({
@@ -26,12 +26,16 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
       return;
     }
 
-    setError(null);
-    onAddProject(projectName, projectCredits);
+    const success = withErrorHandlingVoid(
+      () => onAddProject(projectName, projectCredits),
+      setError,
+    );
 
+    if (!success) return;
+
+    setError(null);
     setProjectName("");
     setProjectCredits(0);
-
     close();
   }
 
@@ -39,7 +43,6 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
     return (
       <>
         {error && <p className="text-sm text-red-500">{error}</p>}
-
         <button
           type="button"
           onClick={open}

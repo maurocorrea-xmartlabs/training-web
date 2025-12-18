@@ -1,40 +1,34 @@
-import type { Task } from "../types/task/task";
-import type { NewTask } from "../types/task/newTask";
-import { TaskArraySchema } from "../types/task/task";
-
-const BASE_URL = import.meta.env.VITE_BASE_URL;
-
-async function generateRandomId() {
-  const random = Math.floor(Math.random() * 1_000_000) + 1;
-  return random;
-}
+import z from "zod";
+import { TaskSchema, type Task } from "../types/task";
+import type { NewTask } from "../types/task";
+import { generateRandomId } from "./utils/randomId";
+import { API_ENDPOINTS } from "./utils/endpoints";
 
 export async function getTasksByProjectId(projectId: string) {
-  const url = `${BASE_URL}/tasks/?projectId=${projectId}`;
+  const searchParams = new URLSearchParams(`projectId=${projectId}`);
+  const url = API_ENDPOINTS.GET_TASKS_BY_PROJECT(searchParams.toString());
   try {
     const response = await fetch(url);
     const tasksData: Task[] = await response.json();
-    const parsed = TaskArraySchema.safeParse(tasksData);
+    const parsed = z.array(TaskSchema).safeParse(tasksData);
     if (!parsed.success) {
       console.error("Invalid tasks response", parsed.error);
       throw new Error("Invalid tasks response");
     }
     return parsed.data;
   } catch (error) {
-    console.error("Fetch error:" + error);
+    console.error("Error getting tasks by project Id:" + error);
+    throw new Error("Error getting tasks, please try again");
   }
 }
 
 export async function postTask(task: NewTask) {
   const taskWithId: Task = {
-    id: String(await generateRandomId()),
-    name: task.name,
-    description: task.description,
-    projectId: task.projectId,
+    id: String(generateRandomId()),
+    ...task,
   };
-  const url = `${BASE_URL}/tasks`;
   try {
-    const response = await fetch(url, {
+    const response = await fetch(API_ENDPOINTS.POST_TASK, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,19 +38,20 @@ export async function postTask(task: NewTask) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Fetch POST error: " + error);
+    console.error("Error creating task: " + error);
+    throw new Error("Error creating task, please try again");
   }
 }
 
 export async function deleteTask(taskId: string) {
-  const url = `${BASE_URL}/tasks/${taskId}`;
   try {
-    const response = await fetch(url, {
+    const response = await fetch(API_ENDPOINTS.DELETE_TASK(taskId), {
       method: "DELETE",
     });
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Fetch POST error: " + error);
+    console.error("Error deleting task: " + error);
+    throw new Error("Error deleting task, please try again");
   }
 }

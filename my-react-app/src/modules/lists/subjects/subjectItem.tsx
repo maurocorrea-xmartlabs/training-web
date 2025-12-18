@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import type { Subject } from "../../../types/subject/subject";
-import type { Project } from "../../../types/project/project";
-import { ProjectList } from "../projects/projectList";
-import { AddProjectForm } from "../../forms/addProjectForm";
 import {
   getProjectsBySubjectId,
   postProject,
   deleteProject,
 } from "../../../controllers/projectController";
-import type { NewProject } from "../../../types/project/newProject";
+import type { Subject } from "../../../types/subject";
+import type { Project, NewProject } from "../../../types/project";
+import { ProjectList } from "../projects/projectList";
+import { AddProjectForm } from "../../forms/addProjectForm";
+import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
 
 type SubjectItemProps = {
   subject: Subject;
@@ -17,15 +17,20 @@ type SubjectItemProps = {
 
 export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   async function loadProjects() {
-    const newProjectList = await getProjectsBySubjectId(subject.id);
-    setProjects(newProjectList!);
+    const newProjectList = await withErrorHandling(
+      () => getProjectsBySubjectId(subject.id),
+      setError,
+    );
+
+    setProjects(newProjectList || []);
   }
 
   useEffect(() => {
     loadProjects();
-  });
+  }, []);
 
   async function handleAddProject(name: string, credits: number) {
     const newProject: NewProject = {
@@ -34,12 +39,12 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
       subjectId: subject.id,
     };
 
-    await postProject(newProject);
+    await withErrorHandling(() => postProject(newProject), setError);
     loadProjects();
   }
 
   async function handleDeleteProject(id: string) {
-    await deleteProject(id);
+    await withErrorHandling(() => deleteProject(id), setError);
     loadProjects();
   }
 
@@ -47,6 +52,7 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
     <div className="bg-white rounded-xl shadow-sm border p-5 space-y-4">
       <div className="flex items-start justify-between">
         <div>
+          {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
           <h3 className="text-lg font-semibold">{subject.name}</h3>
           <p className="text-sm text-gray-500">
             Monthly cost: ${subject.monthlyCost}

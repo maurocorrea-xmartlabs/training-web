@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { TaskFormSchema } from "../../types/task/taskFormSchema";
 import { usePopupForm } from "../hooks/usePopupForm";
 import { PopupForm } from "../utils/popupForm";
+import { TaskFormSchema } from "../../types/task";
+import { withErrorHandlingVoid } from "../../controllers/utils/withErrorHandlingVoid";
 
 type AddTaskFormProps = {
   onAddTask: (name: string, description: string) => void;
@@ -13,7 +14,7 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     const result = TaskFormSchema.safeParse({
@@ -26,9 +27,13 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
       return;
     }
 
-    setError(null);
+    const success = await withErrorHandlingVoid(
+      () => onAddTask(taskName, taskDescription),
+      setError,
+    );
 
-    onAddTask(taskName, taskDescription);
+    if (!success) return;
+
     setTaskName("");
     setTaskDescription("");
     close();

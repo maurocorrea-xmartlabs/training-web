@@ -10,6 +10,7 @@ export function usePopupForm() {
   }
 
   function close() {
+    setError(null);
     setShowPopup(false);
   }
 
