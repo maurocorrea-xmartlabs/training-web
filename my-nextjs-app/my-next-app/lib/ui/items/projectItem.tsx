@@ -1,0 +1,104 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  getTasksByProjectId,
+  postTask,
+  deleteTask,
+} from "../../../controllers/taskController";
+import type { Project } from "../../../types/project";
+import type { Task, NewTask } from "../../../types/task";
+import { AddTaskForm } from "../forms/addTaskForm";
+import { TaskList } from "../lists/taskList";
+import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
+import styles from "../listsAnimations.module.css";
+
+type ProjectItemProps = {
+  project: Project;
+  onDelete: (id: string) => void;
+};
+
+export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  async function loadTasks() {
+    const newTasks = await withErrorHandling(
+      () => getTasksByProjectId(project.id),
+      setError
+    );
+    setTasks(newTasks || []);
+  }
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  async function handleAddTask(name: string, description: string) {
+    const newTask: NewTask = {
+      name: name,
+      description: description,
+      projectId: project.id,
+    };
+
+    const success = await withErrorHandling(() => postTask(newTask), setError);
+
+    if (!success) return;
+
+    loadTasks();
+  }
+
+  function handleDelete() {
+    setIsDeleting(true);
+    setTimeout(() => {
+      onDelete(project.id);
+    }, 150);
+  }
+
+  async function handleDeleteTask(id: string) {
+    const success = await withErrorHandling(() => deleteTask(id), setError);
+    if (!success) return;
+    loadTasks();
+  }
+
+  return (
+    <div
+      className={`bg-white rounded-xl shadow-sm border p-5 space-y-4 ${
+        isDeleting ? styles.animateItemOut : ""
+      }`}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
+          <h4 className="font-semibold">{project.name}</h4>
+          <p className="text-sm text-gray-500">Credits: {project.credits}</p>
+        </div>
+
+        <button
+          onClick={handleDelete}
+          type="button"
+          disabled={isDeleting}
+          className="
+            text-sm text-red-600
+            border border-red-200
+            rounded-md
+            px-3 py-1
+            hover:bg-red-50
+            active:scale-95
+            transition
+          "
+        >
+          Delete
+        </button>
+      </div>
+
+      <AddTaskForm onAddTask={handleAddTask} />
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-gray-700">Tasks</p>
+        <TaskList tasks={tasks} onDelete={handleDeleteTask} />
+      </div>
+    </div>
+  );
+}

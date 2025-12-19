@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Subject } from "../types/subject";
 import {
@@ -5,8 +7,6 @@ import {
   postSubject,
   deleteSubject as deleteSubjectApi,
 } from "../controllers/subjectController";
-
-("use client");
 
 type SubjectsContextType = {
   subjects: Subject[];
