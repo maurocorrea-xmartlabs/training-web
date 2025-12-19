@@ -1,3 +1,5 @@
+"use client";
+
 import { type ReactNode, type FormEventHandler, useState } from "react";
 import styles from "./formAnimations.module.css";
 
