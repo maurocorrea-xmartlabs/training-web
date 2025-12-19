@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -30,5 +34,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["./node_modules"]
 }

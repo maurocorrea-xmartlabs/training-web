@@ -2,7 +2,7 @@
 
 import type { Exam } from "../../../types/exam";
 import { useState } from "react";
-import styles from "../listsAnimations.module.css";
+import styles from "./itemAnimations.module.css";
 
 type ExamItemProps = {
   exam: Exam;

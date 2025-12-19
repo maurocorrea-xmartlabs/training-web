@@ -11,7 +11,7 @@ import type { Project, NewProject } from "../../../types/project";
 import { ProjectList } from "../../ui/lists/projectList";
 import { AddProjectForm } from "../forms/addProjectForm";
 import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
-import styles from "../listsAnimations.module.css";
+import styles from "./itemAnimations.module.css";
 
 type SubjectItemProps = {
   subject: Subject;

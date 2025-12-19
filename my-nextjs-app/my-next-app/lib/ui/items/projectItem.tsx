@@ -11,7 +11,7 @@ import type { Task, NewTask } from "../../../types/task";
 import { AddTaskForm } from "../forms/addTaskForm";
 import { TaskList } from "../lists/taskList";
 import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
-import styles from "../listsAnimations.module.css";
+import styles from "./itemAnimations.module.css";
 
 type ProjectItemProps = {
   project: Project;

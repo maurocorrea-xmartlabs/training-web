@@ -1,12 +1,6 @@
 "use client";
 
-export default function Error({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) {
+export default function Error({ reset }: { reset: () => void }) {
   return (
     <div className="p-10 text-center space-y-4">
       <p className="text-red-600">Something went wrong loading to-do list.</p>

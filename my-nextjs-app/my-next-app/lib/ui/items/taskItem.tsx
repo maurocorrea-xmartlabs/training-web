@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Task } from "../../../types/task";
-import styles from "../listsAnimations.module.css";
+import styles from "./itemAnimations.module.css";
 
 type TaskItemProps = {
   task: Task;
