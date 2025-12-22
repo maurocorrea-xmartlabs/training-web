@@ -1,30 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NewExamSchema } from "../../../types/exam";
 import type { Subject } from "@/generated/prisma/client";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
-import { withErrorHandlingVoid } from "../../../controllers/utils/withErrorHandlingVoid";
+import { createExamAction } from "@/app/exams/actions";
 import styles from "./formAnimations.module.css";
+import { withErrorHandling } from "@/controllers/utils/withErrorHandling";
 
 type AddExamFormProps = {
   subjects: Subject[];
-  onAddExam: (
-    minScore: number,
-    maxScore: number,
-    date: string,
-    subjectId: number
-  ) => void;
 };
 
-export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
+export function AddExamForm({ subjects }: AddExamFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
   const [subjectId, setSubjectId] = useState(0);
   const [minScore, setMinScore] = useState(0);
   const [maxScore, setMaxScore] = useState(1);
   const [date, setDate] = useState("");
   const [isHidingButton, setIsHidingButton] = useState(false);
+
+  useEffect(() => {
+    if (subjects.length >= 1) {
+      setSubjectId(subjects[0].id);
+    }
+  }, [subjects]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -46,8 +47,14 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
       return;
     }
 
-    const success = await withErrorHandlingVoid(
-      () => onAddExam(minScore, maxScore, date, subjectId),
+    const success = await withErrorHandling(
+      () =>
+        createExamAction({
+          minScore,
+          maxScore,
+          date: new Date(date),
+          subjectId,
+        }),
       setError
     );
 
