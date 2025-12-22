@@ -1,56 +1,41 @@
-import z from "zod";
-import { TaskSchema, type Task, type NewTask } from "../types/task";
-import { generateRandomId } from "./utils/randomId";
-import { API_ENDPOINTS } from "./utils/endpoints";
+import { prisma } from "../prisma/prisma";
+import type { NewTask } from "@/types/task";
+import type { Task } from "@/generated/prisma/client";
 
-export async function getTasksByProjectId(projectId: string) {
-  const searchParams = new URLSearchParams(`projectId=${projectId}`);
-  const url = API_ENDPOINTS.GET_TASKS_BY_PROJECT(searchParams.toString());
+export async function getTasksByProjectId(projectId: number): Promise<Task[]> {
   try {
-    const response = await fetch(url);
-    const tasksData: Task[] = await response.json();
-    const parsed = z.array(TaskSchema).safeParse(tasksData);
-    if (!parsed.success) {
-      console.error("Invalid tasks response", parsed.error);
-      throw new Error("Invalid tasks response");
-    }
-    return parsed.data;
+    return await prisma.task.findMany({
+      where: { projectId },
+      orderBy: { name: "asc" },
+    });
   } catch (error) {
-    console.error("Error getting tasks by project Id:" + error);
+    console.error("Error getting tasks by project id:", error);
     throw new Error("Error getting tasks, please try again");
   }
 }
 
-export async function postTask(task: NewTask) {
-  const taskWithId: Task = {
-    id: String(generateRandomId()),
-    ...task,
-  };
+export async function postTask(task: NewTask): Promise<Task> {
   try {
-    const response = await fetch(API_ENDPOINTS.POST_TASK, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    return await prisma.task.create({
+      data: {
+        name: task.name,
+        description: task.description,
+        projectId: task.projectId,
       },
-      body: JSON.stringify(taskWithId),
     });
-    const data = await response.json();
-    return data;
   } catch (error) {
-    console.error("Error creating task: " + error);
+    console.error("Error creating task:", error);
     throw new Error("Error creating task, please try again");
   }
 }
 
-export async function deleteTask(taskId: string) {
+export async function deleteTask(taskId: number): Promise<Task> {
   try {
-    const response = await fetch(API_ENDPOINTS.DELETE_TASK(taskId), {
-      method: "DELETE",
+    return await prisma.task.delete({
+      where: { id: taskId },
     });
-    const data = await response.json();
-    return data;
   } catch (error) {
-    console.error("Error deleting task: " + error);
+    console.error("Error deleting task:", error);
     throw new Error("Error deleting task, please try again");
   }
 }

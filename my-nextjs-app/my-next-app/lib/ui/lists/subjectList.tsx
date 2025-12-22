@@ -10,7 +10,7 @@ export function SubjectList() {
   const { subjects, deleteSubject } = useSubjects();
   const [error, setError] = useState<string | null>(null);
 
-  async function handleDeleteSubject(id: string) {
+  async function handleDeleteSubject(id: number) {
     const success = await withErrorHandling(() => deleteSubject(id), setError);
 
     if (!success) return;

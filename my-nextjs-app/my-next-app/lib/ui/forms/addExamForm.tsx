@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { NewExamSchema } from "../../../types/exam";
-import type { Subject } from "../../../types/subject";
+import type { Subject } from "@/generated/prisma/client";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import { withErrorHandlingVoid } from "../../../controllers/utils/withErrorHandlingVoid";
@@ -14,13 +14,13 @@ type AddExamFormProps = {
     minScore: number,
     maxScore: number,
     date: string,
-    subjectId: string
+    subjectId: number
   ) => void;
 };
 
 export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
-  const [subjectId, setSubjectId] = useState("");
+  const [subjectId, setSubjectId] = useState(0);
   const [minScore, setMinScore] = useState(0);
   const [maxScore, setMaxScore] = useState(1);
   const [date, setDate] = useState("");
@@ -55,7 +55,7 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
 
     setError(null);
 
-    setSubjectId("");
+    setSubjectId(0);
     setMinScore(0);
     setMaxScore(1);
     setDate("");
@@ -102,7 +102,7 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
         <label className="text-sm font-medium">Select a subject</label>
         <select
           value={subjectId}
-          onChange={(e) => setSubjectId(e.target.value)}
+          onChange={(e) => setSubjectId(Number(e.target.value))}
           className="w-full rounded-md border px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-black"
         >
           <option value="" disabled>

@@ -6,8 +6,9 @@ import {
   postTask,
   deleteTask,
 } from "../../../controllers/taskController";
-import type { Project } from "../../../types/project";
-import type { Task, NewTask } from "../../../types/task";
+import type { Project } from "@/generated/prisma/client";
+import type { Task } from "@/generated/prisma/client";
+import type { NewTask } from "../../../types/task";
 import { AddTaskForm } from "../forms/addTaskForm";
 import { TaskList } from "../lists/taskList";
 import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
@@ -15,7 +16,7 @@ import styles from "./itemAnimations.module.css";
 
 type ProjectItemProps = {
   project: Project;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 };
 
 export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
@@ -56,7 +57,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
     }, 150);
   }
 
-  async function handleDeleteTask(id: string) {
+  async function handleDeleteTask(id: number) {
     const success = await withErrorHandling(() => deleteTask(id), setError);
     if (!success) return;
     loadTasks();

@@ -1,10 +1,10 @@
 import { useState } from "react";
-import type { Task } from "../../../types/task";
+import type { Task } from "@/generated/prisma/client";
 import styles from "./itemAnimations.module.css";
 
 type TaskItemProps = {
   task: Task;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 };
 
 export function TaskItem({ task, onDelete }: TaskItemProps) {

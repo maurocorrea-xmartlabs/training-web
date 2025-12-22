@@ -1,9 +1,9 @@
-import type { Project } from "../../../types/project";
+import type { Project } from "@/generated/prisma/client";
 import ProjectItem from "../items/projectItem";
 
 type ProjectListProps = {
   projects: Project[];
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 };
 
 export function ProjectList({ projects, onDelete }: ProjectListProps) {

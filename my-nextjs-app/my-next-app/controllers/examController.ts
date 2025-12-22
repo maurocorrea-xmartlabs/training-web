@@ -1,54 +1,45 @@
-import z from "zod";
-import { ExamSchema, type Exam, type NewExam } from "../types/exam";
-import { generateRandomId } from "./utils/randomId";
-import { API_ENDPOINTS } from "./utils/endpoints";
+import { prisma } from "../prisma/prisma";
+import type { Exam } from "@/generated/prisma/client";
+import type { NewExam } from "@/types/exam";
 
-export async function getExams() {
+export async function getExams(): Promise<Exam[]> {
   try {
-    const response = await fetch(API_ENDPOINTS.GET_EXAMS);
-    const examsData: Exam[] = await response.json();
-    const parsed = z.array(ExamSchema).safeParse(examsData);
-    if (!parsed.success) {
-      console.error("Invalid exams response", parsed.error);
-      throw new Error("Invalid exams response");
-    }
-    return parsed.data;
+    return await prisma.exam.findMany({
+      orderBy: {
+        date: "asc",
+      },
+    });
   } catch (error) {
-    console.error("Error getting exams: " + error);
+    console.error("Error getting exams:", error);
     throw new Error("Error getting exams, please try again");
   }
 }
 
 export async function postExam(exam: NewExam) {
-  const examWithId: Exam = {
-    id: String(generateRandomId()),
-    ...exam,
-  };
   try {
-    const response = await fetch(API_ENDPOINTS.POST_EXAM, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    return await prisma.exam.create({
+      data: {
+        minScore: exam.minScore,
+        maxScore: exam.maxScore,
+        date: exam.date,
+        subjectId: exam.subjectId,
       },
-      body: JSON.stringify(examWithId),
     });
-    const data = await response.json();
-    return data;
   } catch (error) {
-    console.error("Error creating exam: " + error);
+    console.error("Error creating exam:", error);
     throw new Error("Error creating exam, please try again");
   }
 }
 
-export async function deleteExam(examId: string) {
+export async function deleteExam(examId: number) {
   try {
-    const response = await fetch(API_ENDPOINTS.DELETE_EXAM(examId), {
-      method: "DELETE",
+    return await prisma.exam.delete({
+      where: {
+        id: examId,
+      },
     });
-    const data = await response.json();
-    return data;
   } catch (error) {
-    console.error("Delete error: " + error);
+    console.error("Delete error:", error);
     throw new Error("Error deleting exam, please try again");
   }
 }

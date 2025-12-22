@@ -1,9 +1,9 @@
-import type { Task } from "../../../types/task";
+import type { Task } from "@/generated/prisma/client";
 import { TaskItem } from "../items/taskItem";
 
 type TaskListProps = {
   tasks: Task[];
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 };
 
 export function TaskList({ tasks, onDelete }: TaskListProps) {
