@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Navbar } from "@/lib/ui/navbar";
-import { SubjectsProvider } from "@/providers/subjectsProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -20,10 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SubjectsProvider>
-          <Navbar />
-          {children}
-        </SubjectsProvider>
+        <Navbar />
+        {children}
       </body>
     </html>
   );

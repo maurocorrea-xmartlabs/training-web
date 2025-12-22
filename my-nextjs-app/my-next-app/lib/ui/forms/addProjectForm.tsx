@@ -4,14 +4,15 @@ import { useState } from "react";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import { ProjectFormSchema } from "../../../types/project";
-import { withErrorHandlingVoid } from "../../../controllers/utils/withErrorHandlingVoid";
+import { createProjectAction } from "@/app/todo/actions";
 import styles from "./formAnimations.module.css";
+import { withErrorHandling } from "@/controllers/utils/withErrorHandling";
 
 type AddProjectFormProps = {
-  onAddProject: (name: string, monthlyCost: number) => void;
+  subjectId: number;
 };
 
-export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
+export function AddProjectForm({ subjectId }: AddProjectFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
   const [projectName, setProjectName] = useState("");
   const [projectCredits, setProjectCredits] = useState(0);
@@ -30,8 +31,13 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
       return;
     }
 
-    const success = await withErrorHandlingVoid(
-      () => onAddProject(projectName, projectCredits),
+    const success = await withErrorHandling(
+      () =>
+        createProjectAction({
+          name: projectName,
+          credits: projectCredits,
+          subjectId,
+        }),
       setError
     );
 
@@ -64,7 +70,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
           rounded-md
           px-3 py-1.5
           hover:bg-gray-800
-          transition
+          transition mt-2
           ${isHidingButton ? styles.animateButtonOut : ""}
         `}
         >

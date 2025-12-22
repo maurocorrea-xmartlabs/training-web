@@ -1,23 +1,27 @@
-import type { Project } from "@/generated/prisma/client";
-import ProjectItem from "../items/projectItem";
+import { getProjectsBySubjectId } from "@/controllers/projectController";
+import { ProjectItem } from "../items/projectItem/projectItem";
+import { ProjectItemClientWrapper } from "../items/projectItem/projectItemClientWrapper";
 
-type ProjectListProps = {
-  projects: Project[];
-  onDelete: (id: number) => void;
+type Props = {
+  subjectId: number;
 };
 
-export function ProjectList({ projects, onDelete }: ProjectListProps) {
+export async function ProjectList({ subjectId }: Props) {
+  const projects = await getProjectsBySubjectId(subjectId);
+
   if (projects.length === 0) {
     return <p className="text-sm text-gray-500 italic">No projects yet</p>;
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 mt-2">
       <p className="text-md font-semibold">Projects</p>
 
       <div className="space-y-3">
         {projects.map((project) => (
-          <ProjectItem key={project.id} project={project} onDelete={onDelete} />
+          <ProjectItemClientWrapper key={project.id} projectId={project.id}>
+            <ProjectItem project={project} />
+          </ProjectItemClientWrapper>
         ))}
       </div>
     </div>

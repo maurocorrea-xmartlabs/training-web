@@ -8,7 +8,7 @@ export async function getProjectsBySubjectId(
   try {
     return await prisma.project.findMany({
       where: {
-        subjectId,
+        subjectId: subjectId,
       },
       orderBy: {
         name: "asc",

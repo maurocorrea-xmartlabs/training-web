@@ -4,14 +4,15 @@ import { useState } from "react";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import { TaskFormSchema } from "../../../types/task";
-import { withErrorHandlingVoid } from "../../../controllers/utils/withErrorHandlingVoid";
 import styles from "./formAnimations.module.css";
+import { createTaskAction } from "@/app/todo/actions";
+import { withErrorHandling } from "@/controllers/utils/withErrorHandling";
 
 type AddTaskFormProps = {
-  onAddTask: (name: string, description: string) => void;
+  projectId: number;
 };
 
-export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
+export function AddTaskForm({ projectId }: AddTaskFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
@@ -30,8 +31,13 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
       return;
     }
 
-    const success = await withErrorHandlingVoid(
-      () => onAddTask(taskName, taskDescription),
+    const success = await withErrorHandling(
+      () =>
+        createTaskAction({
+          name: taskName,
+          description: taskDescription,
+          projectId,
+        }),
       setError
     );
 
@@ -64,7 +70,7 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
           rounded-md
           px-3 py-1.5
           hover:bg-gray-800
-          transition
+          transition mt-2
           ${isHidingButton ? styles.animateButtonOut : ""}
         `}
         >
