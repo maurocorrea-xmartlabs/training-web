@@ -6,8 +6,9 @@ import {
   postProject,
   deleteProject,
 } from "../../../controllers/projectController";
-import type { Subject } from "../../../types/subject";
-import type { Project, NewProject } from "../../../types/project";
+import type { Subject } from "@/generated/prisma/client";
+import type { Project } from "@/generated/prisma/client";
+import type { NewProject } from "../../../types/project";
 import { ProjectList } from "../../ui/lists/projectList";
 import { AddProjectForm } from "../forms/addProjectForm";
 import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
@@ -15,7 +16,7 @@ import styles from "./itemAnimations.module.css";
 
 type SubjectItemProps = {
   subject: Subject;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 };
 
 export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
@@ -59,7 +60,7 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
     }, 150);
   }
 
-  async function handleDeleteProject(id: string) {
+  async function handleDeleteProject(id: number) {
     const success = await withErrorHandling(() => deleteProject(id), setError);
     if (!success) return;
     loadProjects();

@@ -1,13 +1,13 @@
 "use client";
 
-import type { Exam } from "../../../types/exam";
+import type { Exam } from "@/generated/prisma/client";
 import { useState } from "react";
 import styles from "./itemAnimations.module.css";
 
 type ExamItemProps = {
   exam: Exam;
   subjectName: string;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 };
 
 export function ExamItem({ exam, subjectName, onDelete }: ExamItemProps) {

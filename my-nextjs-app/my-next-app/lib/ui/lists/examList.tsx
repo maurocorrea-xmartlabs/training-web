@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { Exam, NewExam } from "../../../types/exam";
-import type { Subject } from "../../../types/subject";
+import type { NewExam } from "../../../types/exam";
+import type { Exam } from "@/generated/prisma/client";
+import type { Subject } from "@/generated/prisma/client";
 import { AddExamForm } from "../forms/addExamForm";
 import { ExamItem } from "../items/examItem";
 import {
@@ -31,7 +32,7 @@ export function ExamList({ exams: initialExams, subjects }: ExamListProps) {
     minScore: number,
     maxScore: number,
     date: string,
-    subjectId: string
+    subjectId: number
   ) {
     const newExam: NewExam = {
       minScore,
@@ -47,7 +48,7 @@ export function ExamList({ exams: initialExams, subjects }: ExamListProps) {
     await reloadExams();
   }
 
-  async function handleDeleteExam(id: string) {
+  async function handleDeleteExam(id: number) {
     const success = await withErrorHandling(() => deleteExam(id), setError);
 
     if (!success) return;

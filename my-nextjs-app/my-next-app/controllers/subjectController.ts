@@ -1,55 +1,39 @@
-import z from "zod";
-import { SubjectSchema, type Subject, type NewSubject } from "../types/subject";
-import { generateRandomId } from "./utils/randomId";
-import { API_ENDPOINTS } from "./utils/endpoints";
+import { prisma } from "../prisma/prisma";
+import type { NewSubject } from "@/types/subject";
+import type { Subject } from "@/generated/prisma/client";
 
-export async function getSubjects() {
+export async function getSubjects(): Promise<Subject[]> {
   try {
-    const response = await fetch(API_ENDPOINTS.GET_SUBJECTS);
-    console.log(API_ENDPOINTS.GET_SUBJECTS);
-    const subjectsData: Subject[] = await response.json();
-    const parsed = z.array(SubjectSchema).safeParse(subjectsData);
-    if (!parsed.success) {
-      console.error("Invalid subjects response", parsed.error);
-      throw new Error("Invalid subjects response");
-    }
-    return parsed.data;
+    return await prisma.subject.findMany({
+      orderBy: { name: "asc" },
+    });
   } catch (error) {
-    console.error("Error getting subjects: " + error);
+    console.error("Error getting subjects:", error);
     throw new Error("Error getting subjects, please try again");
   }
 }
 
-export async function postSubject(subject: NewSubject) {
-  const subjectWithId: Subject = {
-    id: String(generateRandomId()),
-    ...subject,
-  };
+export async function postSubject(subject: NewSubject): Promise<Subject> {
   try {
-    const response = await fetch(API_ENDPOINTS.POST_SUBJECT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    return await prisma.subject.create({
+      data: {
+        name: subject.name,
+        monthlyCost: subject.monthlyCost,
       },
-      body: JSON.stringify(subjectWithId),
     });
-    const data = await response.json();
-    return data;
   } catch (error) {
-    console.error("Error posting subject: " + error);
-    throw new Error("Error posting subject, please try again");
+    console.error("Error creating subject:", error);
+    throw new Error("Error creating subject, please try again");
   }
 }
 
-export async function deleteSubject(subjectId: string) {
+export async function deleteSubject(subjectId: number): Promise<Subject> {
   try {
-    const response = await fetch(API_ENDPOINTS.DELETE_SUBJECT(subjectId), {
-      method: "DELETE",
+    return await prisma.subject.delete({
+      where: { id: subjectId },
     });
-    const data = await response.json();
-    return data;
   } catch (error) {
-    console.error("Error deleting subject " + error);
+    console.error("Error deleting subject:", error);
     throw new Error("Error deleting subject, please try again");
   }
 }

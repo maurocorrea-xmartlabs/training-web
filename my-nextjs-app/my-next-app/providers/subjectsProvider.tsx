@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Subject } from "../types/subject";
+import type { Subject } from "@/generated/prisma/client";
 import {
   getSubjects,
   postSubject,
@@ -12,7 +12,7 @@ type SubjectsContextType = {
   subjects: Subject[];
   reloadSubjects: () => Promise<void>;
   addSubject: (name: string, monthlyCost: number) => Promise<void>;
-  deleteSubject: (id: string) => Promise<void>;
+  deleteSubject: (id: number) => Promise<void>;
 };
 
 const SubjectsContext = createContext<SubjectsContextType | null>(null);
@@ -30,7 +30,7 @@ export function SubjectsProvider({ children }: { children: React.ReactNode }) {
     await reloadSubjects();
   }
 
-  async function deleteSubject(id: string) {
+  async function deleteSubject(id: number) {
     await deleteSubjectApi(id);
     await reloadSubjects();
   }
