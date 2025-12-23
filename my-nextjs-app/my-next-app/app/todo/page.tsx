@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { SubjectList } from "@/lib/ui/lists/subjectList";
-import { getSubjects } from "@/controllers/subjectController";
+import { getSubjects } from "@/services/subjectService";
 
 export const metadata: Metadata = {
   title: "To-Do",

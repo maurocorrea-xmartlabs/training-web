@@ -6,7 +6,7 @@ import { PopupForm } from "./popupForm";
 import { ProjectFormSchema } from "../../../types/project";
 import { createProjectAction } from "@/app/todo/actions";
 import styles from "./formAnimations.module.css";
-import { withErrorHandling } from "@/controllers/utils/withErrorHandling";
+import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 type AddProjectFormProps = {
   subjectId: number;

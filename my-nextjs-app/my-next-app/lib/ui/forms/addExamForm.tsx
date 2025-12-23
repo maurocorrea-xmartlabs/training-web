@@ -7,7 +7,7 @@ import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import { createExamAction } from "@/app/exams/actions";
 import styles from "./formAnimations.module.css";
-import { withErrorHandling } from "@/controllers/utils/withErrorHandling";
+import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 type AddExamFormProps = {
   subjects: Subject[];

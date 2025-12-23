@@ -1,4 +1,4 @@
-import { getProjectsBySubjectId } from "@/controllers/projectController";
+import { getProjectsBySubjectId } from "@/services/projectService";
 import { ProjectItem } from "../items/projectItem/projectItem";
 import { ProjectItemClientWrapper } from "../items/projectItem/projectItemClientWrapper";
 

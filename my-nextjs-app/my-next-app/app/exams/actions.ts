@@ -1,6 +1,6 @@
 "use server";
 
-import { postExam, deleteExam } from "@/controllers/examController";
+import { postExam, deleteExam } from "@/services/examService";
 import { revalidatePath } from "next/cache";
 import type { NewExam } from "@/types/exam";
 
