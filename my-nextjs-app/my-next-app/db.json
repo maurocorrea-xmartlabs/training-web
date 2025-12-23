@@ -1,0 +1,52 @@
+{
+  "subjects": [
+    {
+      "id": "166034",
+      "name": "Algoritmos 1",
+      "monthlyCost": 50
+    },
+    {
+      "id": "481198",
+      "name": "Materia 2",
+      "monthlyCost": 100
+    }
+  ],
+  "projects": [
+    {
+      "id": "721097",
+      "name": "Project 1",
+      "credits": 50,
+      "subjectId": "166034"
+    },
+    {
+      "id": "108975",
+      "name": "Proyecto 2",
+      "credits": 10,
+      "subjectId": "166034"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "889751",
+      "name": "Task 1",
+      "description": "Sape",
+      "projectId": "721097"
+    }
+  ],
+  "exams": [
+    {
+      "id": "1",
+      "minScore": 0,
+      "maxScore": 25,
+      "date": "2025-06-20",
+      "subjectId": "166034"
+    },
+    {
+      "id": "759158",
+      "minScore": 20,
+      "maxScore": 25,
+      "date": "2025-12-26T00:00:00.000Z",
+      "subjectId": "481198"
+    }
+  ]
+}
