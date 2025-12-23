@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { postSubject, deleteSubject } from "@/controllers/subjectController";
+import { postSubject, deleteSubject } from "@/services/subjectService";
 import type { NewSubject } from "@/types/subject";
 import { NewProject } from "@/types/project";
-import { deleteProject, postProject } from "@/controllers/projectController";
-import { deleteTask, postTask } from "@/controllers/taskController";
+import { deleteProject, postProject } from "@/services/projectService";
+import { deleteTask, postTask } from "@/services/taskService";
 import { NewTask } from "@/types/task";
 
 export async function createSubjectAction(data: NewSubject) {

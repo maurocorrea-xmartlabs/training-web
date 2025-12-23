@@ -6,7 +6,7 @@ import { PopupForm } from "./popupForm";
 import { TaskFormSchema } from "../../../types/task";
 import styles from "./formAnimations.module.css";
 import { createTaskAction } from "@/app/todo/actions";
-import { withErrorHandling } from "@/controllers/utils/withErrorHandling";
+import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 type AddTaskFormProps = {
   projectId: number;

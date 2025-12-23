@@ -1,4 +1,4 @@
-import { getTasksByProjectId } from "@/controllers/taskController";
+import { getTasksByProjectId } from "@/services/taskService";
 import { TaskItemClientWrapper } from "../items/taskItem/taskItemClientWrapper";
 import { TaskItem } from "../items/taskItem/taskItem";
 
