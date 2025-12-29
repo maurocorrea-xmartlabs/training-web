@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { usePopupForm } from "../hooks/usePopupForm";
-import { PopupForm } from "../utils/popupForm";
+import { PopupForm } from "../../common/popupForm";
 import { ProjectFormSchema } from "../../types/project";
 import { withErrorHandling } from "../../controllers/utils/withErrorHandling";
-import styles from "../utils/formAnimations.module.css";
+import styles from "../../common/formAnimations.module.css";
 
 type AddProjectFormProps = {
   onAddProject: (name: string, monthlyCost: number) => void;

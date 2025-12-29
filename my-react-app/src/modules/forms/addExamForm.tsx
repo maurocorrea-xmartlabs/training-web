@@ -2,9 +2,9 @@ import { useState } from "react";
 import { NewExamSchema } from "../../types/exam";
 import type { Subject } from "../../types/subject";
 import { usePopupForm } from "../hooks/usePopupForm";
-import { PopupForm } from "../utils/popupForm";
+import { PopupForm } from "../../common/popupForm";
 import { withErrorHandling } from "../../controllers/utils/withErrorHandling";
-import styles from "../utils/formAnimations.module.css";
+import styles from "../../common/formAnimations.module.css";
 
 type AddExamFormProps = {
   subjects: Subject[];

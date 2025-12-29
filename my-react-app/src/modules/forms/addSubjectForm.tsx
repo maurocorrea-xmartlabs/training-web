@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { SubjectFormSchema } from "../../types/subject";
 import { usePopupForm } from "../hooks/usePopupForm";
-import { PopupForm } from "../utils/popupForm";
+import { PopupForm } from "../../common/popupForm";
 import { useSubjects } from "../../contexts/subjectsContexts";
 import { withErrorHandling } from "../../controllers/utils/withErrorHandling";
-import styles from "../utils/formAnimations.module.css";
+import styles from "../../common/formAnimations.module.css";
 
 export function AddSubjectForm() {
   const { addSubject } = useSubjects();

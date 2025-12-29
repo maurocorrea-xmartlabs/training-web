@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { usePopupForm } from "../hooks/usePopupForm";
-import { PopupForm } from "../utils/popupForm";
+import { PopupForm } from "../../common/popupForm";
 import { TaskFormSchema } from "../../types/task";
 import { withErrorHandling } from "../../controllers/utils/withErrorHandling";
-import styles from "../utils/formAnimations.module.css";
+import styles from "../../common/formAnimations.module.css";
 
 type AddTaskFormProps = {
   onAddTask: (name: string, description: string) => void;
