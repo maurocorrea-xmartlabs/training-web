@@ -1,5 +1,5 @@
+import type { Exam } from "../../../types/exam";
 import { useState } from "react";
-import type { Exam } from "../../../types/exam/exam";
 import styles from "../listsAnimations.module.css";
 
 type ExamItemProps = {

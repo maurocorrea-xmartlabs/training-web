@@ -1,20 +1,19 @@
 import { useState } from "react";
-import styles from "./formAnimations.module.css";
 import { SubjectFormSchema } from "../../types/subject";
+import { usePopupForm } from "../hooks/usePopupForm";
+import { PopupForm } from "../../common/popupForm";
+import { useSubjects } from "../../contexts/subjectsContexts";
+import { withErrorHandling } from "../../controllers/utils/withErrorHandling";
+import styles from "../../common/formAnimations.module.css";
 
-type AddSubjectFormProps = {
-  onAddSubject: (name: string, monthlyCost: number) => void;
-};
-
-export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
-  const [showPopup, setShowPopup] = useState(false);
+export function AddSubjectForm() {
+  const { addSubject } = useSubjects();
+  const { showPopup, open, close, error, setError } = usePopupForm();
   const [subjectName, setSubjectName] = useState("");
   const [subjectCost, setSubjectCost] = useState(0);
-  const [error, setError] = useState<string | null>(null);
   const [isHidingButton, setIsHidingButton] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     const result = SubjectFormSchema.safeParse({
@@ -27,27 +26,24 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
       return;
     }
 
-    setError(null);
+    const success = await withErrorHandling(
+      () => addSubject(subjectName, subjectCost),
+      setError,
+    );
 
-    onAddSubject(subjectName, subjectCost);
+    if (!success) return;
+
+    setError(null);
     setSubjectName("");
     setSubjectCost(0);
-    closeForm();
+    close();
   }
 
   function handleShowForm() {
     setIsHidingButton(true);
     setTimeout(() => {
-      setShowPopup(true);
+      open();
       setIsHidingButton(false);
-    }, 150);
-  }
-
-  function closeForm() {
-    setIsClosing(true);
-    setTimeout(() => {
-      setShowPopup(false);
-      setIsClosing(false);
     }, 150);
   }
 
@@ -75,56 +71,44 @@ export function AddSubjectForm({ onAddSubject }: AddSubjectFormProps) {
   }
 
   return (
-    <div
-      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 transition-opacity duration-200 m-0"
-      onClick={closeForm}
+    <PopupForm
+      title="New Subject"
+      onRequestClose={close}
+      onSubmit={handleSubmit}
     >
-      <form
-        onSubmit={handleSubmit}
-        onClick={(e) => e.stopPropagation()}
-        className={`bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4 transition-all duration-200 scale-95 opacity-0 ${isClosing ? styles.animateModalOut : styles.animateModalIn}`}
-      >
-        <h3 className="text-lg font-semibold">New subject</h3>
+      {error && <p className="text-sm text-red-500">{error}</p>}
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+      <div className="space-y-1">
+        <label className="text-sm font-medium" htmlFor="name">
+          Subject name
+        </label>
+        <input
+          id="name"
+          type="text"
+          value={subjectName}
+          onChange={(e) => setSubjectName(e.target.value)}
+          className="
+          w-full rounded-md border px-3 py-2
+          focus:outline-none focus:ring-2 focus:ring-black
+        "
+        />
+      </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Subject name</label>
-          <input
-            type="text"
-            placeholder="Algorithms 2"
-            value={subjectName}
-            onChange={(e) => setSubjectName(e.target.value)}
-            className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Monthly cost</label>
-          <input
-            type="number"
-            value={subjectCost}
-            onChange={(e) => setSubjectCost(Number(e.target.value))}
-            className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
-
-        <div className="flex justify-end gap-2 pt-2">
-          <button
-            type="button"
-            onClick={closeForm}
-            className="px-4 py-2 text-sm rounded-md border hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 text-sm rounded-md bg-black text-white hover:bg-gray-800"
-          >
-            Add
-          </button>
-        </div>
-      </form>
-    </div>
+      <div className="space-y-1">
+        <label className="text-sm font-medium" htmlFor="monthlyCost">
+          Monthly cost
+        </label>
+        <input
+          id="monthlyCost"
+          type="number"
+          value={subjectCost}
+          onChange={(e) => setSubjectCost(Number(e.target.value))}
+          className="
+          w-full rounded-md border px-3 py-2
+          focus:outline-none focus:ring-2 focus:ring-black
+        "
+        />
+      </div>
+    </PopupForm>
   );
 }

@@ -1,20 +1,21 @@
 import { useState } from "react";
-import styles from "./formAnimations.module.css";
+import { usePopupForm } from "../hooks/usePopupForm";
+import { PopupForm } from "../../common/popupForm";
 import { TaskFormSchema } from "../../types/task";
+import { withErrorHandling } from "../../controllers/utils/withErrorHandling";
+import styles from "../../common/formAnimations.module.css";
 
 type AddTaskFormProps = {
   onAddTask: (name: string, description: string) => void;
 };
 
 export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
-  const [showPopup, setShowPopup] = useState(false);
+  const { showPopup, open, close, error, setError } = usePopupForm();
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isHidingButton, setIsHidingButton] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     const result = TaskFormSchema.safeParse({
@@ -27,27 +28,23 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
       return;
     }
 
-    setError(null);
+    const success = await withErrorHandling(
+      () => onAddTask(taskName, taskDescription),
+      setError,
+    );
 
-    onAddTask(taskName, taskDescription);
+    if (!success) return;
+
     setTaskName("");
     setTaskDescription("");
-    closeForm();
+    close();
   }
 
   function handleShowForm() {
     setIsHidingButton(true);
     setTimeout(() => {
-      setShowPopup(true);
+      open();
       setIsHidingButton(false);
-    }, 150);
-  }
-
-  function closeForm() {
-    setIsClosing(true);
-    setTimeout(() => {
-      setShowPopup(false);
-      setIsClosing(false);
     }, 150);
   }
 
@@ -55,6 +52,7 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
     return (
       <>
         {error && <p className="text-sm text-red-500">{error}</p>}
+
         <button
           type="button"
           onClick={handleShowForm}
@@ -72,63 +70,47 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
         </button>
       </>
     );
-  }
-  return (
-    <div
-      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 transition-opacity duration-200 m-0"
-      onClick={closeForm}
-    >
-      <form
+  } else {
+    return (
+      <PopupForm
+        title="New Task"
+        onRequestClose={close}
         onSubmit={handleSubmit}
-        onClick={(e) => e.stopPropagation()}
-        className={`bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4 transition-all duration-200 scale-95 opacity-0 ${isClosing ? styles.animateModalOut : styles.animateModalIn}`}
       >
-        <h3 className="text-lg font-semibold">New task</h3>
-
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <div className="space-y-1">
-          <label className="text-sm font-medium">Task name</label>
+          <label className="text-sm font-medium" htmlFor="name">
+            Task name
+          </label>
           <input
+            id="name"
             type="text"
             value={taskName}
             onChange={(e) => setTaskName(e.target.value)}
             className="
-              w-full rounded-md border px-3 py-2
-              focus:outline-none focus:ring-2 focus:ring-black
-            "
+            w-full rounded-md border px-3 py-2
+            focus:outline-none focus:ring-2 focus:ring-black
+          "
           />
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium">Description</label>
+          <label className="text-sm font-medium" htmlFor="description">
+            Description
+          </label>
           <input
+            id="description"
             type="text"
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}
             className="
-              w-full rounded-md border px-3 py-2
-              focus:outline-none focus:ring-2 focus:ring-black
-            "
+            w-full rounded-md border px-3 py-2
+            focus:outline-none focus:ring-2 focus:ring-black
+          "
           />
         </div>
-
-        <div className="flex justify-end gap-2 pt-2">
-          <button
-            type="button"
-            onClick={closeForm}
-            className="px-4 py-2 text-sm rounded-md border hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 text-sm rounded-md bg-black text-white hover:bg-gray-800"
-          >
-            Add
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+      </PopupForm>
+    );
+  }
 }

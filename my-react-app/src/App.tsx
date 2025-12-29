@@ -7,6 +7,13 @@ import { Link } from "react-router-dom";
 export function App() {
   return (
     <>
+      <meta charSet="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta
+        name="description"
+        content="React app for managing subjects, projects, tasks and exams"
+      />
+      <meta name="author" content="Mauro Correa" />
       <nav className="bg-black px-4 py-2 flex items-center gap-6">
         <img
           className="ml-2"
