@@ -80,8 +80,11 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <div className="space-y-1">
-          <label className="text-sm font-medium">Task name</label>
+          <label className="text-sm font-medium" htmlFor="name">
+            Task name
+          </label>
           <input
+            id="name"
             type="text"
             value={taskName}
             onChange={(e) => setTaskName(e.target.value)}
@@ -93,8 +96,11 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium">Description</label>
+          <label className="text-sm font-medium" htmlFor="description">
+            Description
+          </label>
           <input
+            id="description"
             type="text"
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}

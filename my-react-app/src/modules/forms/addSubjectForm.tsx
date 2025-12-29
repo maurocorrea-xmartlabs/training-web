@@ -79,8 +79,11 @@ export function AddSubjectForm() {
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       <div className="space-y-1">
-        <label className="text-sm font-medium">Subject name</label>
+        <label className="text-sm font-medium" htmlFor="name">
+          Subject name
+        </label>
         <input
+          id="name"
           type="text"
           value={subjectName}
           onChange={(e) => setSubjectName(e.target.value)}
@@ -92,8 +95,11 @@ export function AddSubjectForm() {
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium">Monthly cost</label>
+        <label className="text-sm font-medium" htmlFor="monthlyCost">
+          Monthly cost
+        </label>
         <input
+          id="monthlyCost"
           type="number"
           value={subjectCost}
           onChange={(e) => setSubjectCost(Number(e.target.value))}

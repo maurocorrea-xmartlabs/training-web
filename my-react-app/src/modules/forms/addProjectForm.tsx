@@ -81,8 +81,11 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       <div className="space-y-1">
-        <label className="text-sm font-medium">Project name</label>
+        <label className="text-sm font-medium" htmlFor="name">
+          Project name
+        </label>
         <input
+          id="name"
           type="text"
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
@@ -94,8 +97,11 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium">Credits</label>
+        <label className="text-sm font-medium" htmlFor="credits">
+          Credits
+        </label>
         <input
+          id="credits"
           type="number"
           value={projectCredits}
           onChange={(e) => setProjectCredits(Number(e.target.value))}

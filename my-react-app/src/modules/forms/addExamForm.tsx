@@ -92,8 +92,11 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       <div className="space-y-1">
-        <label className="text-sm font-medium">Select a subject</label>
+        <label className="text-sm font-medium" htmlFor="subject">
+          Select a subject
+        </label>
         <select
+          id="subject"
           value={subjectId}
           onChange={(e) => setSubjectId(e.target.value)}
           className="w-full rounded-md border px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-black"
@@ -111,8 +114,11 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium">Minimum score</label>
+        <label className="text-sm font-medium" htmlFor="minScore">
+          Minimum score
+        </label>
         <input
+          id="minScore"
           type="number"
           value={minScore}
           onChange={(e) => setMinScore(Number(e.target.value))}
@@ -121,8 +127,11 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium">Maximum score</label>
+        <label className="text-sm font-medium" htmlFor="maxScore">
+          Maximum score
+        </label>
         <input
+          id="maxScore"
           type="number"
           value={maxScore}
           onChange={(e) => setMaxScore(Number(e.target.value))}
@@ -131,8 +140,11 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium">Date</label>
+        <label className="text-sm font-medium" htmlFor="date">
+          Date
+        </label>
         <input
+          id="date"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
