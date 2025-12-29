@@ -2,7 +2,7 @@ import { useState } from "react";
 import { usePopupForm } from "../hooks/usePopupForm";
 import { PopupForm } from "../utils/popupForm";
 import { ProjectFormSchema } from "../../types/project";
-import { withErrorHandlingVoid } from "../../controllers/utils/withErrorHandlingVoid";
+import { withErrorHandling } from "../../controllers/utils/withErrorHandling";
 import styles from "../utils/formAnimations.module.css";
 
 type AddProjectFormProps = {
@@ -28,7 +28,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
       return;
     }
 
-    const success = withErrorHandlingVoid(
+    const success = withErrorHandling(
       () => onAddProject(projectName, projectCredits),
       setError,
     );

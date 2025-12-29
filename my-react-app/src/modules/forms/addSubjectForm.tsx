@@ -3,7 +3,7 @@ import { SubjectFormSchema } from "../../types/subject";
 import { usePopupForm } from "../hooks/usePopupForm";
 import { PopupForm } from "../utils/popupForm";
 import { useSubjects } from "../../contexts/subjectsContexts";
-import { withErrorHandlingVoid } from "../../controllers/utils/withErrorHandlingVoid";
+import { withErrorHandling } from "../../controllers/utils/withErrorHandling";
 import styles from "../utils/formAnimations.module.css";
 
 export function AddSubjectForm() {
@@ -26,7 +26,7 @@ export function AddSubjectForm() {
       return;
     }
 
-    const success = await withErrorHandlingVoid(
+    const success = await withErrorHandling(
       () => addSubject(subjectName, subjectCost),
       setError,
     );
