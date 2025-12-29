@@ -4,7 +4,7 @@ import { useState } from "react";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import { TaskFormSchema } from "../../../types/task";
-import { withErrorHandlingVoid } from "../../../controllers/utils/withErrorHandlingVoid";
+import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
 import styles from "./formAnimations.module.css";
 
 type AddTaskFormProps = {
@@ -30,7 +30,7 @@ export function AddTaskForm({ onAddTask }: AddTaskFormProps) {
       return;
     }
 
-    const success = await withErrorHandlingVoid(
+    const success = await withErrorHandling(
       () => onAddTask(taskName, taskDescription),
       setError
     );

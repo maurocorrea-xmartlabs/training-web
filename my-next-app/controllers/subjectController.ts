@@ -6,7 +6,6 @@ import { API_ENDPOINTS } from "./utils/endpoints";
 export async function getSubjects() {
   try {
     const response = await fetch(API_ENDPOINTS.GET_SUBJECTS);
-    console.log(API_ENDPOINTS.GET_SUBJECTS);
     const subjectsData: Subject[] = await response.json();
     const parsed = z.array(SubjectSchema).safeParse(subjectsData);
     if (!parsed.success) {
