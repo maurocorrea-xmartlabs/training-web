@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
 import { sendResetPasswordEmail } from "./utils/mail/templates/resetPasswordEmail";
-import { env } from "@/config/env";
 import { sendLogInEmail } from "./utils/mail/templates/logInEmail";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
