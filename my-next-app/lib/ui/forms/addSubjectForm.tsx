@@ -5,7 +5,7 @@ import { SubjectFormSchema } from "../../../types/subject";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import styles from "./formAnimations.module.css";
-import { createSubjectAction } from "@/app/todo/actions";
+import { createSubjectAction } from "@/app/(app)/todo/actions";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 export function AddSubjectForm() {

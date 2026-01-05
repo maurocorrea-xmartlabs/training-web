@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import styles from "../itemAnimations.module.css";
-import { deleteExamAction } from "@/app/exams/actions";
+import { deleteExamAction } from "@/app/(app)/exams/actions";
 
 type Props = {
   examId: number;

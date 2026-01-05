@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import styles from "../itemAnimations.module.css";
-import { deleteTaskAction } from "@/app/todo/actions";
+import { deleteTaskAction } from "@/app/(app)/todo/actions";
 
 type Props = {
   taskId: number;
