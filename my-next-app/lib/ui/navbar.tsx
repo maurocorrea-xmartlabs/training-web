@@ -36,7 +36,7 @@ export function Navbar() {
       <button
         type="button"
         onClick={handleLogout}
-        className="text-white text-2xl hover:underline"
+        className="ml-auto text-white text-2xl hover:underline"
       >
         Logout
       </button>
