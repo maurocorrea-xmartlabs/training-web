@@ -30,5 +30,4 @@ export async function signUpAction(data: UserSignUp) {
 
   await signUp(data);
   redirect("/logIn");
-  return true;
 }
