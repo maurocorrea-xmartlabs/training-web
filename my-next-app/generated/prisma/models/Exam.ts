@@ -418,10 +418,6 @@ export type ExamUncheckedUpdateManyWithoutSubjectNestedInput = {
   deleteMany?: Prisma.ExamScalarWhereInput | Prisma.ExamScalarWhereInput[]
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type ExamCreateWithoutSubjectInput = {
   minScore: number
   maxScore: number
