@@ -20,7 +20,7 @@ export async function signUpAction(data: UserSignUp) {
       const remainingSeconds = Math.ceil((COOLDOWN_MS - elapsed) / 1000);
 
       throw new Error(
-        `Please wait ${remainingSeconds} seconds before trying again`
+        `Please wait ${remainingSeconds} seconds before trying again`,
       );
     }
   }
