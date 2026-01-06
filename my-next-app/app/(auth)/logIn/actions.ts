@@ -3,7 +3,6 @@
 import { logIn } from "@/services/authService";
 import { UserLogIn } from "@/types/user";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export async function logInAction(data: UserLogIn) {
   const sessionId = await logIn(data);
@@ -14,6 +13,4 @@ export async function logInAction(data: UserLogIn) {
     sameSite: "lax",
     path: "/",
   });
-
-  redirect("/");
 }

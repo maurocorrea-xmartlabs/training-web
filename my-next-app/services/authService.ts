@@ -63,6 +63,17 @@ export async function logIn(data: UserLogIn) {
   }
 }
 
+export async function logOut(sessionId: string) {
+  try {
+    await prisma.session.delete({
+      where: { id: sessionId },
+    });
+  } catch (error) {
+    console.error("Error logging out");
+    throw new Error("Error logging out, please try again");
+  }
+}
+
 async function createUserSession(userId: number) {
   const sessionId = crypto.randomBytes(512).toString("hex").normalize();
   const expiresAt = new Date(Date.now() + SESSION_EXPIRATION_SECONDS);

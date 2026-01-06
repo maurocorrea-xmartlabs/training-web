@@ -4,11 +4,13 @@ import { logInAction } from "@/app/(auth)/logIn/actions";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
 import { UserLogInFormSchema } from "@/types/user";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function LogInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,6 +33,7 @@ export function LogInForm() {
 
     setEmail("");
     setPassword("");
+    router.push("/");
   }
 
   return (
