@@ -10,6 +10,23 @@ export function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const passRules = passwordRules(password);
+  const nameRules = usernameRules(name);
+
+  // These sets of rules are used to give char by char feedback to user
+  function passwordRules(password: string) {
+    return {
+      minLength: password.length >= 8,
+      hasUppercase: /[A-Z]/.test(password),
+      hasSpecialChar: /[^A-Za-z0-9]/.test(password),
+    };
+  }
+
+  function usernameRules(password: string) {
+    return {
+      minLength: password.length >= 8,
+    };
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,6 +61,13 @@ export function SignUpForm() {
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <label htmlFor="username"> Username </label>
+        <ul className="mt-2 text-sm space-y-1">
+          <li
+            className={nameRules.minLength ? "text-green-600" : "text-gray-500"}
+          >
+            {nameRules.minLength ? "✔" : "✗"} At least 8 characters
+          </li>
+        </ul>
         <input
           type="text"
           id="username"
@@ -64,6 +88,28 @@ export function SignUpForm() {
         />
 
         <label htmlFor="password"> Password </label>
+        <ul className="mt-2 text-sm space-y-1">
+          <li
+            className={passRules.minLength ? "text-green-600" : "text-gray-500"}
+          >
+            {passRules.minLength ? "✔" : "✗"} At least 8 characters
+          </li>
+          <li
+            className={
+              passRules.hasUppercase ? "text-green-600" : "text-gray-500"
+            }
+          >
+            {passRules.hasUppercase ? "✔" : "✗"} One uppercase letter
+          </li>
+          <li
+            className={
+              passRules.hasSpecialChar ? "text-green-600" : "text-gray-500"
+            }
+          >
+            {passRules.hasSpecialChar ? "✔" : "✗"} One special character
+          </li>
+        </ul>
+
         <input
           type="password"
           id="password"
@@ -78,7 +124,7 @@ export function SignUpForm() {
             type="submit"
             className="px-4 py-2 text-sm rounded-md bg-black text-white hover:bg-gray-800 transition"
           >
-            Log In
+            Sign Up
           </button>
         </div>
       </form>

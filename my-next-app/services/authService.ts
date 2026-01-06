@@ -8,7 +8,7 @@ export async function signUp(user: UserSignUp) {
   try {
     const hashedPassword = await bcrypt.hash(user.password, 10);
 
-    const ret = await prisma.user.create({
+    await prisma.user.create({
       data: {
         name: user.name,
         email: user.email,
@@ -17,8 +17,6 @@ export async function signUp(user: UserSignUp) {
     });
 
     sendSignUpEmail(user.email);
-
-    return ret;
   } catch (error) {
     console.error("Error getting exams: ", error);
     if (
