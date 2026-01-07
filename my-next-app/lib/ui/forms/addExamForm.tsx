@@ -1,30 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NewExamSchema } from "../../../types/exam";
-import type { Subject } from "../../../types/subject";
+import type { Subject } from "@/generated/prisma/client";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
-import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
+import { createExamAction } from "@/app/(app)/exams/actions";
 import styles from "./formAnimations.module.css";
+import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 type AddExamFormProps = {
   subjects: Subject[];
-  onAddExam: (
-    minScore: number,
-    maxScore: number,
-    date: string,
-    subjectId: string
-  ) => void;
 };
 
-export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
+export function AddExamForm({ subjects }: AddExamFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
-  const [subjectId, setSubjectId] = useState("");
+  const [subjectId, setSubjectId] = useState(0);
   const [minScore, setMinScore] = useState(0);
   const [maxScore, setMaxScore] = useState(1);
   const [date, setDate] = useState("");
   const [isHidingButton, setIsHidingButton] = useState(false);
+
+  useEffect(() => {
+    if (subjects.length >= 1) {
+      setSubjectId(subjects[0].id);
+    }
+  }, [subjects]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -47,7 +48,13 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
     }
 
     const success = await withErrorHandling(
-      () => onAddExam(minScore, maxScore, date, subjectId),
+      () =>
+        createExamAction({
+          minScore,
+          maxScore,
+          date: new Date(date),
+          subjectId,
+        }),
       setError
     );
 
@@ -55,7 +62,7 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
 
     setError(null);
 
-    setSubjectId("");
+    setSubjectId(0);
     setMinScore(0);
     setMaxScore(1);
     setDate("");
@@ -102,7 +109,7 @@ export function AddExamForm({ subjects, onAddExam }: AddExamFormProps) {
         <label className="text-sm font-medium">Select a subject</label>
         <select
           value={subjectId}
-          onChange={(e) => setSubjectId(e.target.value)}
+          onChange={(e) => setSubjectId(Number(e.target.value))}
           className="w-full rounded-md border px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-black"
         >
           <option value="" disabled>
