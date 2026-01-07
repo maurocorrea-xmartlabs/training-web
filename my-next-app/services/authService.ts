@@ -3,7 +3,7 @@ import { prisma } from "../prisma/prisma";
 import type { UserLogIn, UserSignUp } from "@/types/user";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { sendSignUpEmail } from "./utils/mailer";
+import { sendLogInEmail, sendSignUpEmail } from "./utils/mailer";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 
@@ -50,6 +50,8 @@ export async function logIn(data: UserLogIn) {
     }
 
     const sessionId = await createUserSession(user.id);
+
+    sendLogInEmail(data.email);
 
     return sessionId;
   } catch (error) {

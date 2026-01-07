@@ -4,6 +4,7 @@ import { logInAction } from "@/app/(auth)/logIn/actions";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
 import { UserLogInFormSchema } from "@/types/user";
 import { useState } from "react";
+import Image from "next/image";
 
 export function LogInForm() {
   const [email, setEmail] = useState("");
@@ -35,21 +36,33 @@ export function LogInForm() {
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 space-y-4">
+      <Image
+        src="/logoAlt.png"
+        alt="Uni-Do"
+        width={92}
+        height={92}
+        className="mx-auto rounded-full"
+        unoptimized
+      />
       <h1 className="text-xl font-semibold">Log In</h1>
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-3">
+        <label htmlFor="email">Email</label>
         <input
           type="email"
+          id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/20"
           placeholder="Email"
         />
 
+        <label htmlFor="password">Password</label>
         <input
           type="password"
+          id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/20"
