@@ -41,7 +41,7 @@ export function LogInForm() {
         alt="Uni-Do"
         width={92}
         height={92}
-        className="mx-auto rounded-full"
+        className="mx-auto"
         unoptimized
       />
       <h1 className="text-xl font-semibold">Log In</h1>
