@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "../itemAnimations.module.css";
 import { deleteProjectAction } from "@/app/(app)/todo/actions";
 
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export function ProjectItemClientWrapper({ projectId, children }: Props) {
+  const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
   function handleDelete() {
@@ -20,6 +22,10 @@ export function ProjectItemClientWrapper({ projectId, children }: Props) {
         await deleteProjectAction(projectId);
       } catch (error) {
         setIsDeleting(false);
+
+        if (error instanceof Error && error.message === "UNAUTHORIZED") {
+          router.push("/logIn");
+        }
       }
     }, 150);
   }

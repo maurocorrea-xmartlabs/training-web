@@ -68,14 +68,9 @@ export async function logIn(data: UserLogIn) {
 }
 
 export async function logOut(sessionId: string) {
-  try {
-    await prisma.session.delete({
-      where: { id: sessionId },
-    });
-  } catch (error) {
-    console.error("Error logging out");
-    throw new Error("Error logging out, please try again");
-  }
+  await prisma.session.deleteMany({
+    where: { id: sessionId },
+  });
 }
 
 export async function forgotPassword(email: string) {
@@ -111,13 +106,13 @@ export async function resetPassword(token: string, newPassword: string) {
 
   if (!user) {
     throw new Error(
-      "This password reset link is invalid or has expired. Please request a new one."
+      "This password reset link is invalid or has expired. Please request a new one.",
     );
   }
 
   if (!user.TokenExpirationDate || new Date() > user.TokenExpirationDate) {
     throw new Error(
-      "This password reset link is invalid or has expired. Please request a new one."
+      "This password reset link is invalid or has expired. Please request a new one.",
     );
   }
 
