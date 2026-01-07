@@ -18,7 +18,6 @@ export async function signUp(user: UserSignUp) {
 
     sendSignUpEmail(user.email);
   } catch (error) {
-    console.error("Error getting exams: ", error);
     if (
       error instanceof PrismaClientKnownRequestError &&
       error.code == "P2002"
