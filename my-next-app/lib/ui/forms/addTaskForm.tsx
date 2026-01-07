@@ -7,6 +7,7 @@ import { TaskFormSchema } from "../../../types/task";
 import styles from "./formAnimations.module.css";
 import { createTaskAction } from "@/app/(app)/todo/actions";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
+import { useRouter } from "next/navigation";
 
 type AddTaskFormProps = {
   projectId: number;
@@ -17,6 +18,7 @@ export function AddTaskForm({ projectId }: AddTaskFormProps) {
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [isHidingButton, setIsHidingButton] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,7 +43,12 @@ export function AddTaskForm({ projectId }: AddTaskFormProps) {
       setError
     );
 
-    if (!success) return;
+    if (!success) {
+      if (error === "UNAUTHORIZED") {
+        router.push("/logIn");
+      }
+      return;
+    }
 
     setTaskName("");
     setTaskDescription("");

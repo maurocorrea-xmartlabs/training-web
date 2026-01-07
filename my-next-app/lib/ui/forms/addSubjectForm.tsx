@@ -7,12 +7,14 @@ import { PopupForm } from "./popupForm";
 import styles from "./formAnimations.module.css";
 import { createSubjectAction } from "@/app/(app)/todo/actions";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
+import { useRouter } from "next/navigation";
 
 export function AddSubjectForm() {
   const { showPopup, open, close, error, setError } = usePopupForm();
   const [subjectName, setSubjectName] = useState("");
   const [subjectCost, setSubjectCost] = useState(0);
   const [isHidingButton, setIsHidingButton] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,7 +33,13 @@ export function AddSubjectForm() {
       () => createSubjectAction(parsed.data),
       setError
     );
-    if (!success) return;
+
+    if (!success) {
+      if (error === "UNAUTHORIZED") {
+        router.push("/logIn");
+      }
+      return;
+    }
 
     setSubjectName("");
     setSubjectCost(0);

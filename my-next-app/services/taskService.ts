@@ -1,6 +1,7 @@
 import { prisma } from "../prisma/prisma";
 import type { NewTask } from "@/types/task";
 import type { Task } from "@/generated/prisma/client";
+import { validateUserSession } from "./authService";
 
 export async function getTasksByProjectId(projectId: number): Promise<Task[]> {
   try {
@@ -14,7 +15,11 @@ export async function getTasksByProjectId(projectId: number): Promise<Task[]> {
   }
 }
 
-export async function postTask(task: NewTask): Promise<Task> {
+export async function postTask(
+  task: NewTask,
+  sessionId?: string
+): Promise<Task> {
+  await validateUserSession(sessionId);
   try {
     return await prisma.task.create({
       data: {
@@ -29,7 +34,11 @@ export async function postTask(task: NewTask): Promise<Task> {
   }
 }
 
-export async function deleteTask(taskId: number): Promise<Task> {
+export async function deleteTask(
+  taskId: number,
+  sessionId?: string
+): Promise<Task> {
+  await validateUserSession(sessionId);
   try {
     return await prisma.task.delete({
       where: { id: taskId },

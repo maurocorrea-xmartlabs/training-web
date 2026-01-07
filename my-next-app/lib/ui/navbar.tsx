@@ -10,7 +10,7 @@ export function Navbar() {
 
   const handleLogout = async () => {
     await logOutAction();
-    router.push("/login");
+    router.push("/logIn");
   };
 
   return (

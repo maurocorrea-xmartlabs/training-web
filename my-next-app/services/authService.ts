@@ -21,7 +21,6 @@ export async function signUp(user: UserSignUp) {
 
     sendSignUpEmail(user.email);
   } catch (error) {
-    console.error("Error getting exams: ", error);
     if (
       error instanceof PrismaClientKnownRequestError &&
       error.code == "P2002"
@@ -34,44 +33,27 @@ export async function signUp(user: UserSignUp) {
 }
 
 export async function logIn(data: UserLogIn) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: data.email },
-    });
+  const user = await prisma.user.findUnique({
+    where: { email: data.email },
+  });
 
-    if (!user) {
-      throw new Error("Invalid email or password");
-    }
-
-    const isValidPassword = await bcrypt.compare(data.password, user.password);
-
-    if (!isValidPassword) {
-      throw new Error("Invalid email or password");
-    }
-
-    const sessionId = await createUserSession(user.id);
-
-    return sessionId;
-  } catch (error) {
-    console.error("Error logging in:", error);
-
-    if (error instanceof Error) {
-      throw error;
-    }
-
-    throw new Error("Error logging in, please try again");
+  if (!user) {
+    throw new Error("Invalid email or password");
   }
+
+  const isValidPassword = await bcrypt.compare(data.password, user.password);
+
+  if (!isValidPassword) {
+    throw new Error("Invalid email or password");
+  }
+
+  return createUserSession(user.id);
 }
 
 export async function logOut(sessionId: string) {
-  try {
-    await prisma.session.delete({
-      where: { id: sessionId },
-    });
-  } catch (error) {
-    console.error("Error logging out");
-    throw new Error("Error logging out, please try again");
-  }
+  await prisma.session.deleteMany({
+    where: { id: sessionId },
+  });
 }
 
 async function createUserSession(userId: number) {
@@ -87,4 +69,20 @@ async function createUserSession(userId: number) {
   });
 
   return sessionId;
+}
+
+export async function validateUserSession(sessionId?: string) {
+  if (!sessionId) {
+    throw new Error("UNAUTHORIZED");
+  }
+
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+  });
+
+  if (!session || new Date() > session.expiresAt) {
+    throw new Error("UNAUTHORIZED");
+  }
+
+  return session;
 }
