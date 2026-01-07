@@ -2,7 +2,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { prisma } from "../prisma/prisma";
 import type { UserSignUp } from "@/types/user";
 import bcrypt from "bcryptjs";
-import { sendSignUpEmail } from "./utils/mailer";
+import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
 
 export async function signUp(user: UserSignUp) {
   try {
