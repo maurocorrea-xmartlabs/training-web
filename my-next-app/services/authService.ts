@@ -36,10 +36,10 @@ export async function signUp(user: UserSignUp) {
 }
 
 export async function logIn(data: UserLogIn) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: data.email },
-    });
+  try{
+  const user = await prisma.user.findUnique({
+    where: { email: data.email },
+  });
 
     if (!user) {
       throw new Error("Invalid email or password");

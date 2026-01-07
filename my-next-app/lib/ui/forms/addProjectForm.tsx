@@ -38,7 +38,7 @@ export function AddProjectForm({ subjectId }: AddProjectFormProps) {
           credits: projectCredits,
           subjectId,
         }),
-      setError
+      setError,
     );
 
     if (!success) {

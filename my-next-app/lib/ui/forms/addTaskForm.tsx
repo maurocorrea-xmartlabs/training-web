@@ -38,7 +38,7 @@ export function AddTaskForm({ projectId }: AddTaskFormProps) {
           description: taskDescription,
           projectId,
         }),
-      setError
+      setError,
     );
 
     if (!success) {
