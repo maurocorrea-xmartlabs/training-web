@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export function Navbar() {
   return (
-    <nav className="bg-black px-4 py-2 flex items-center gap-6">
+    <nav className="fixed top-0 left-0 w-full bg-black px-4 py-2 flex items-center gap-6 z-50">
       <Link href="/">
         <Image
           src="/logo.png"

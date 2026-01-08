@@ -5,7 +5,7 @@ import { NewExamSchema } from "../../../types/exam";
 import type { Subject } from "@/generated/prisma/client";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
-import { createExamAction } from "@/app/exams/actions";
+import { createExamAction } from "@/app/(app)/exams/actions";
 import styles from "./formAnimations.module.css";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
 

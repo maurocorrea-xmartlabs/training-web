@@ -7,10 +7,24 @@ datasource db {
   provider = "postgresql"
 }
 
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+
+  // I comment this because subjects are global right now, so this relation is not needed
+  //subjects Subject[]
+}
+
 model Subject {
   id          Int       @id @default(autoincrement())
   name        String
   monthlyCost Int
+
+  // Commented for the same reason that above
+  //userId Int
+  //user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   projects    Project[]
   exams       Exam[]

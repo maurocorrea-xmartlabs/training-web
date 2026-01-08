@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import styles from "../itemAnimations.module.css";
-import { deleteSubjectAction } from "@/app/todo/actions";
+import { deleteSubjectAction } from "@/app/(app)/todo/actions";
 
 type Props = {
   subjectId: number;
