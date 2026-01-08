@@ -1,21 +1,13 @@
-"use client";
-
-import { useState } from "react";
+import type { Subject } from "@/generated/prisma/client";
 import { AddSubjectForm } from "../forms/addSubjectForm";
-import { SubjectItem } from "../items/subjectItem";
-import { useSubjects } from "../../../providers/subjectsProvider";
-import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
+import { SubjectItemClientWrapper } from "../items/subjectItem/subjectItemClientWrapper";
+import { SubjectItem } from "../items/subjectItem/subjectItem";
 
-export function SubjectList() {
-  const { subjects, deleteSubject } = useSubjects();
-  const [error, setError] = useState<string | null>(null);
+type SubjectListProps = {
+  subjects: Subject[];
+};
 
-  async function handleDeleteSubject(id: string) {
-    const success = await withErrorHandling(() => deleteSubject(id), setError);
-
-    if (!success) return;
-  }
-
+export function SubjectList({ subjects }: SubjectListProps) {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -23,16 +15,16 @@ export function SubjectList() {
         <AddSubjectForm />
       </div>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
-
-      <div className="space-y-4">
-        {subjects.map((subject) => (
-          <SubjectItem
-            key={subject.id}
-            subject={subject}
-            onDelete={handleDeleteSubject}
-          />
-        ))}
+      <div className="space-y-4 flex flex-col items-center">
+        {subjects.length === 0 ? (
+          <p className="text-sm text-gray-500 italic">No subjects yet</p>
+        ) : (
+          subjects.map((subject) => (
+            <SubjectItemClientWrapper key={subject.id} subjectId={subject.id}>
+              <SubjectItem subject={subject} />
+            </SubjectItemClientWrapper>
+          ))
+        )}
       </div>
     </div>
   );

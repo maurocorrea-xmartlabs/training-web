@@ -1,6 +1,6 @@
 import { ExamList } from "@/lib/ui/lists/examList";
-import { getExams } from "@/controllers/examController";
-import { getSubjects } from "@/controllers/subjectController";
+import { getExams } from "@/services/examService";
+import { getSubjects } from "@/services/subjectService";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

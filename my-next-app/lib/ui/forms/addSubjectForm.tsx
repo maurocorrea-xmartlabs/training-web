@@ -4,12 +4,11 @@ import { useState } from "react";
 import { SubjectFormSchema } from "../../../types/subject";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
-import { useSubjects } from "../../../providers/subjectsProvider";
-import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
 import styles from "./formAnimations.module.css";
+import { createSubjectAction } from "@/app/todo/actions";
+import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 export function AddSubjectForm() {
-  const { addSubject } = useSubjects();
   const { showPopup, open, close, error, setError } = usePopupForm();
   const [subjectName, setSubjectName] = useState("");
   const [subjectCost, setSubjectCost] = useState(0);
@@ -18,24 +17,22 @@ export function AddSubjectForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const result = SubjectFormSchema.safeParse({
+    const parsed = SubjectFormSchema.safeParse({
       name: subjectName,
       monthlyCost: subjectCost,
     });
 
-    if (!result.success) {
-      setError(result.error.issues[0].message);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message);
       return;
     }
 
     const success = await withErrorHandling(
-      () => addSubject(subjectName, subjectCost),
+      () => createSubjectAction(parsed.data),
       setError
     );
-
     if (!success) return;
 
-    setError(null);
     setSubjectName("");
     setSubjectCost(0);
     close();
@@ -57,14 +54,10 @@ export function AddSubjectForm() {
           type="button"
           onClick={handleShowForm}
           className={`
-          text-sm
-          bg-black text-white
-          rounded-md
-          px-3 py-1.5
-          hover:bg-gray-800
-          transition
-          ${isHidingButton ? styles.animateButtonOut : ""}
-        `}
+            text-sm bg-black text-white rounded-md
+            px-3 py-1.5 hover:bg-gray-800 transition
+            ${isHidingButton ? styles.animateButtonOut : ""}
+          `}
         >
           + Subject
         </button>
@@ -80,31 +73,20 @@ export function AddSubjectForm() {
     >
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <div className="space-y-1">
-        <label className="text-sm font-medium">Subject name</label>
-        <input
-          type="text"
-          value={subjectName}
-          onChange={(e) => setSubjectName(e.target.value)}
-          className="
-          w-full rounded-md border px-3 py-2
-          focus:outline-none focus:ring-2 focus:ring-black
-        "
-        />
-      </div>
+      <input
+        value={subjectName}
+        onChange={(e) => setSubjectName(e.target.value)}
+        className="w-full rounded-md border px-3 py-2"
+        placeholder="Subject name"
+      />
 
-      <div className="space-y-1">
-        <label className="text-sm font-medium">Monthly cost</label>
-        <input
-          type="number"
-          value={subjectCost}
-          onChange={(e) => setSubjectCost(Number(e.target.value))}
-          className="
-          w-full rounded-md border px-3 py-2
-          focus:outline-none focus:ring-2 focus:ring-black
-        "
-        />
-      </div>
+      <input
+        type="number"
+        value={subjectCost}
+        onChange={(e) => setSubjectCost(Number(e.target.value))}
+        className="w-full rounded-md border px-3 py-2"
+        placeholder="Monthly cost"
+      />
     </PopupForm>
   );
 }
