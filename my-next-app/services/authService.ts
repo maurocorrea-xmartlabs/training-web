@@ -3,7 +3,8 @@ import { prisma } from "../prisma/prisma";
 import type { UserLogIn, UserSignUp } from "@/types/user";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { sendLogInEmail, sendSignUpEmail } from "./utils/mailer";
+import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
+import { sendLogInEmail } from "./utils/mail/templates/logInEmail";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 
@@ -21,7 +22,6 @@ export async function signUp(user: UserSignUp) {
 
     sendSignUpEmail(user.email);
   } catch (error) {
-    console.error("Error getting exams: ", error);
     if (
       error instanceof PrismaClientKnownRequestError &&
       error.code == "P2002"

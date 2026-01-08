@@ -12,7 +12,7 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const publicPaths = ["/logIn", "/signUp"];
+  const publicPaths = ["/logIn", "/signUp", "/logoAlt.png", "logo.png"];
 
   if (publicPaths.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
