@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export type resetPassword = {
+export type resetPasswordType = {
   password: string;
   passwordConfirmation: string;
 };

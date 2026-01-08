@@ -47,14 +47,14 @@ export function ResetPasswordForm({ token }: Props) {
 
     // usign "!" on token to remove warning because it will not be null, as we verified it above
     const success = await withErrorHandling(
-      () => resetPasswordAction(parsed.data, token!),
+      () => resetPasswordAction(token!, parsed.data),
       setError
     );
     if (!success) return;
 
     setPassword("");
     setPasswordConfirmation("");
-    router.push("/login");
+    router.push("/logIn");
   }
 
   return (
@@ -93,7 +93,6 @@ export function ResetPasswordForm({ token }: Props) {
             {passRules.hasSpecialChar ? "✔" : "✗"} One special character
           </li>
         </ul>
-
         <input
           type="password"
           id="password"
@@ -127,7 +126,6 @@ export function ResetPasswordForm({ token }: Props) {
             {passConfRules.hasSpecialChar ? "✔" : "✗"} One special character
           </li>
         </ul>
-
         <input
           type="password"
           id="passwordConfirmation"

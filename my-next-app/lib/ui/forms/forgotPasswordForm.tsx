@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { forgotPasswordAction } from "@/app/(auth)/forgotpassword/actions";
 import { ForgotPasswordFormSchema } from "@/types/forgotPassword";
+import Image from "next/image";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -31,24 +32,35 @@ export function ForgotPasswordForm() {
     if (!result) return;
 
     setEmail("");
-    setSuccess("Email sent!");
-    router.push("/");
+    setSuccess(
+      "If an account with that email exists, we've sent you a password reset link."
+    );
   }
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 space-y-4">
-      <h1 className="text-xl font-semibold">Log In</h1>
+      <Image
+        src="/logoAlt.png"
+        alt="Uni-Do"
+        width={92}
+        height={92}
+        className="mx-auto"
+        unoptimized
+      />
+      <h1 className="text-xl font-semibold">Reset your password</h1>
 
       {success && <p className="text-sm text-green-500">{success}</p>}
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-3">
+        <label htmlFor="email">Email</label>
         <input
           type="email"
+          id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/20"
-          placeholder="Email"
+          placeholder="JohnDoe@gmail.com"
         />
 
         <div className="flex justify-end pt-2">

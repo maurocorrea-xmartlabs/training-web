@@ -1,7 +1,11 @@
 "use server";
 
-import { resetPassword } from "@/types/resetPassword";
+import { resetPassword } from "@/services/authService";
+import { resetPasswordType } from "@/types/resetPassword";
 
-export async function resetPasswordAction(data: resetPassword, token: string) {
-  //resetPassword(data, token);
+export async function resetPasswordAction(
+  token: string,
+  data: resetPasswordType
+) {
+  await resetPassword(token, data.password);
 }

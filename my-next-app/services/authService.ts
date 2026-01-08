@@ -4,6 +4,7 @@ import type { UserLogIn, UserSignUp } from "@/types/user";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
+import { sendResetPasswordEmail } from "./utils/mail/templates/resetPasswordEmail";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 const RESET_TOKEN_EXPIRATION_SECONDS = 1000 * 60 * 60;
@@ -78,7 +79,7 @@ export async function forgotPassword(email: string) {
     },
   });
 
-  //falta mandar maillll
+  sendResetPasswordEmail(user.email, token);
 }
 
 export async function resetPassword(token: string, newPassword: string) {

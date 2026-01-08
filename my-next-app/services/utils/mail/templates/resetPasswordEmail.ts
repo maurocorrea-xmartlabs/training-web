@@ -1,7 +1,7 @@
 import { env } from "@/config/env";
 import { transporter } from "../mailer";
 
-export async function resetPasswordEmail(userEmail: string, token: string) {
+export async function sendResetPasswordEmail(userEmail: string, token: string) {
   const resetUrl = `${env.NEXT_PUBLIC_APP_URL}/resetpassword/${token}`;
 
   await transporter.sendMail({
