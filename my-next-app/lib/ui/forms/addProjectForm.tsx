@@ -4,18 +4,21 @@ import { useState } from "react";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import { ProjectFormSchema } from "../../../types/project";
-import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
+import { createProjectAction } from "@/app/(app)/todo/actions";
 import styles from "./formAnimations.module.css";
+import { withErrorHandling } from "@/services/utils/withErrorHandling";
+import { useRouter } from "next/navigation";
 
 type AddProjectFormProps = {
-  onAddProject: (name: string, monthlyCost: number) => void;
+  subjectId: number;
 };
 
-export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
+export function AddProjectForm({ subjectId }: AddProjectFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
   const [projectName, setProjectName] = useState("");
   const [projectCredits, setProjectCredits] = useState(0);
   const [isHidingButton, setIsHidingButton] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,11 +34,21 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
     }
 
     const success = await withErrorHandling(
-      () => onAddProject(projectName, projectCredits),
+      () =>
+        createProjectAction({
+          name: projectName,
+          credits: projectCredits,
+          subjectId,
+        }),
       setError
     );
 
-    if (!success) return;
+    if (!success) {
+      if (error === "UNAUTHORIZED") {
+        router.push("/logIn");
+      }
+      return;
+    }
 
     setError(null);
     setProjectName("");
@@ -64,7 +77,7 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
           rounded-md
           px-3 py-1.5
           hover:bg-gray-800
-          transition
+          transition mt-2
           ${isHidingButton ? styles.animateButtonOut : ""}
         `}
         >
