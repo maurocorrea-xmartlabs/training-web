@@ -3,9 +3,10 @@ import { prisma } from "../prisma/prisma";
 import type { UserLogIn, UserSignUp } from "@/types/user";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { sendSignUpEmail } from "./utils/mailer";
+import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
+const RESET_TOKEN_EXPIRATION_SECONDS = 1000 * 60 * 60;
 
 export async function signUp(user: UserSignUp) {
   try {
@@ -53,6 +54,57 @@ export async function logIn(data: UserLogIn) {
 export async function logOut(sessionId: string) {
   await prisma.session.deleteMany({
     where: { id: sessionId },
+  });
+}
+
+export async function forgotPassword(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  // We should not reveal if the user exists or not
+  if (!user) {
+    return;
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const expirationDate = new Date(Date.now() + RESET_TOKEN_EXPIRATION_SECONDS);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordResetToken: token,
+      TokenExpirationDate: expirationDate,
+    },
+  });
+
+  //falta mandar maillll
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  const user = await prisma.user.findFirst({
+    where: {
+      passwordResetToken: token,
+    },
+  });
+
+  if (!user) {
+    throw new Error("Invalid or expired token");
+  }
+
+  if (!user.TokenExpirationDate || new Date() > user.TokenExpirationDate) {
+    throw new Error("Invalid or expired token");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashedPassword,
+      passwordResetToken: null,
+      TokenExpirationDate: null,
+    },
   });
 }
 
