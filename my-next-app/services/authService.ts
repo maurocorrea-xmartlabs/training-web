@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
 import { sendResetPasswordEmail } from "./utils/mail/templates/resetPasswordEmail";
+import { env } from "@/config/env";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 const RESET_TOKEN_EXPIRATION_SECONDS = 1000 * 60 * 60;
@@ -90,11 +91,15 @@ export async function resetPassword(token: string, newPassword: string) {
   });
 
   if (!user) {
-    throw new Error("Invalid or expired token");
+    throw new Error(
+      "This password reset link is invalid or has expired. Please request a new one."
+    );
   }
 
   if (!user.TokenExpirationDate || new Date() > user.TokenExpirationDate) {
-    throw new Error("Invalid or expired token");
+    throw new Error(
+      "This password reset link is invalid or has expired. Please request a new one."
+    );
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);

@@ -69,7 +69,20 @@ export function ResetPasswordForm({ token }: Props) {
       />
       <h1 className="text-xl font-semibold">Reset your password</h1>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <div className="space-y-2">
+          <p className="text-sm text-red-500">{error}</p>
+
+          <button
+            type="button"
+            onClick={() => router.push("/forgotpassword")}
+            className="text-sm text-black underline hover:text-gray-700 transition"
+          >
+            Request a new password reset
+          </button>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-3">
         <label htmlFor="password"> New password </label>
         <ul className="mt-2 text-sm space-y-1">
