@@ -73,20 +73,31 @@ export function AddSubjectForm() {
     >
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <input
-        value={subjectName}
-        onChange={(e) => setSubjectName(e.target.value)}
-        className="w-full rounded-md border px-3 py-2"
-        placeholder="Subject name"
-      />
+      <div className="space-y-1">
+        <label className="text-sm font-medium">Subject name</label>
+        <input
+          type="text"
+          value={subjectName}
+          onChange={(e) => setSubjectName(e.target.value)}
+          className="
+          w-full rounded-md border px-3 py-2
+          focus:outline-none focus:ring-2 focus:ring-black
+        "
+        />
+      </div>
 
-      <input
-        type="number"
-        value={subjectCost}
-        onChange={(e) => setSubjectCost(Number(e.target.value))}
-        className="w-full rounded-md border px-3 py-2"
-        placeholder="Monthly cost"
-      />
+      <div className="space-y-1">
+        <label className="text-sm font-medium">Monthly cost</label>
+        <input
+          type="number"
+          value={subjectCost}
+          onChange={(e) => setSubjectCost(Number(e.target.value))}
+          className="
+          w-full rounded-md border px-3 py-2
+          focus:outline-none focus:ring-2 focus:ring-black
+        "
+        />
+      </div>
     </PopupForm>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import {
   getProjectsBySubjectId,
@@ -6,10 +8,10 @@ import {
 } from "../../../controllers/projectController";
 import type { Subject } from "../../../types/subject";
 import type { Project, NewProject } from "../../../types/project";
-import { ProjectList } from "../projects/projectList";
-import { AddProjectForm } from "../../forms/addProjectForm";
+import { ProjectList } from "../../ui/lists/projectList";
+import { AddProjectForm } from "../forms/addProjectForm";
 import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
-import styles from "../listsAnimations.module.css";
+import styles from "./itemAnimations.module.css";
 
 type SubjectItemProps = {
   subject: Subject;
@@ -24,7 +26,7 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   async function loadProjects() {
     const newProjectList = await withErrorHandling(
       () => getProjectsBySubjectId(subject.id),
-      setError,
+      setError
     );
 
     setProjects(newProjectList || []);
@@ -41,7 +43,12 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
       subjectId: subject.id,
     };
 
-    await withErrorHandling(() => postProject(newProject), setError);
+    const success = await withErrorHandling(
+      () => postProject(newProject),
+      setError
+    );
+
+    if (!success) return;
     loadProjects();
   }
 
@@ -53,13 +60,16 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
   }
 
   async function handleDeleteProject(id: string) {
-    await withErrorHandling(() => deleteProject(id), setError);
+    const success = await withErrorHandling(() => deleteProject(id), setError);
+    if (!success) return;
     loadProjects();
   }
 
   return (
     <div
-      className={`bg-white rounded-xl shadow-sm border p-5 space-y-4 ${isDeleting ? styles.animateItemOut : ""}`}
+      className={`bg-white rounded-xl shadow-sm border p-5 space-y-4 ${
+        isDeleting ? styles.animateItemOut : ""
+      }`}
     >
       <div className="flex items-start justify-between">
         <div>
@@ -73,6 +83,7 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
         <button
           onClick={() => handleDelete()}
           type="button"
+          disabled={isDeleting}
           className="
     text-sm
     text-red-600
@@ -91,10 +102,7 @@ export function SubjectItem({ subject, onDelete }: SubjectItemProps) {
       <AddProjectForm onAddProject={handleAddProject} />
 
       <div>
-        <ProjectList
-          projects={projects}
-          onDeleteProject={handleDeleteProject}
-        />
+        <ProjectList projects={projects} onDelete={handleDeleteProject} />
       </div>
     </div>
   );
