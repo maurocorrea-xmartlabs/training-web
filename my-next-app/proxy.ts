@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "./lib/auth/session";
 
 export default async function proxy(req: NextRequest) {
+  let session;
   const sessionCookie = req.cookies.get("session")?.value;
-  const session = await getSession();
+
+  if (sessionCookie) {
+    session = await getSession();
+  }
+
   const pathname = req.nextUrl.pathname;
 
   if (

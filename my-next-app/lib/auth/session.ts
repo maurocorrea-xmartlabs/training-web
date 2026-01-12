@@ -1,14 +1,10 @@
 import { cookies } from "next/headers";
-import { prisma } from "@/prisma/prisma";
+import { getSessionById } from "@/services/authService";
 
 export async function getSession() {
   const sessionId = (await cookies()).get("session")?.value;
-  if (!sessionId) return null;
 
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-    include: { user: true },
-  });
+  const session = await getSessionById(Number(sessionId));
 
   if (!session) return null;
   if (session.expiresAt < new Date()) return null;

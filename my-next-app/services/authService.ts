@@ -79,3 +79,10 @@ async function createUserSession(userId: number) {
 
   return sessionId;
 }
+
+export async function getSessionById(sessionId: number) {
+  return await prisma.session.findUnique({
+    where: { id: sessionId },
+    include: { user: true },
+  });
+}
