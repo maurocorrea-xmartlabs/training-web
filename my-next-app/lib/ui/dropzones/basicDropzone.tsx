@@ -7,7 +7,7 @@ import {
   storeResourceMetadataAction,
 } from "@/app/(app)/resources/action";
 import { Subject } from "@/generated/prisma/browser";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 type UploadingFile = {
   file: File;
