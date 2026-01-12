@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSession } from "./lib/auth/session";
 
 export default async function proxy(req: NextRequest) {
   const sessionCookie = req.cookies.get("session")?.value;
+  const session = await getSession();
   const pathname = req.nextUrl.pathname;
 
   if (
@@ -18,7 +20,7 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!sessionCookie) {
+  if (!sessionCookie || !session) {
     return NextResponse.redirect(new URL("/logIn", req.url));
   }
 

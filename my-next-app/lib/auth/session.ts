@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/prisma/prisma";
 
-// Should be used on pages
 export async function getSession() {
   const sessionId = (await cookies()).get("session")?.value;
   if (!sessionId) return null;
