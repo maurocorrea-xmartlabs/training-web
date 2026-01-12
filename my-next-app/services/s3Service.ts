@@ -1,12 +1,20 @@
-import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+  PutObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client } from "@/lib/s3/s3Client";
 import { v4 as uuidv4 } from "uuid";
-import { uploadRequest, deleteRequest } from "@/types/uploadRequest";
+import {
+  uploadRequest,
+  deleteRequest,
+  downloadRequest,
+} from "@/types/uploadRequest";
+import { prisma } from "../prisma/prisma";
 
 export async function createPresignedUploadUrl(data: uploadRequest) {
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
-  const region = process.env.AWS_S3_REGION!;
 
   const key = `${uuidv4()}-${data.filename}`;
 
@@ -21,22 +29,16 @@ export async function createPresignedUploadUrl(data: uploadRequest) {
     expiresIn: 3600,
   });
 
-  const publicUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${encodeURIComponent(
-    key
-  )}`;
-
   return {
     presignedUrl,
     key,
-    publicUrl,
   };
 }
 
 export async function createPresignedDeleteUrl(data: deleteRequest) {
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
-  const region = process.env.AWS_S3_REGION!;
 
-  const key = `${uuidv4()}-${data.filename}`;
+  const key = data.key;
 
   const command = new DeleteObjectCommand({
     Bucket: bucketName,
@@ -47,13 +49,46 @@ export async function createPresignedDeleteUrl(data: deleteRequest) {
     expiresIn: 3600,
   });
 
-  const publicUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${encodeURIComponent(
-    key
-  )}`;
-
   return {
     presignedUrl,
     key,
-    publicUrl,
   };
+}
+
+export async function createPresignedDownloadUrl(data: downloadRequest) {
+  const bucketName = process.env.AWS_S3_BUCKET_NAME!;
+
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: data.key,
+  });
+
+  return await getSignedUrl(s3Client, command, {
+    expiresIn: 60 * 5,
+  });
+}
+
+export async function storeFileMetadata(key: string, subjectId: number) {
+  return await prisma.fileMetadata.create({
+    data: {
+      key: key,
+      subjectId: subjectId,
+    },
+  });
+}
+
+export async function deleteFileMetadata(key: string) {
+  return await prisma.fileMetadata.delete({
+    where: {
+      key: key,
+    },
+  });
+}
+
+export async function getFilesBySubject(subjectId: number) {
+  return await prisma.fileMetadata.findMany({
+    where: {
+      subjectId: subjectId,
+    },
+  });
 }

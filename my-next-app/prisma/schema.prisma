@@ -42,6 +42,7 @@ model Subject {
 
   projects    Project[]
   exams       Exam[]
+  files FileMetadata[]
 }
 
 model Project {
@@ -75,5 +76,10 @@ model Exam {
   subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 }
 
-
+model FileMetadata{
+  id Int @id @default(autoincrement())
+  key String @unique
+  subjectId Int
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+}
 

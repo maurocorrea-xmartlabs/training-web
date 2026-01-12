@@ -7,8 +7,13 @@ export const uploadRequestSchema = z.object({
 });
 
 export const deleteRequestSchema = z.object({
-  filename: z.string(),
+  key: z.string(),
+});
+
+export const downloadRequestSchema = z.object({
+  key: z.string(),
 });
 
 export type uploadRequest = z.infer<typeof uploadRequestSchema>;
 export type deleteRequest = z.infer<typeof deleteRequestSchema>;
+export type downloadRequest = z.infer<typeof downloadRequestSchema>;
