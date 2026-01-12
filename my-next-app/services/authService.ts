@@ -80,7 +80,7 @@ async function createUserSession(userId: number) {
   return sessionId;
 }
 
-export async function getSessionById(sessionId: number) {
+export async function getSessionById(sessionId: string) {
   return await prisma.session.findUnique({
     where: { id: sessionId },
     include: { user: true },

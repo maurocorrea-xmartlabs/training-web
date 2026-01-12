@@ -13,7 +13,6 @@ export function Navbar() {
           width={60}
           height={60}
           className="ml-2"
-          unoptimized
         />
       </Link>
 
