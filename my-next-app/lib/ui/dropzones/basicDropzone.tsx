@@ -6,7 +6,8 @@ import {
   getPresignedUploadUrlAction,
   storeResourceMetadataAction,
 } from "@/app/(app)/resources/action";
-import { Subject } from "@/generated/prisma/browser";
+import { Subject } from "@/generated/prisma/";
+import { uploadRequestSchema } from "@/types/uploadRequest";
 
 type UploadingFile = {
   file: File;
@@ -27,15 +28,35 @@ export function SimpleDropzone({ subjects }: Props) {
     if (!subjectId) return;
 
     setFiles((prev) =>
-      prev.map((f) => (f.file === file ? { ...f, uploading: true } : f))
+      prev.map((f) => (f.file === file ? { ...f, uploading: true } : f)),
     );
 
+    const parsed = uploadRequestSchema.safeParse({
+      filename: file.name,
+      contentType: file.type,
+      size: file.size,
+    });
+
+    if (!parsed.success) {
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.file === file
+            ? {
+                ...f,
+                uploading: false,
+                error:
+                  parsed.error.issues[0]?.message ?? "Invalid upload request",
+              }
+            : f,
+        ),
+      );
+      return;
+    }
+
     try {
-      const { presignedUrl, key } = await getPresignedUploadUrlAction({
-        filename: file.name,
-        contentType: file.type,
-        size: file.size,
-      });
+      const { presignedUrl, key } = await getPresignedUploadUrlAction(
+        parsed.data,
+      );
 
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -44,7 +65,7 @@ export function SimpleDropzone({ subjects }: Props) {
           if (e.lengthComputable) {
             const progress = Math.round((e.loaded / e.total) * 100);
             setFiles((prev) =>
-              prev.map((f) => (f.file === file ? { ...f, progress } : f))
+              prev.map((f) => (f.file === file ? { ...f, progress } : f)),
             );
           }
         };
@@ -63,8 +84,8 @@ export function SimpleDropzone({ subjects }: Props) {
 
       setFiles((prev) =>
         prev.map((f) =>
-          f.file === file ? { ...f, uploading: false, progress: 100 } : f
-        )
+          f.file === file ? { ...f, uploading: false, progress: 100 } : f,
+        ),
       );
     } catch (error) {
       if (error instanceof Error) {
@@ -76,8 +97,8 @@ export function SimpleDropzone({ subjects }: Props) {
                   uploading: false,
                   error: error.message,
                 }
-              : f
-          )
+              : f,
+          ),
         );
       } else {
         setFiles((prev) =>
@@ -88,8 +109,8 @@ export function SimpleDropzone({ subjects }: Props) {
                   uploading: false,
                   error: "Unexpected error happened, please try again",
                 }
-              : f
-          )
+              : f,
+          ),
         );
       }
     }
@@ -108,7 +129,7 @@ export function SimpleDropzone({ subjects }: Props) {
       setFiles((prev) => [...prev, ...mapped]);
       acceptedFiles.forEach(uploadFile);
     },
-    [subjectId]
+    [subjectId],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
