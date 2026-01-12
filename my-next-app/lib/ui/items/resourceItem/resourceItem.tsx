@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { FileMetadata } from "@/generated/prisma/client";
+import type { ResourceMetadata } from "@/generated/prisma/client";
 import { getImagePresignedUrlAction } from "@/app/(app)/resources/action";
 import Image from "next/image";
 
 type Props = {
-  resource: FileMetadata;
+  resource: ResourceMetadata;
 };
 
 export function ResourceItem({ resource }: Props) {

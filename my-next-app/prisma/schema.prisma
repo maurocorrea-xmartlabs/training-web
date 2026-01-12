@@ -44,7 +44,7 @@ model Subject {
 
   projects    Project[]
   exams       Exam[]
-  files FileMetadata[]
+  resources ResourceMetadata[]
 }
 
 model Project {
@@ -78,7 +78,7 @@ model Exam {
   subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 }
 
-model FileMetadata{
+model ResourceMetadata{
   id Int @id @default(autoincrement())
   key String @unique
   subjectId Int

@@ -12,8 +12,8 @@ import {
   createPresignedDeleteUrl,
   createPresignedDownloadUrl,
   createPresignedUploadUrl,
-  deleteFileMetadata,
-  storeFileMetadata,
+  deleteResourceMetadata,
+  storeResourceMetadata,
 } from "@/services/s3Service";
 
 export async function getPresignedUploadUrlAction(input: uploadRequest) {
@@ -45,10 +45,13 @@ export async function getPresignedDeleteUrlAction(input: deleteRequest) {
   return await createPresignedDeleteUrl(parsed.data);
 }
 
-export async function storeFileMetadataAction(key: string, subjectdId: number) {
-  return await storeFileMetadata(key, subjectdId);
+export async function storeResourceMetadataAction(
+  key: string,
+  subjectdId: number
+) {
+  return await storeResourceMetadata(key, subjectdId);
 }
 
-export async function deleteFileMetadataAction(key: string) {
-  return await deleteFileMetadata(key);
+export async function deleteResourceMetadataAction(key: string) {
+  return await deleteResourceMetadata(key);
 }
