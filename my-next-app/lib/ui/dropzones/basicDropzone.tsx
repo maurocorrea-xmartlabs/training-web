@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   getPresignedUploadUrlAction,
-  storeFileMetadataAction,
+  storeResourceMetadataAction,
 } from "@/app/(app)/resources/action";
 import { Subject } from "@/generated/prisma/browser";
 
@@ -57,7 +57,7 @@ export function SimpleDropzone({ subjects }: Props) {
         xhr.open("PUT", presignedUrl);
         xhr.setRequestHeader("Content-Type", file.type);
         xhr.send(file);
-        storeFileMetadataAction(key, subjectId);
+        storeResourceMetadataAction(key, subjectId);
       });
 
       setFiles((prev) =>

@@ -12,10 +12,10 @@ export default async function resources() {
         <h1 className="text-2xl font-bold mb-6 text-center">
           Upload or check some relevant resources for your subjects!
         </h1>
-        <h2>Upload a resource!</h2>
+        <h2>Upload a resource</h2>
         <SimpleDropzone subjects={subjects} />
         <h2>Available resources</h2>
-        <ResourceList />
+        <ResourceList subjects={subjects} />
       </div>
     </div>
   );

@@ -68,8 +68,8 @@ export async function createPresignedDownloadUrl(data: downloadRequest) {
   });
 }
 
-export async function storeFileMetadata(key: string, subjectId: number) {
-  return await prisma.fileMetadata.create({
+export async function storeResourceMetadata(key: string, subjectId: number) {
+  return await prisma.resourceMetadata.create({
     data: {
       key: key,
       subjectId: subjectId,
@@ -77,8 +77,8 @@ export async function storeFileMetadata(key: string, subjectId: number) {
   });
 }
 
-export async function deleteFileMetadata(key: string) {
-  return await prisma.fileMetadata.delete({
+export async function deleteResourceMetadata(key: string) {
+  return await prisma.resourceMetadata.delete({
     where: {
       key: key,
     },
@@ -86,7 +86,7 @@ export async function deleteFileMetadata(key: string) {
 }
 
 export async function getFilesBySubject(subjectId: number) {
-  return await prisma.fileMetadata.findMany({
+  return await prisma.resourceMetadata.findMany({
     where: {
       subjectId: subjectId,
     },

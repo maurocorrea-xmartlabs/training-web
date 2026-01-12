@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import styles from "../itemAnimations.module.css";
 import {
   getPresignedDeleteUrlAction,
-  deleteFileMetadataAction,
+  deleteResourceMetadataAction,
   getImagePresignedUrlAction,
 } from "@/app/(app)/resources/action";
 
@@ -35,7 +35,7 @@ export function ResourceItemClientWrapper({ resourceKey, children }: Props) {
         throw new Error("Failed to delete S3 resource");
       }
 
-      await deleteFileMetadataAction(resourceKey);
+      await deleteResourceMetadataAction(resourceKey);
     } catch (error) {
       setIsDeleting(false);
 
