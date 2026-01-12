@@ -1,13 +1,13 @@
 import type { Subject } from "@/generated/prisma/client";
-import { getFilesBySubject } from "@/services/s3Service";
 import { ResourceItem } from "../items/resourceItem/resourceItem";
+import { getResourcesBySubjectAction } from "@/app/(app)/resources/action";
 
 type Props = {
   subject: Subject;
 };
 
 export async function ResourceSection({ subject }: Props) {
-  const resources = await getFilesBySubject(subject.id);
+  const resources = await getResourcesBySubjectAction(subject.id);
 
   if (resources.length === 0) return null;
 

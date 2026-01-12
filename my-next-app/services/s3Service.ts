@@ -12,8 +12,13 @@ import {
   downloadRequest,
 } from "@/types/uploadRequest";
 import { prisma } from "../prisma/prisma";
+import { validateUserSession } from "./authService";
 
-export async function createPresignedUploadUrl(data: uploadRequest) {
+export async function createPresignedUploadUrl(
+  data: uploadRequest,
+  sessionId?: string
+) {
+  await validateUserSession(sessionId);
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
 
   const key = `${uuidv4()}-${data.filename}`;
@@ -35,7 +40,11 @@ export async function createPresignedUploadUrl(data: uploadRequest) {
   };
 }
 
-export async function createPresignedDeleteUrl(data: deleteRequest) {
+export async function createPresignedDeleteUrl(
+  data: deleteRequest,
+  sessionId?: string
+) {
+  await validateUserSession(sessionId);
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
 
   const key = data.key;
@@ -68,7 +77,12 @@ export async function createPresignedDownloadUrl(data: downloadRequest) {
   });
 }
 
-export async function storeResourceMetadata(key: string, subjectId: number) {
+export async function storeResourceMetadata(
+  key: string,
+  subjectId: number,
+  sessionId?: string
+) {
+  await validateUserSession(sessionId);
   return await prisma.resourceMetadata.create({
     data: {
       key: key,
@@ -77,7 +91,8 @@ export async function storeResourceMetadata(key: string, subjectId: number) {
   });
 }
 
-export async function deleteResourceMetadata(key: string) {
+export async function deleteResourceMetadata(key: string, sessionId?: string) {
+  await validateUserSession(sessionId);
   return await prisma.resourceMetadata.delete({
     where: {
       key: key,
@@ -85,7 +100,7 @@ export async function deleteResourceMetadata(key: string) {
   });
 }
 
-export async function getFilesBySubject(subjectId: number) {
+export async function getResourcesBySubject(subjectId: number) {
   return await prisma.resourceMetadata.findMany({
     where: {
       subjectId: subjectId,

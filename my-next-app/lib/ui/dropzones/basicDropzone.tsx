@@ -7,6 +7,7 @@ import {
   storeResourceMetadataAction,
 } from "@/app/(app)/resources/action";
 import { Subject } from "@/generated/prisma/browser";
+import { useRouter } from "next/router";
 
 type UploadingFile = {
   file: File;
@@ -22,6 +23,7 @@ type Props = {
 export function SimpleDropzone({ subjects }: Props) {
   const [files, setFiles] = useState<UploadingFile[]>([]);
   const [subjectId, setSubjectId] = useState<number | null>(null);
+  const router = useRouter();
 
   async function uploadFile(file: File) {
     if (!subjectId) return;
@@ -57,20 +59,25 @@ export function SimpleDropzone({ subjects }: Props) {
         xhr.open("PUT", presignedUrl);
         xhr.setRequestHeader("Content-Type", file.type);
         xhr.send(file);
-        storeResourceMetadataAction(key, subjectId);
       });
+
+      await storeResourceMetadataAction(key, subjectId);
 
       setFiles((prev) =>
         prev.map((f) =>
           f.file === file ? { ...f, uploading: false, progress: 100 } : f
         )
       );
-    } catch {
+    } catch (error) {
       setFiles((prev) =>
         prev.map((f) =>
           f.file === file ? { ...f, uploading: false, error: true } : f
         )
       );
+
+      if (error instanceof Error && error.message === "UNAUTHORIZED") {
+        router.push("/logIn");
+      }
     }
   }
 
