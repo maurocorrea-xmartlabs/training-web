@@ -38,7 +38,7 @@ export function LogInForm() {
     <div className="bg-white rounded-xl shadow-lg p-6 space-y-4">
       <Image
         src="/logoAlt.png"
-        alt="Uni-Do"
+        alt="Uni-Do logo"
         width={92}
         height={92}
         className="mx-auto"

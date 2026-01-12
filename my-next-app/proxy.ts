@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "./lib/auth/session";
 
-export default async function proxy(req: NextRequest) {
-  let session;
-  const sessionCookie = req.cookies.get("session")?.value;
-
-  if (sessionCookie) {
-    session = await getSession();
-  }
-
+export default async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
   if (
@@ -19,13 +12,28 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const publicPaths = ["/logIn", "/signUp", "/logoAlt.png", "logo.png"];
+  const session = await getSession();
 
-  if (publicPaths.some((path) => pathname.startsWith(path))) {
+  const authPages = ["/logIn", "/signUp"];
+  const publicAssets = ["/logoAlt.png", "/logo.png"];
+
+  const isAuthPage = authPages.some((path) => pathname.startsWith(path));
+
+  const isPublicAsset = publicAssets.some((path) => pathname.startsWith(path));
+
+  if (isPublicAsset) {
     return NextResponse.next();
   }
 
-  if (!sessionCookie || !session) {
+  if (isAuthPage && session) {
+    return NextResponse.redirect(new URL("/home", req.url));
+  }
+
+  if (isAuthPage && !session) {
+    return NextResponse.next();
+  }
+
+  if (!session) {
     return NextResponse.redirect(new URL("/logIn", req.url));
   }
 
