@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Task } from "../../../types/task";
-import styles from "../listsAnimations.module.css";
+import styles from "./itemAnimations.module.css";
 
 type TaskItemProps = {
   task: Task;
@@ -34,7 +34,8 @@ export function TaskItem({ task, onDelete }: TaskItemProps) {
 
       <button
         type="button"
-        onClick={() => handleDelete()}
+        onClick={handleDelete}
+        disabled={isDeleting}
         className="
           text-sm text-red-600
           border border-red-200

@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import {
   getTasksByProjectId,
@@ -6,10 +8,10 @@ import {
 } from "../../../controllers/taskController";
 import type { Project } from "../../../types/project";
 import type { Task, NewTask } from "../../../types/task";
-import { AddTaskForm } from "../../forms/addTaskForm";
-import { TaskList } from "../tasks/taskList";
+import { AddTaskForm } from "../forms/addTaskForm";
+import { TaskList } from "../lists/taskList";
 import { withErrorHandling } from "../../../controllers/utils/withErrorHandling";
-import styles from "../listsAnimations.module.css";
+import styles from "./itemAnimations.module.css";
 
 type ProjectItemProps = {
   project: Project;
@@ -17,21 +19,21 @@ type ProjectItemProps = {
 };
 
 export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
-  const [tasks, setTasks] = useState<Task[]>();
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    loadTasks();
-  }, []);
 
   async function loadTasks() {
     const newTasks = await withErrorHandling(
       () => getTasksByProjectId(project.id),
-      setError,
+      setError
     );
     setTasks(newTasks || []);
   }
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
 
   async function handleAddTask(name: string, description: string) {
     const newTask: NewTask = {
@@ -40,7 +42,10 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
       projectId: project.id,
     };
 
-    await postTask(newTask);
+    const success = await withErrorHandling(() => postTask(newTask), setError);
+
+    if (!success) return;
+
     loadTasks();
   }
 
@@ -52,13 +57,16 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
   }
 
   async function handleDeleteTask(id: string) {
-    await deleteTask(id);
+    const success = await withErrorHandling(() => deleteTask(id), setError);
+    if (!success) return;
     loadTasks();
   }
 
   return (
     <div
-      className={`bg-white rounded-xl shadow-sm border p-5 space-y-4 ${isDeleting ? styles.animateItemOut : ""}`}
+      className={`bg-white rounded-xl shadow-sm border p-5 space-y-4 ${
+        isDeleting ? styles.animateItemOut : ""
+      }`}
     >
       <div className="flex items-start justify-between">
         <div>
@@ -68,8 +76,9 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
         </div>
 
         <button
-          onClick={() => handleDelete()}
+          onClick={handleDelete}
           type="button"
+          disabled={isDeleting}
           className="
             text-sm text-red-600
             border border-red-200
@@ -88,7 +97,7 @@ export default function ProjectItem({ project, onDelete }: ProjectItemProps) {
 
       <div className="space-y-2">
         <p className="text-sm font-medium text-gray-700">Tasks</p>
-        <TaskList tasks={tasks!} onDeleteTask={handleDeleteTask} />
+        <TaskList tasks={tasks} onDelete={handleDeleteTask} />
       </div>
     </div>
   );

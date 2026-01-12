@@ -1,6 +1,5 @@
 import z from "zod";
-import { TaskSchema, type Task } from "../types/task";
-import type { NewTask } from "../types/task";
+import { TaskSchema, type Task, type NewTask } from "../types/task";
 import { generateRandomId } from "./utils/randomId";
 import { API_ENDPOINTS } from "./utils/endpoints";
 

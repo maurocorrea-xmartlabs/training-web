@@ -1,4 +1,4 @@
-export default async function Home() {
+export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50">
       <main className="w-full max-w-3xl px-16 py-32 bg-white border border-zinc-200 rounded-xl">

@@ -1,6 +1,5 @@
 import z from "zod";
-import { ProjectSchema, type Project } from "../types/project";
-import type { NewProject } from "../types/project";
+import { ProjectSchema, type Project, type NewProject } from "../types/project";
 import { API_ENDPOINTS } from "./utils/endpoints";
 import { generateRandomId } from "./utils/randomId";
 

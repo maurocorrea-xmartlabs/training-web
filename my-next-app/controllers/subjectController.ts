@@ -1,6 +1,5 @@
 import z from "zod";
-import { SubjectSchema, type Subject } from "../types/subject";
-import type { NewSubject } from "../types/subject";
+import { SubjectSchema, type Subject, type NewSubject } from "../types/subject";
 import { generateRandomId } from "./utils/randomId";
 import { API_ENDPOINTS } from "./utils/endpoints";
 
