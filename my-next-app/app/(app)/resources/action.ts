@@ -13,17 +13,22 @@ import {
   createPresignedDownloadUrl,
   createPresignedUploadUrl,
   deleteResourceMetadata,
+  getResourcesBySubject,
   storeResourceMetadata,
 } from "@/services/s3Service";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 export async function getPresignedUploadUrlAction(input: uploadRequest) {
   const parsed = uploadRequestSchema.safeParse(input);
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("session")?.value;
 
   if (!parsed.success) {
     throw new Error("Invalid upload request");
   }
 
-  return await createPresignedUploadUrl(parsed.data);
+  return await createPresignedUploadUrl(parsed.data, sessionId);
 }
 
 export async function getImagePresignedUrlAction(input: downloadRequest) {
@@ -37,21 +42,32 @@ export async function getImagePresignedUrlAction(input: downloadRequest) {
 
 export async function getPresignedDeleteUrlAction(input: deleteRequest) {
   const parsed = deleteRequestSchema.safeParse(input);
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("session")?.value;
 
   if (!parsed.success) {
     throw new Error("Invalid delete request");
   }
 
-  return await createPresignedDeleteUrl(parsed.data);
+  return await createPresignedDeleteUrl(parsed.data, sessionId);
 }
 
 export async function storeResourceMetadataAction(
   key: string,
   subjectdId: number
 ) {
-  return await storeResourceMetadata(key, subjectdId);
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("session")?.value;
+  await storeResourceMetadata(key, subjectdId, sessionId);
+  revalidatePath("/resources");
 }
 
 export async function deleteResourceMetadataAction(key: string) {
-  return await deleteResourceMetadata(key);
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("session")?.value;
+  return await deleteResourceMetadata(key, sessionId);
+}
+
+export async function getResourcesBySubjectAction(subjectId: number) {
+  return await getResourcesBySubject(subjectId);
 }
