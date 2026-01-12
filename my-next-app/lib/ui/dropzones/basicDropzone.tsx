@@ -2,7 +2,11 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { getPresignedUploadUrlAction } from "@/app/(app)/resources/action";
+import {
+  getPresignedUploadUrlAction,
+  storeFileMetadataAction,
+} from "@/app/(app)/resources/action";
+import { Subject } from "@/generated/prisma/browser";
 
 type UploadingFile = {
   file: File;
@@ -11,16 +15,23 @@ type UploadingFile = {
   error?: boolean;
 };
 
-export function SimpleDropzone() {
+type Props = {
+  subjects: Subject[];
+};
+
+export function SimpleDropzone({ subjects }: Props) {
   const [files, setFiles] = useState<UploadingFile[]>([]);
+  const [subjectId, setSubjectId] = useState<number | null>(null);
 
   async function uploadFile(file: File) {
+    if (!subjectId) return;
+
     setFiles((prev) =>
       prev.map((f) => (f.file === file ? { ...f, uploading: true } : f))
     );
 
     try {
-      const { presignedUrl } = await getPresignedUploadUrlAction({
+      const { presignedUrl, key } = await getPresignedUploadUrlAction({
         filename: file.name,
         contentType: file.type,
         size: file.size,
@@ -46,6 +57,7 @@ export function SimpleDropzone() {
         xhr.open("PUT", presignedUrl);
         xhr.setRequestHeader("Content-Type", file.type);
         xhr.send(file);
+        storeFileMetadataAction(key, subjectId);
       });
 
       setFiles((prev) =>
@@ -62,33 +74,60 @@ export function SimpleDropzone() {
     }
   }
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const mapped = acceptedFiles.map((file) => ({
-      file,
-      progress: 0,
-      uploading: false,
-    }));
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (!subjectId) return;
 
-    setFiles((prev) => [...prev, ...mapped]);
-    acceptedFiles.forEach(uploadFile);
-  }, []);
+      const mapped = acceptedFiles.map((file) => ({
+        file,
+        progress: 0,
+        uploading: false,
+      }));
+
+      setFiles((prev) => [...prev, ...mapped]);
+      acceptedFiles.forEach(uploadFile);
+    },
+    [subjectId]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     maxSize: 50 * 1024 * 1024,
+    disabled: !subjectId,
   });
 
   return (
     <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Subject</label>
+        <select
+          value={subjectId ?? ""}
+          onChange={(e) => setSubjectId(Number(e.target.value))}
+          className="w-full rounded-md border px-3 py-2 text-sm"
+        >
+          <option value="" disabled>
+            Select a subject
+          </option>
+          {subjects.map((subject) => (
+            <option key={subject.id} value={subject.id}>
+              {subject.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition
           ${isDragActive ? "border-black bg-gray-100" : "border-gray-300"}
+          ${!subjectId ? "opacity-50 cursor-not-allowed" : ""}
         `}
       >
         <input {...getInputProps()} />
         <p className="text-sm text-gray-600">
-          Drag & drop files here, or click to select
+          {subjectId
+            ? "Drag & drop files here, or click to select"
+            : "Select a subject to upload files"}
         </p>
       </div>
 
@@ -97,7 +136,7 @@ export function SimpleDropzone() {
           <li key={file.name} className="text-sm">
             <div className="flex justify-between">
               <span className="truncate">{file.name}</span>
-              <span>{error ? "❌" : uploading ? `${progress}%` : "✅"}</span>
+              <span>{error ? "✗" : uploading ? `${progress}%` : "✔"}</span>
             </div>
             <div className="h-1 bg-gray-200 rounded">
               <div
