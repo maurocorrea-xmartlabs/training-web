@@ -1,5 +1,3 @@
-"use client";
-
 import { SimpleDropzone } from "@/lib/ui/dropzones/basicDropzone";
 import { ResourceList } from "@/lib/ui/lists/resourceList";
 import { getSubjects } from "@/services/subjectService";
