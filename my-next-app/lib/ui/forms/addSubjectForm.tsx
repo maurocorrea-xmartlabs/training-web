@@ -79,6 +79,7 @@ export function AddSubjectForm() {
           type="text"
           value={subjectName}
           onChange={(e) => setSubjectName(e.target.value)}
+          placeholder="Subject name"
           className="
           w-full rounded-md border px-3 py-2
           focus:outline-none focus:ring-2 focus:ring-black
@@ -92,6 +93,7 @@ export function AddSubjectForm() {
           type="number"
           value={subjectCost}
           onChange={(e) => setSubjectCost(Number(e.target.value))}
+          placeholder="Monthly cost"
           className="
           w-full rounded-md border px-3 py-2
           focus:outline-none focus:ring-2 focus:ring-black

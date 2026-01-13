@@ -2,7 +2,6 @@
 
 import { signUp } from "@/services/authService";
 import { UserSignUp } from "@/types/user";
-import { redirect } from "next/navigation";
 
 // Basic rate-limiting logic for Next using attempts and cooldown
 // Probably, there are better ways to do this
@@ -29,5 +28,4 @@ export async function signUpAction(data: UserSignUp) {
   signUpAttempts.set(key, now);
 
   await signUp(data);
-  redirect("/logIn");
 }

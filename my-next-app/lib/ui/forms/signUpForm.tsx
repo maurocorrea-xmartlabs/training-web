@@ -3,6 +3,7 @@
 import { signUpAction } from "@/app/(auth)/signUp/actions";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
 import { UserSignUpFormSchema } from "@/types/user";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function SignUpForm() {
@@ -12,6 +13,7 @@ export function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const passRules = passwordRules(password);
   const nameRules = usernameRules(name);
+  const router = useRouter();
 
   // These sets of rules are used to give char by char feedback to user
   function passwordRules(password: string) {
@@ -51,6 +53,7 @@ export function SignUpForm() {
     setName("");
     setEmail("");
     setPassword("");
+    router.push("/login");
   }
 
   return (

@@ -3,12 +3,12 @@
 import { logIn } from "@/services/authService";
 import { UserLogIn } from "@/types/user";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { env } from "@/config/env";
 
 // Basic rate-limiting logic for Next using attempts and cooldown
 // Probably, there are better ways to do this
 const logInAttempts = new Map<string, number>();
-const COOLDOWN_MS = 20_000;
+const COOLDOWN_MS = 5_000;
 
 export async function logInAction(data: UserLogIn) {
   const key = data.email;
@@ -33,10 +33,8 @@ export async function logInAction(data: UserLogIn) {
 
   (await cookies()).set("session", sessionId, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
   });
-
-  redirect("/");
 }
