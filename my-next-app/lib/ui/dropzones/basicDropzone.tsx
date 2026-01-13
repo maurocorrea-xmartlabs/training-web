@@ -6,7 +6,7 @@ import {
   getPresignedUploadUrlAction,
   storeResourceMetadataAction,
 } from "@/app/(app)/resources/action";
-import { Subject } from "@/generated/prisma/";
+import { Subject } from "@/generated/prisma/client";
 import { uploadRequestSchema } from "@/types/uploadRequest";
 
 type UploadingFile = {
