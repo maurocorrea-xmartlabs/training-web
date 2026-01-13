@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import styles from "../itemAnimations.module.css";
 import { deleteExamAction } from "@/app/(app)/exams/actions";
 
@@ -11,7 +10,6 @@ type Props = {
 };
 
 export function ExamItemClientWrapper({ examId, children }: Props) {
-  const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
   function handleDelete() {
@@ -22,10 +20,6 @@ export function ExamItemClientWrapper({ examId, children }: Props) {
         await deleteExamAction(examId);
       } catch (error) {
         setIsDeleting(false);
-
-        if (error instanceof Error && error.message === "UNAUTHORIZED") {
-          router.push("/logIn");
-        }
       }
     }, 150);
   }
