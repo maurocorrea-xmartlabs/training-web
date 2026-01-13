@@ -11,7 +11,6 @@ type Props = {
 };
 
 export function ExamItemClientWrapper({ examId, children }: Props) {
-  const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
   function handleDelete() {
@@ -22,10 +21,6 @@ export function ExamItemClientWrapper({ examId, children }: Props) {
         await deleteExamAction(examId);
       } catch (error) {
         setIsDeleting(false);
-
-        if (error instanceof Error && error.message === "UNAUTHORIZED") {
-          router.push("/logIn");
-        }
       }
     }, 150);
   }

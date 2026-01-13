@@ -61,9 +61,6 @@ export function AddExamForm({ subjects }: AddExamFormProps) {
     );
 
     if (!success) {
-      if (error === "UNAUTHORIZED") {
-        router.push("/logIn");
-      }
       return;
     }
 
