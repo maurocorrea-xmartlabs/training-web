@@ -44,9 +44,6 @@ export function AddTaskForm({ projectId }: AddTaskFormProps) {
     );
 
     if (!success) {
-      if (error === "UNAUTHORIZED") {
-        router.push("/logIn");
-      }
       return;
     }
 

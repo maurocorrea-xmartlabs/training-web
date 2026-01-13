@@ -44,9 +44,6 @@ export function AddProjectForm({ subjectId }: AddProjectFormProps) {
     );
 
     if (!success) {
-      if (error === "UNAUTHORIZED") {
-        router.push("/logIn");
-      }
       return;
     }
 

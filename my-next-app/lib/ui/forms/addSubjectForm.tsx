@@ -35,9 +35,6 @@ export function AddSubjectForm() {
     );
 
     if (!success) {
-      if (error === "UNAUTHORIZED") {
-        router.push("/logIn");
-      }
       return;
     }
 
