@@ -15,6 +15,19 @@ model User{
 
   // I comment this because subjects are global right now, so this relation is not needed
   //subjects Subject[]
+  sessions Session[]
+}
+
+model Session {
+  id        String   @id
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Subject {
