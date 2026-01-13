@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import styles from "../itemAnimations.module.css";
 import { deleteProjectAction } from "@/app/(app)/todo/actions";
 

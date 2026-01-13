@@ -6,7 +6,6 @@ import type { Subject } from "@/generated/prisma/client";
 import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import { createExamAction } from "@/app/(app)/exams/actions";
-import { useRouter } from "next/navigation";
 import styles from "./formAnimations.module.css";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
@@ -21,7 +20,6 @@ export function AddExamForm({ subjects }: AddExamFormProps) {
   const [maxScore, setMaxScore] = useState(1);
   const [date, setDate] = useState("");
   const [isHidingButton, setIsHidingButton] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     if (subjects.length >= 1) {
