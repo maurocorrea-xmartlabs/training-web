@@ -7,7 +7,6 @@ import { ProjectFormSchema } from "../../../types/project";
 import { createProjectAction } from "@/app/(app)/todo/actions";
 import styles from "./formAnimations.module.css";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
-import { useRouter } from "next/navigation";
 
 type AddProjectFormProps = {
   subjectId: number;
@@ -18,7 +17,6 @@ export function AddProjectForm({ subjectId }: AddProjectFormProps) {
   const [projectName, setProjectName] = useState("");
   const [projectCredits, setProjectCredits] = useState(0);
   const [isHidingButton, setIsHidingButton] = useState(false);
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
