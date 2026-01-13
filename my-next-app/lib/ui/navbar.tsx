@@ -18,7 +18,7 @@ export function Navbar() {
       <Link href="/">
         <Image
           src="/logo.png"
-          alt="Uni-Do"
+          alt="Uni-Do logo"
           width={60}
           height={60}
           className="ml-2"

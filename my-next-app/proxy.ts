@@ -12,10 +12,6 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (req.method !== "GET") {
-    return NextResponse.next();
-  }
-
   const publicPaths = ["/logIn", "/signUp"];
 
   if (publicPaths.some((path) => pathname.startsWith(path))) {

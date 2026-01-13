@@ -58,9 +58,7 @@ export function AddExamForm({ subjects }: AddExamFormProps) {
       setError
     );
 
-    if (!success) {
-      return;
-    }
+    if (!success) return;
 
     setError(null);
 

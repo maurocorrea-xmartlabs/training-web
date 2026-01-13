@@ -13,6 +13,7 @@ model User{
   email String @unique
   password String
 
+  // I comment this because subjects are global right now, so this relation is not needed
   //subjects Subject[]
   sessions Session[]
 }
@@ -34,6 +35,7 @@ model Subject {
   name        String
   monthlyCost Int
 
+  // Commented for the same reason that above
   //userId Int
   //user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

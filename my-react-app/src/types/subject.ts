@@ -16,6 +16,4 @@ export const SubjectFormSchema = z.object({
   monthlyCost: z.number().positive("Subject must have a positive monthly cost"),
 });
 
-
 export type Subject = z.infer<typeof SubjectSchema>;
-export const SubjectArraySchema = z.array(SubjectSchema);
