@@ -7,13 +7,12 @@ import {
   storeResourceMetadataAction,
 } from "@/app/(app)/resources/action";
 import { Subject } from "@/generated/prisma/browser";
-import { useRouter } from "next/navigation";
 
 type UploadingFile = {
   file: File;
   progress: number;
   uploading: boolean;
-  error?: boolean;
+  error?: string;
 };
 
 type Props = {
@@ -23,7 +22,6 @@ type Props = {
 export function SimpleDropzone({ subjects }: Props) {
   const [files, setFiles] = useState<UploadingFile[]>([]);
   const [subjectId, setSubjectId] = useState<number | null>(null);
-  const router = useRouter();
 
   async function uploadFile(file: File) {
     if (!subjectId) return;
@@ -69,14 +67,30 @@ export function SimpleDropzone({ subjects }: Props) {
         )
       );
     } catch (error) {
-      setFiles((prev) =>
-        prev.map((f) =>
-          f.file === file ? { ...f, uploading: false, error: true } : f
-        )
-      );
-
-      if (error instanceof Error && error.message === "UNAUTHORIZED") {
-        router.push("/logIn");
+      if (error instanceof Error) {
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.file === file
+              ? {
+                  ...f,
+                  uploading: false,
+                  error: error.message,
+                }
+              : f
+          )
+        );
+      } else {
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.file === file
+              ? {
+                  ...f,
+                  uploading: false,
+                  error: "Unexpected error happened, please try again",
+                }
+              : f
+          )
+        );
       }
     }
   }
@@ -99,17 +113,19 @@ export function SimpleDropzone({ subjects }: Props) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    maxSize: 50 * 1024 * 1024,
     disabled: !subjectId,
   });
 
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Subject</label>
+        <label className="block text-sm font-medium mb-1" htmlFor="subject">
+          Subject
+        </label>
         <select
           value={subjectId ?? ""}
           onChange={(e) => setSubjectId(Number(e.target.value))}
+          id="subject"
           className="w-full rounded-md border px-3 py-2 text-sm"
         >
           <option value="" disabled>
@@ -143,7 +159,9 @@ export function SimpleDropzone({ subjects }: Props) {
           <li key={file.name} className="text-sm">
             <div className="flex justify-between">
               <span className="truncate">{file.name}</span>
-              <span>{error ? "✗" : uploading ? `${progress}%` : "✔"}</span>
+              <span>
+                {error ? `✗ ${error}` : uploading ? `${progress}%` : "✔"}
+              </span>
             </div>
             <div className="h-1 bg-gray-200 rounded">
               <div

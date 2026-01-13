@@ -21,7 +21,7 @@ export async function createPresignedUploadUrl(
   await validateUserSession(sessionId);
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
 
-  const key = `${uuidv4()}-${data.filename}`;
+  const key = `${uuidv4()}#${data.filename}`;
 
   const command = new PutObjectCommand({
     Bucket: bucketName,

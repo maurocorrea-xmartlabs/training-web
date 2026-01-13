@@ -19,6 +19,9 @@ import {
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp"];
+
 export async function getPresignedUploadUrlAction(input: uploadRequest) {
   const parsed = uploadRequestSchema.safeParse(input);
   const cookieStore = await cookies();
@@ -26,6 +29,14 @@ export async function getPresignedUploadUrlAction(input: uploadRequest) {
 
   if (!parsed.success) {
     throw new Error("Invalid upload request");
+  }
+
+  if (parsed.data.size > MAX_FILE_SIZE) {
+    throw new Error("File size must be lower than 5 MB");
+  }
+
+  if (!ALLOWED_TYPES.includes(parsed.data.contentType)) {
+    throw new Error("File must be an image");
   }
 
   return await createPresignedUploadUrl(parsed.data, sessionId);

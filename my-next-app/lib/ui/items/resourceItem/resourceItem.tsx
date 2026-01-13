@@ -95,7 +95,7 @@ export function ResourceItem({ resource }: Props) {
       </div>
 
       <p className="text-xs text-gray-500 truncate">
-        {resource.key.split("-").slice(1).join("-")}
+        {resource.key.split("#")[1]}
       </p>
     </div>
   );
