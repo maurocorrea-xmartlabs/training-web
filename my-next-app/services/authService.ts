@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
 import { sendResetPasswordEmail } from "./utils/mail/templates/resetPasswordEmail";
-import { env } from "@/config/env";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 const RESET_TOKEN_EXPIRATION_SECONDS = 1000 * 60 * 60;
