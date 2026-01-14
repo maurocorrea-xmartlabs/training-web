@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import styles from "../itemAnimations.module.css";
 import { deleteTaskAction } from "@/app/(app)/todo/actions";
 
@@ -11,7 +10,6 @@ type Props = {
 };
 
 export function TaskItemClientWrapper({ taskId, children }: Props) {
-  const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
   function handleDelete() {
@@ -22,10 +20,6 @@ export function TaskItemClientWrapper({ taskId, children }: Props) {
         await deleteTaskAction(taskId);
       } catch (error) {
         setIsDeleting(false);
-
-        if (error instanceof Error && error.message === "UNAUTHORIZED") {
-          router.push("/logIn");
-        }
       }
     }, 150);
   }

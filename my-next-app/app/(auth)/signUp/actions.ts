@@ -6,7 +6,7 @@ import { UserSignUp } from "@/types/user";
 // Basic rate-limiting logic for Next using attempts and cooldown
 // Probably, there are better ways to do this
 const signUpAttempts = new Map<string, number>();
-const COOLDOWN_MS = 20_000;
+const COOLDOWN_MS = 5_000;
 
 export async function signUpAction(data: UserSignUp) {
   const key = data.email;

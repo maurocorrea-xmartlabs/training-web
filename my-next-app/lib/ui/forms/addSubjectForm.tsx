@@ -7,14 +7,12 @@ import { PopupForm } from "./popupForm";
 import styles from "./formAnimations.module.css";
 import { createSubjectAction } from "@/app/(app)/todo/actions";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
-import { useRouter } from "next/navigation";
 
 export function AddSubjectForm() {
   const { showPopup, open, close, error, setError } = usePopupForm();
   const [subjectName, setSubjectName] = useState("");
   const [subjectCost, setSubjectCost] = useState(0);
   const [isHidingButton, setIsHidingButton] = useState(false);
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,13 +31,7 @@ export function AddSubjectForm() {
       () => createSubjectAction(parsed.data),
       setError
     );
-
-    if (!success) {
-      if (error === "UNAUTHORIZED") {
-        router.push("/logIn");
-      }
-      return;
-    }
+    if (!success) return;
 
     setSubjectName("");
     setSubjectCost(0);
@@ -81,20 +73,33 @@ export function AddSubjectForm() {
     >
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <input
-        value={subjectName}
-        onChange={(e) => setSubjectName(e.target.value)}
-        className="w-full rounded-md border px-3 py-2"
-        placeholder="Subject name"
-      />
+      <div className="space-y-1">
+        <label className="text-sm font-medium">Subject name</label>
+        <input
+          type="text"
+          value={subjectName}
+          onChange={(e) => setSubjectName(e.target.value)}
+          placeholder="Subject name"
+          className="
+          w-full rounded-md border px-3 py-2
+          focus:outline-none focus:ring-2 focus:ring-black
+        "
+        />
+      </div>
 
-      <input
-        type="number"
-        value={subjectCost}
-        onChange={(e) => setSubjectCost(Number(e.target.value))}
-        className="w-full rounded-md border px-3 py-2"
-        placeholder="Monthly cost"
-      />
+      <div className="space-y-1">
+        <label className="text-sm font-medium">Monthly cost</label>
+        <input
+          type="number"
+          value={subjectCost}
+          onChange={(e) => setSubjectCost(Number(e.target.value))}
+          placeholder="Monthly cost"
+          className="
+          w-full rounded-md border px-3 py-2
+          focus:outline-none focus:ring-2 focus:ring-black
+        "
+        />
+      </div>
     </PopupForm>
   );
 }

@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { Task } from "../../../types/task";
+import styles from "../listsAnimations.module.css";
 
 type TaskItemProps = {
   task: Task;
@@ -6,15 +8,24 @@ type TaskItemProps = {
 };
 
 export function TaskItem({ task, onDelete }: TaskItemProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  function handleDelete() {
+    setIsDeleting(true);
+    setTimeout(() => {
+      onDelete(task.id);
+    }, 150);
+  }
+
   return (
     <div
-      className="
+      className={`
         flex items-start justify-between
         rounded-md
         border border-gray-200
         bg-white
-        px-4 py-3
-      "
+        px-4 py-3 ${isDeleting ? styles.animateItemOut : ""}
+      `}
     >
       <div>
         <p className="font-medium">{task.name}</p>
@@ -23,7 +34,7 @@ export function TaskItem({ task, onDelete }: TaskItemProps) {
 
       <button
         type="button"
-        onClick={() => onDelete(task.id)}
+        onClick={() => handleDelete()}
         className="
           text-sm text-red-600
           border border-red-200
