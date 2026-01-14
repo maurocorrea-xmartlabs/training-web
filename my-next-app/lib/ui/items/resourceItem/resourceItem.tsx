@@ -9,6 +9,7 @@ import {
 } from "@/app/(app)/resources/action";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { showToast } from "nextjs-toast-notify";
 
 type Props = {
   resource: ResourceMetadata;
@@ -47,10 +48,19 @@ export function ResourceItem({ resource }: Props) {
 
       router.refresh();
     } catch (error) {
-      //these alerts should be changed to a Toast or a more user-friendly UI component in a future PR
-      error instanceof Error
-        ? alert(error.message)
-        : alert("Error deleting resource, please try again");
+      showToast.error(
+        error instanceof Error
+          ? error.message
+          : "Unexpected error happened when deleting the resource, please try again",
+        {
+          duration: 5000,
+          progress: true,
+          position: "bottom-right",
+          transition: "popUp",
+          icon: "",
+          sound: true,
+        }
+      );
       setIsDeleting(false);
     }
   }

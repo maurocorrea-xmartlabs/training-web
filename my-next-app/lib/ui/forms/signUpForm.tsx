@@ -4,6 +4,7 @@ import { signUpAction } from "@/app/(auth)/signUp/actions";
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
 import { UserSignUpFormSchema } from "@/types/user";
 import { useRouter } from "next/navigation";
+import { showToast } from "nextjs-toast-notify";
 import { useState } from "react";
 
 export function SignUpForm() {
@@ -53,6 +54,16 @@ export function SignUpForm() {
     setName("");
     setEmail("");
     setPassword("");
+
+    showToast.success("Account successfully created!", {
+      duration: 4000,
+      progress: true,
+      position: "bottom-right",
+      transition: "popUp",
+      icon: "",
+      sound: true,
+    });
+
     router.push("/logIn");
   }
 
