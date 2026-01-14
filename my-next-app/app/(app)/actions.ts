@@ -1,7 +1,7 @@
 "use server";
 
-import { logOut } from "@/services/authService";
 import { getSessionId } from "@/lib/auth/getSessionId";
+import { createEmailVerificationRequest, logOut } from "@/services/authService";
 
 export async function logOutAction() {
   const sessionId = await getSessionId();
@@ -11,4 +11,8 @@ export async function logOutAction() {
   }
 
   cookieStore.delete("session");
+}
+
+export async function requestEmailVerificationAction(email: string) {
+  await createEmailVerificationRequest(email);
 }

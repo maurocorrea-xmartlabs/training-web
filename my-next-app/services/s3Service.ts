@@ -15,13 +15,17 @@ export async function createPresignedUploadUrl(
   data: UploadRequest,
   sessionId?: string,
 ) {
-  await validateUserSession(sessionId);
-  const bucketName = env.AWS_S3_BUCKET_NAME;
+  const session = await validateUserSession(sessionId);
+  if (!session.user.isVerified) {
+    throw new Error(
+      "You must verify your email before uploading a file, verify it before trying again",
+    );
+  }
 
   const key = `${uuidv4()}#${data.filename}`;
 
   const command = new PutObjectCommand({
-    Bucket: bucketName,
+    Bucket: env.AWS_S3_BUCKET_NAME,
     Key: key,
     ContentType: data.contentType,
     ContentLength: data.size,
@@ -38,10 +42,8 @@ export async function createPresignedUploadUrl(
 }
 
 export async function createPresignedDownloadUrl(data: DownloadRequest) {
-  const bucketName = env.AWS_S3_BUCKET_NAME;
-
   const command = new GetObjectCommand({
-    Bucket: bucketName,
+    Bucket: env.AWS_S3_BUCKET_NAME,
     Key: data.key,
   });
 

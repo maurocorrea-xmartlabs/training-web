@@ -180,7 +180,7 @@ export function SimpleDropzone({ subjects }: Props) {
           <li key={file.name} className="text-sm">
             <div className="flex justify-between">
               <span className="truncate">{file.name}</span>
-              <span>
+              <span className={error ? "text-red-600" : ""}>
                 {error ? `✗ ${error}` : uploading ? `${progress}%` : "✔"}
               </span>
             </div>

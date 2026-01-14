@@ -3,8 +3,9 @@ import { getSessionById } from "@/services/authService";
 
 export async function getSession() {
   const sessionId = (await cookies()).get("session")?.value;
+  if (!sessionId) return null;
 
-  const session = await getSessionById(sessionId!);
+  const session = await getSessionById(sessionId);
 
   if (!session) return null;
   if (session.expiresAt < new Date()) return null;
