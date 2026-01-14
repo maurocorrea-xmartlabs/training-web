@@ -8,7 +8,7 @@ export default async function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50">
       <main className="w-full max-w-3xl px-16 py-32 bg-white border border-zinc-200 rounded-xl">
-        <div className="space-y-8">
+        <div>
           <h1 className="text-4xl font-semibold tracking-tight">Uni-Do</h1>
 
           <p className="text-lg text-zinc-600 leading-relaxed">

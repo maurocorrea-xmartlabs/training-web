@@ -1,6 +1,6 @@
 "use server";
 
-import { logOut } from "@/services/authService";
+import { createEmailVerificationRequest, logOut } from "@/services/authService";
 import { cookies } from "next/headers";
 
 export async function logOutAction() {
@@ -12,4 +12,8 @@ export async function logOutAction() {
   }
 
   cookieStore.delete("session");
+}
+
+export async function requestEmailVerificationAction(email: string) {
+  await createEmailVerificationRequest(email);
 }

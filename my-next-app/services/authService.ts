@@ -6,6 +6,7 @@ import crypto from "crypto";
 import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
 import { sendResetPasswordEmail } from "./utils/mail/templates/resetPasswordEmail";
 import { sendLogInEmail } from "./utils/mail/templates/logInEmail";
+import { sendEmailVerificationEmail } from "./utils/mail/templates/emailVerificationEmail";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 const RESET_TOKEN_EXPIRATION_SECONDS = 1000 * 60 * 60;
@@ -103,19 +104,17 @@ export async function forgotPassword(email: string) {
 }
 
 export async function resetPassword(token: string, newPassword: string) {
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findUnique({
     where: {
       passwordResetToken: token,
     },
   });
 
-  if (!user) {
-    throw new Error(
-      "This password reset link is invalid or has expired. Please request a new one."
-    );
-  }
-
-  if (!user.TokenExpirationDate || new Date() > user.TokenExpirationDate) {
+  if (
+    !user ||
+    !user.TokenExpirationDate ||
+    new Date() > user.TokenExpirationDate
+  ) {
     throw new Error(
       "This password reset link is invalid or has expired. Please request a new one."
     );
@@ -129,6 +128,57 @@ export async function resetPassword(token: string, newPassword: string) {
       password: hashedPassword,
       passwordResetToken: null,
       TokenExpirationDate: null,
+    },
+  });
+}
+
+export async function createEmailVerificationRequest(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    return;
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const expirationDate = new Date(Date.now() + RESET_TOKEN_EXPIRATION_SECONDS);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      emailVerificationToken: token,
+      verificationTokenExpirationDate: expirationDate,
+    },
+  });
+
+  sendEmailVerificationEmail(user.email, token);
+}
+
+export async function verifyEmail(token: string) {
+  const user = await prisma.user.findUnique({
+    where: {
+      emailVerificationToken: token,
+    },
+  });
+
+  if (
+    !user ||
+    !user.verificationTokenExpirationDate ||
+    new Date() > user.verificationTokenExpirationDate ||
+    user.isVerified
+  ) {
+    throw new Error(
+      "This email validation link is invalid or has expired. Please request a new one."
+    );
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      isVerified: true,
+      emailVerificationToken: null,
+      verificationTokenExpirationDate: null,
     },
   });
 }
@@ -153,9 +203,7 @@ export async function validateUserSession(sessionId?: string) {
     throw new Error("UNAUTHORIZED");
   }
 
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-  });
+  const session = await getSessionById(sessionId);
 
   if (!session || new Date() > session.expiresAt) {
     throw new Error("UNAUTHORIZED");

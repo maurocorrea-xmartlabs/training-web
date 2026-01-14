@@ -12,13 +12,17 @@ model User{
   name String
   email String @unique
   password String
+  isVerified Boolean @default(false)
 
   // I comment this because subjects are global right now, so this relation is not needed
   //subjects Subject[]
   sessions Session[]
 
-  passwordResetToken String?
+  passwordResetToken String? @unique
   TokenExpirationDate DateTime?
+
+  emailVerificationToken String? @unique
+  verificationTokenExpirationDate DateTime?
 }
 
 model Session {

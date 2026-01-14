@@ -18,7 +18,13 @@ export async function createPresignedUploadUrl(
   data: uploadRequest,
   sessionId?: string
 ) {
-  await validateUserSession(sessionId);
+  const session = await validateUserSession(sessionId);
+  if (!session.user.isVerified) {
+    throw new Error(
+      "You must verify your email before uploading a file, verify it before trying again"
+    );
+  }
+
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
 
   const key = `${uuidv4()}#${data.filename}`;
@@ -44,7 +50,12 @@ export async function createPresignedDeleteUrl(
   data: deleteRequest,
   sessionId?: string
 ) {
-  await validateUserSession(sessionId);
+  const session = await validateUserSession(sessionId);
+  if (!session.user.isVerified) {
+    throw new Error(
+      "You must verify your email before deleting a file, verify it before trying again"
+    );
+  }
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
 
   const key = data.key;
