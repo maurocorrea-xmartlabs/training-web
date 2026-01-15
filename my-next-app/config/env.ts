@@ -12,13 +12,13 @@ const envSchema = z.object({
   AWS_S3_ACCESS_KEY_ID: z.string(),
   AWS_S3_SECRET_ACCESS_KEY: z.string(),
   AWS_S3_REGION: z.string(),
-  NODE_ENV: z.enum(["development", "test", "production"]),
+  NODE_ENV: z.enum(["development", "test", "production"]).default("production"),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
 
 if (!parsedEnv.success) {
-  throw new Error("Invalid environment variables");
+  throw new Error(JSON.stringify(z.treeifyError(parsedEnv.error), null, 2));
 }
 
 export const env = parsedEnv.data;
