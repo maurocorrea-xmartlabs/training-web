@@ -1,11 +1,11 @@
-import { env } from "@/config/env";
+import { env, getAppUrl } from "@/config/env";
 import { transporter } from "../mailer";
 
 export async function sendEmailVerificationEmail(
   userEmail: string,
   token: string
 ) {
-  const resetUrl = `${env.NEXT_PUBLIC_APP_URL}/emailverification/${token}`;
+  const resetUrl = `${getAppUrl()}/emailverification/${token}`;
 
   await transporter.sendMail({
     from: env.MAIL_FROM,
