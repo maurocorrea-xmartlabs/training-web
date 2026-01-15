@@ -2,7 +2,6 @@
 
 import { withErrorHandling } from "@/services/utils/withErrorHandling";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { forgotPasswordAction } from "@/app/(auth)/forgotpassword/actions";
 import { ForgotPasswordFormSchema } from "@/types/forgotPassword";
 import Image from "next/image";
@@ -11,7 +10,6 @@ export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
