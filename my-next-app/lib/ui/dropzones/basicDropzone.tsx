@@ -7,6 +7,7 @@ import {
   storeResourceMetadataAction,
 } from "@/app/(app)/resources/action";
 import { Subject } from "@/generated/prisma/browser";
+import { uploadRequestSchema } from "@/types/uploadRequest";
 
 type UploadingFile = {
   file: File;
@@ -31,11 +32,21 @@ export function SimpleDropzone({ subjects }: Props) {
     );
 
     try {
-      const { presignedUrl, key } = await getPresignedUploadUrlAction({
+      const parsed = uploadRequestSchema.safeParse({
         filename: file.name,
         contentType: file.type,
         size: file.size,
       });
+
+      if (!parsed.success) {
+        throw new Error(
+          parsed.error.issues[0]?.message ?? "Invalid upload request"
+        );
+      }
+
+      const { presignedUrl, key } = await getPresignedUploadUrlAction(
+        parsed.data
+      );
 
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();

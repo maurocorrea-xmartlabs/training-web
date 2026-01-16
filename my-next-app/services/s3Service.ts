@@ -7,15 +7,15 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client } from "@/lib/s3/s3Client";
 import { v4 as uuidv4 } from "uuid";
 import {
-  uploadRequest,
-  deleteRequest,
-  downloadRequest,
+  UploadRequest,
+  DeleteRequest,
+  DownloadRequest,
 } from "@/types/uploadRequest";
 import { prisma } from "../prisma/prisma";
 import { validateUserSession } from "./authService";
 
 export async function createPresignedUploadUrl(
-  data: uploadRequest,
+  data: UploadRequest,
   sessionId?: string
 ) {
   const session = await validateUserSession(sessionId);
@@ -47,7 +47,7 @@ export async function createPresignedUploadUrl(
 }
 
 export async function createPresignedDeleteUrl(
-  data: deleteRequest,
+  data: DeleteRequest,
   sessionId?: string
 ) {
   const session = await validateUserSession(sessionId);
@@ -75,7 +75,7 @@ export async function createPresignedDeleteUrl(
   };
 }
 
-export async function createPresignedDownloadUrl(data: downloadRequest) {
+export async function createPresignedDownloadUrl(data: DownloadRequest) {
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
 
   const command = new GetObjectCommand({

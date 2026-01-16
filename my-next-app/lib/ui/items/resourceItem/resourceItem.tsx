@@ -10,6 +10,10 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { showToast } from "nextjs-toast-notify";
+import {
+  deleteRequestSchema,
+  downloadRequestSchema,
+} from "@/types/uploadRequest";
 
 type Props = {
   resource: ResourceMetadata;
@@ -20,14 +24,30 @@ export function ResourceItem({ resource }: Props) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadImage() {
-      const presignedUrl = await getImagePresignedUrlAction({
-        key: resource.key,
-      });
+      try {
+        const parsed = downloadRequestSchema.safeParse(resource.key);
 
-      setImageUrl(presignedUrl);
+        if (!parsed.success) {
+          throw new Error("Invalid download request");
+        }
+
+        const presignedUrl = await getImagePresignedUrlAction(parsed.data);
+        setImageUrl(presignedUrl);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to load image";
+
+        setImageError(message);
+
+        showToast.error(message, {
+          duration: 5000,
+          position: "bottom-right",
+        });
+      }
     }
 
     loadImage();
@@ -39,9 +59,13 @@ export function ResourceItem({ resource }: Props) {
     setIsDeleting(true);
 
     try {
-      const { presignedUrl } = await getPresignedDeleteUrlAction({
-        key: resource.key,
-      });
+      const parsed = deleteRequestSchema.safeParse({ key: resource.key });
+
+      if (!parsed.success) {
+        throw new Error("Invalid delete request");
+      }
+
+      const { presignedUrl } = await getPresignedDeleteUrlAction(parsed.data);
 
       await fetch(presignedUrl, { method: "DELETE" });
       await deleteResourceMetadataAction(resource.key);
@@ -89,9 +113,13 @@ export function ResourceItem({ resource }: Props) {
 
         <div
           className="rounded-md overflow-hidden bg-gray-100 cursor-pointer"
-          onClick={() => imageUrl && setIsOpen(true)}
+          onClick={() => imageUrl && !imageError && setIsOpen(true)}
         >
-          {imageUrl ? (
+          {imageError ? (
+            <div className="h-40 flex items-center justify-center text-xs text-gray-400">
+              Image unavailable
+            </div>
+          ) : imageUrl ? (
             <Image
               src={imageUrl}
               alt="Resource"
@@ -112,7 +140,7 @@ export function ResourceItem({ resource }: Props) {
         </p>
       </div>
 
-      {isOpen && imageUrl && (
+      {isOpen && imageUrl && !imageError && (
         <div
           className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
           onClick={() => setIsOpen(false)}

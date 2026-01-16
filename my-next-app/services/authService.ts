@@ -7,11 +7,12 @@ import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
 import { sendResetPasswordEmail } from "./utils/mail/templates/resetPasswordEmail";
 import { sendLogInEmail } from "./utils/mail/templates/logInEmail";
 import { sendEmailVerificationEmail } from "./utils/mail/templates/emailVerificationEmail";
+import { ActionResult } from "@/types/actionResult";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 const RESET_TOKEN_EXPIRATION_SECONDS = 1000 * 60 * 60;
 
-export async function signUp(user: UserSignUp) {
+export async function signUp(user: UserSignUp): Promise<ActionResult> {
   try {
     const hashedPassword = await bcrypt.hash(user.password, 10);
 
@@ -23,49 +24,47 @@ export async function signUp(user: UserSignUp) {
       },
     });
 
-    sendSignUpEmail(user.email);
+    await sendSignUpEmail(user.email);
+
+    return { ok: true, data: null };
   } catch (error) {
     if (
       error instanceof PrismaClientKnownRequestError &&
-      error.code == "P2002"
+      error.code === "P2002"
     ) {
-      throw new Error("Email already in use");
+      return {
+        ok: false,
+        error: "Email already in use",
+      };
     }
 
-    throw new Error("Error signing up, please try again");
+    return {
+      ok: false,
+      error: "Error signing up, please try again",
+    };
   }
 }
 
-export async function logIn(data: UserLogIn) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: data.email },
-    });
+export async function logIn(data: UserLogIn): Promise<ActionResult<string>> {
+  const user = await prisma.user.findUnique({
+    where: { email: data.email },
+  });
 
-    if (!user) {
-      throw new Error("Invalid email or password");
-    }
-
-    const isValidPassword = await bcrypt.compare(data.password, user.password);
-
-    if (!isValidPassword) {
-      throw new Error("Invalid email or password");
-    }
-
-    const sessionId = await createUserSession(user.id);
-
-    sendLogInEmail(data.email);
-
-    return sessionId;
-  } catch (error) {
-    console.error("Error logging in:", error);
-
-    if (error instanceof Error) {
-      throw error;
-    }
-
-    throw new Error("Error logging in, please try again");
+  if (!user) {
+    return { ok: false, error: "Invalid email or password" } as const;
   }
+
+  const isValidPassword = await bcrypt.compare(data.password, user.password);
+
+  if (!isValidPassword) {
+    return { ok: false, error: "Invalid email or password" } as const;
+  }
+
+  const sessionId = await createUserSession(user.id);
+
+  await sendLogInEmail(data.email);
+
+  return { ok: true, data: sessionId } as const;
 }
 
 export async function logOut(sessionId: string) {
@@ -79,14 +78,14 @@ export async function logOut(sessionId: string) {
   }
 }
 
-export async function forgotPassword(email: string) {
+export async function forgotPassword(email: string): Promise<ActionResult> {
   const user = await prisma.user.findUnique({
     where: { email },
   });
 
   // We should not reveal if the user exists or not
   if (!user) {
-    return;
+    return { ok: true, data: null } as const;
   }
 
   const token = crypto.randomBytes(32).toString("hex");
@@ -100,10 +99,15 @@ export async function forgotPassword(email: string) {
     },
   });
 
-  sendResetPasswordEmail(user.email, token);
+  await sendResetPasswordEmail(user.email, token);
+
+  return { ok: true, data: null } as const;
 }
 
-export async function resetPassword(token: string, newPassword: string) {
+export async function resetPassword(
+  token: string,
+  newPassword: string
+): Promise<ActionResult> {
   const user = await prisma.user.findUnique({
     where: {
       passwordResetToken: token,
@@ -115,9 +119,11 @@ export async function resetPassword(token: string, newPassword: string) {
     !user.TokenExpirationDate ||
     new Date() > user.TokenExpirationDate
   ) {
-    throw new Error(
-      "This password reset link is invalid or has expired. Please request a new one."
-    );
+    return {
+      ok: false,
+      error:
+        "This password reset link is invalid or has expired, please request a new one.",
+    } as const;
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -130,6 +136,8 @@ export async function resetPassword(token: string, newPassword: string) {
       TokenExpirationDate: null,
     },
   });
+
+  return { ok: true, data: null } as const;
 }
 
 export async function createEmailVerificationRequest(email: string) {
@@ -152,10 +160,10 @@ export async function createEmailVerificationRequest(email: string) {
     },
   });
 
-  sendEmailVerificationEmail(user.email, token);
+  await sendEmailVerificationEmail(user.email, token);
 }
 
-export async function verifyEmail(token: string) {
+export async function verifyEmail(token: string): Promise<ActionResult> {
   const user = await prisma.user.findUnique({
     where: {
       emailVerificationToken: token,
@@ -168,9 +176,11 @@ export async function verifyEmail(token: string) {
     new Date() > user.verificationTokenExpirationDate ||
     user.isVerified
   ) {
-    throw new Error(
-      "This email validation link is invalid or has expired. Please request a new one."
-    );
+    return {
+      ok: false,
+      error:
+        "This email validation link is invalid or has expired. Please request a new one.",
+    } as const;
   }
 
   await prisma.user.update({
@@ -181,6 +191,8 @@ export async function verifyEmail(token: string) {
       verificationTokenExpirationDate: null,
     },
   });
+
+  return { ok: true, data: null } as const;
 }
 
 async function createUserSession(userId: number) {

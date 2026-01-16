@@ -1,7 +1,6 @@
 "use client";
 
 import { logInAction } from "@/app/(auth)/logIn/actions";
-import { withErrorHandling } from "@/services/utils/withErrorHandling";
 import { UserLogInFormSchema } from "@/types/user";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -26,11 +25,12 @@ export function LogInForm() {
       return;
     }
 
-    const success = await withErrorHandling(
-      () => logInAction(parsed.data),
-      setError
-    );
-    if (!success) return;
+    const result = await logInAction(parsed.data);
+
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
 
     setEmail("");
     setPassword("");

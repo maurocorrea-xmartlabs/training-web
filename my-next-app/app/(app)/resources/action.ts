@@ -1,12 +1,9 @@
 "use server";
 
 import {
-  deleteRequest,
-  deleteRequestSchema,
-  downloadRequest,
-  downloadRequestSchema,
-  uploadRequest,
-  uploadRequestSchema,
+  DeleteRequest,
+  DownloadRequest,
+  UploadRequest,
 } from "@/types/uploadRequest";
 import {
   createPresignedDeleteUrl,
@@ -19,48 +16,22 @@ import {
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp"];
-
-export async function getPresignedUploadUrlAction(input: uploadRequest) {
-  const parsed = uploadRequestSchema.safeParse(input);
+export async function getPresignedUploadUrlAction(input: UploadRequest) {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get("session")?.value;
 
-  if (!parsed.success) {
-    throw new Error("Invalid upload request");
-  }
-
-  if (parsed.data.size > MAX_FILE_SIZE) {
-    throw new Error("File size must be lower than 5 MB");
-  }
-
-  if (!ALLOWED_TYPES.includes(parsed.data.contentType)) {
-    throw new Error("File must be an image");
-  }
-
-  return await createPresignedUploadUrl(parsed.data, sessionId);
+  return await createPresignedUploadUrl(input, sessionId);
 }
 
-export async function getImagePresignedUrlAction(input: downloadRequest) {
-  const parsed = downloadRequestSchema.safeParse(input);
-
-  if (!parsed.success) {
-    throw new Error("Invalid download request");
-  }
-  return createPresignedDownloadUrl(parsed.data);
+export async function getImagePresignedUrlAction(input: DownloadRequest) {
+  return createPresignedDownloadUrl(input);
 }
 
-export async function getPresignedDeleteUrlAction(input: deleteRequest) {
-  const parsed = deleteRequestSchema.safeParse(input);
+export async function getPresignedDeleteUrlAction(input: DeleteRequest) {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get("session")?.value;
 
-  if (!parsed.success) {
-    throw new Error("Invalid delete request");
-  }
-
-  return await createPresignedDeleteUrl(parsed.data, sessionId);
+  return await createPresignedDeleteUrl(input, sessionId);
 }
 
 export async function storeResourceMetadataAction(
