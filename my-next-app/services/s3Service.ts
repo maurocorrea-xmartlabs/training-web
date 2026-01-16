@@ -9,22 +9,26 @@ import { v4 as uuidv4 } from "uuid";
 import { UploadRequest, DownloadRequest } from "@/types/uploadRequest";
 import { prisma } from "../prisma/prisma";
 import { validateUserSession } from "./authService";
+import { ActionResult } from "@/types/actionResult";
+import { ResourceMetadata } from "@/generated/prisma/client";
 import { env } from "@/config/env";
 
 export async function createPresignedUploadUrl(
   data: UploadRequest,
   sessionId?: string,
-) {
-  const session = await validateUserSession(sessionId);
+): Promise<ActionResult<{ presignedUrl: string; key: string }>> {
+  const sessionResult = await validateUserSession(sessionId);
 
-  if (!session.ok) {
-    return session;
+  if (!sessionResult.ok) {
+    return sessionResult;
   }
 
-  if (!session.data.user.isVerified) {
-    throw new Error(
-      "You must verify your email before uploading a file, verify it before trying again",
-    );
+  if (!sessionResult.data.user.isVerified) {
+    return {
+      ok: false,
+      error:
+        "You must verify your email before uploading a file, verify it before trying again",
+    };
   }
 
   const key = `${uuidv4()}#${data.filename}`;
@@ -40,58 +44,103 @@ export async function createPresignedUploadUrl(
     expiresIn: 3600,
   });
 
-  return {
-    presignedUrl,
-    key,
-  };
+  return { ok: true, data: { presignedUrl, key } };
 }
 
-export async function createPresignedDownloadUrl(data: DownloadRequest) {
+export async function createPresignedDownloadUrl(
+  data: DownloadRequest,
+  sessionId?: string,
+): Promise<ActionResult<{ presignedUrl: string }>> {
+  const sessionResult = await validateUserSession(sessionId);
+
+  if (!sessionResult.ok) {
+    return sessionResult;
+  }
+
   const command = new GetObjectCommand({
     Bucket: env.AWS_S3_BUCKET_NAME,
     Key: data.key,
   });
 
-  return await getSignedUrl(s3Client, command, {
+  const presignedUrl = await getSignedUrl(s3Client, command, {
     expiresIn: 60 * 5,
   });
+
+  return {
+    ok: true,
+    data: { presignedUrl },
+  };
 }
 
 export async function storeResourceMetadata(
   key: string,
   subjectId: number,
   sessionId?: string,
-) {
-  await validateUserSession(sessionId);
-  return await prisma.resourceMetadata.create({
+): Promise<ActionResult<ResourceMetadata>> {
+  const sessionResult = await validateUserSession(sessionId);
+
+  if (!sessionResult.ok) {
+    return sessionResult;
+  }
+
+  const result = await prisma.resourceMetadata.create({
     data: {
-      key: key,
-      subjectId: subjectId,
+      key,
+      subjectId,
     },
   });
+
+  return { ok: true, data: result };
 }
 
-export async function deleteResource(key: string, sessionId?: string) {
-  await validateUserSession(sessionId);
+export async function deleteResource(
+  key: string,
+  sessionId?: string,
+): Promise<ActionResult<ResourceMetadata>> {
+  const sessionResult = await validateUserSession(sessionId);
 
-  await s3Client.send(
-    new DeleteObjectCommand({
-      Bucket: env.AWS_S3_BUCKET_NAME,
-      Key: key,
-    }),
-  );
+  if (!sessionResult.ok) {
+    return sessionResult;
+  }
 
-  return await prisma.resourceMetadata.delete({
-    where: {
-      key: key,
-    },
-  });
+  try {
+    await s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: env.AWS_S3_BUCKET_NAME,
+        Key: key,
+      }),
+    );
+
+    const result = await prisma.resourceMetadata.delete({
+      where: { key },
+    });
+
+    return { ok: true, data: result };
+  } catch (error) {
+    console.error("Error deleting resource:", error);
+    return {
+      ok: false,
+      error: "Error deleting resource, please try again",
+    };
+  }
 }
 
-export async function getResourcesBySubject(subjectId: number) {
-  return await prisma.resourceMetadata.findMany({
-    where: {
-      subjectId: subjectId,
-    },
-  });
+export async function getResourcesBySubject(
+  subjectId: number,
+): Promise<ActionResult<ResourceMetadata[]>> {
+  try {
+    const resources = await prisma.resourceMetadata.findMany({
+      where: {
+        subjectId,
+      },
+    });
+
+    return { ok: true, data: resources };
+  } catch (error) {
+    console.error("Error fetching resources by subject:", error);
+    return {
+      ok: false,
+      error: "Error loading resources, please try again",
+    };
+  }
 }

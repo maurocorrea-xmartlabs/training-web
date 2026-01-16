@@ -2,6 +2,7 @@ import { prisma } from "../prisma/prisma";
 import type { Project } from "@/generated/prisma/client";
 import type { NewProject } from "../types/project";
 import { validateUserSession } from "./authService";
+import { ActionResult } from "@/types/actionResult";
 
 export async function getProjectsBySubjectId(
   subjectId: number
@@ -24,32 +25,45 @@ export async function getProjectsBySubjectId(
 export async function postProject(
   project: NewProject,
   sessionId?: string
-): Promise<Project> {
-  await validateUserSession(sessionId);
+): Promise<ActionResult<Project>> {
+  const sessionResult = await validateUserSession(sessionId);
+  if (!sessionResult.ok) {
+    return sessionResult;
+  }
+
   try {
-    return await prisma.project.create({
+    const result = await prisma.project.create({
       data: {
         name: project.name,
         credits: project.credits,
         subjectId: project.subjectId,
       },
     });
+
+    return { ok: true, data: result };
   } catch (error) {
-    console.error("Error creating project:", error);
-    throw new Error("Error creating project, please try again");
+    return { ok: false, error: "Error creating project, please try again" };
   }
 }
 
-export async function deleteProject(projectId: number, sessionId?: string) {
-  await validateUserSession(sessionId);
+export async function deleteProject(
+  projectId: number,
+  sessionId?: string
+): Promise<ActionResult<Project>> {
+  const sessionResult = await validateUserSession(sessionId);
+  if (!sessionResult.ok) {
+    return sessionResult;
+  }
+
   try {
-    return await prisma.project.delete({
+    const project = await prisma.project.delete({
       where: {
         id: projectId,
       },
     });
+
+    return { ok: true, data: project };
   } catch (error) {
-    console.error("Delete error:", error);
-    throw new Error("Error deleting project, please try again");
+    return { ok: false, error: "Error deleting project, please try again" };
   }
 }

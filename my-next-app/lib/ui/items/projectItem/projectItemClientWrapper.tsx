@@ -16,9 +16,9 @@ export function ProjectItemClientWrapper({ projectId, children }: Props) {
     setIsDeleting(true);
 
     setTimeout(async () => {
-      try {
-        await deleteProjectAction(projectId);
-      } catch (error) {
+      const result = await deleteProjectAction(projectId);
+
+      if (!result.ok) {
         setIsDeleting(false);
       }
     }, 150);

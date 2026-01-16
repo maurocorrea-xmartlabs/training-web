@@ -6,7 +6,6 @@ import { PopupForm } from "./popupForm";
 import { ProjectFormSchema } from "../../../types/project";
 import { createProjectAction } from "@/app/(app)/todo/actions";
 import styles from "./formAnimations.module.css";
-import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 type AddProjectFormProps = {
   subjectId: number;
@@ -21,27 +20,21 @@ export function AddProjectForm({ subjectId }: AddProjectFormProps) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const result = ProjectFormSchema.safeParse({
+    const parsed = ProjectFormSchema.safeParse({
       name: projectName,
       credits: projectCredits,
+      subjectId: subjectId,
     });
 
-    if (!result.success) {
-      setError(result.error.issues[0].message);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message);
       return;
     }
 
-    const success = await withErrorHandling(
-      () =>
-        createProjectAction({
-          name: projectName,
-          credits: projectCredits,
-          subjectId,
-        }),
-      setError,
-    );
+    const result = await createProjectAction(parsed.data);
 
-    if (!success) {
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
 

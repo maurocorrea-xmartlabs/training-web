@@ -72,10 +72,19 @@ export async function logIn(data: UserLogIn): Promise<ActionResult<string>> {
   return { ok: true, data: sessionId } as const;
 }
 
-export async function logOut(sessionId: string) {
-  await prisma.session.deleteMany({
-    where: { id: sessionId },
-  });
+export async function logOut(sessionId: string): Promise<ActionResult> {
+  try {
+    await prisma.session.delete({
+      where: { id: sessionId },
+    });
+
+    return { ok: true, data: null } as const;
+  } catch {
+    return {
+      ok: false,
+      error: "Unexpected error when logging out",
+    } as const;
+  }
 }
 
 export async function forgotPassword(email: string): Promise<ActionResult> {
@@ -140,13 +149,15 @@ export async function resetPassword(
   return { ok: true, data: null } as const;
 }
 
-export async function createEmailVerificationRequest(email: string) {
+export async function createEmailVerificationRequest(
+  email: string
+): Promise<ActionResult> {
   const user = await prisma.user.findUnique({
     where: { email },
   });
 
-  if (!user) {
-    return;
+  if (!user || user.isVerified) {
+    return { ok: true, data: null } as const;
   }
 
   const token = crypto.randomBytes(32).toString("hex");
@@ -161,6 +172,8 @@ export async function createEmailVerificationRequest(email: string) {
   });
 
   await sendEmailVerificationEmail(user.email, token);
+
+  return { ok: true, data: null } as const;
 }
 
 export async function verifyEmail(token: string): Promise<ActionResult> {

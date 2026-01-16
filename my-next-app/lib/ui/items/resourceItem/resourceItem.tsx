@@ -9,7 +9,10 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { showToast } from "nextjs-toast-notify";
-import { downloadRequestSchema } from "@/types/uploadRequest";
+import {
+  deleteRequestSchema,
+  downloadRequestSchema,
+} from "@/types/uploadRequest";
 
 type Props = {
   resource: ResourceMetadata;
@@ -24,26 +27,26 @@ export function ResourceItem({ resource }: Props) {
 
   useEffect(() => {
     async function loadImage() {
-      try {
-        const parsed = downloadRequestSchema.safeParse(resource.key);
+      const parsed = downloadRequestSchema.safeParse({ key: resource.key });
 
-        if (!parsed.success) {
-          throw new Error("Invalid download request");
-        }
+      if (!parsed.success) {
+        setImageError("Invalid download request");
+        return;
+      }
 
-        const presignedUrl = await getImagePresignedUrlAction(parsed.data);
-        setImageUrl(presignedUrl);
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Failed to load image";
+      const result = await getImagePresignedUrlAction(parsed.data);
 
-        setImageError(message);
+      if (!result.ok) {
+        setImageError(result.error);
 
-        showToast.error(message, {
+        showToast.error(result.error, {
           duration: 5000,
           position: "bottom-right",
         });
+        return;
       }
+
+      setImageUrl(result.data.presignedUrl);
     }
 
     loadImage();
@@ -53,17 +56,34 @@ export function ResourceItem({ resource }: Props) {
     if (isDeleting) return;
     setIsDeleting(true);
 
+    const parsed = deleteRequestSchema.safeParse({ key: resource.key });
+
+    if (!parsed.success) {
+      showToast.error("Invalid delete request");
+      setIsDeleting(false);
+      return;
+    }
+
     try {
-      await deleteResourceAction({ key: resource.key });
+      const result = await deleteResourceAction(resource.key);
+
+      if (!result.ok) {
+        showToast.error(result.error, {
+          duration: 5000,
+          position: "bottom-right",
+        });
+        setIsDeleting(false);
+        return;
+      }
+
       router.refresh();
     } catch (error) {
       showToast.error(
         error instanceof Error
           ? error.message
-          : "Unexpected error happened when deleting the resource, please try again",
+          : "Unexpected error deleting resource",
         {
           duration: 5000,
-          progress: true,
           position: "bottom-right",
           transition: "popUp",
           icon: "",

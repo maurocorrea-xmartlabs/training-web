@@ -16,9 +16,9 @@ export function ExamItemClientWrapper({ examId, children }: Props) {
     setIsDeleting(true);
 
     setTimeout(async () => {
-      try {
-        await deleteExamAction(examId);
-      } catch (error) {
+      const result = await deleteExamAction(examId);
+
+      if (!result.ok) {
         setIsDeleting(false);
       }
     }, 150);

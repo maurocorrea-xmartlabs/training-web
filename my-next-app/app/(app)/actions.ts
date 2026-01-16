@@ -2,8 +2,12 @@
 
 import { getSessionId } from "@/lib/auth/getSessionId";
 import { createEmailVerificationRequest, logOut } from "@/services/authService";
+import { ActionResult } from "@/types/actionResult";
+import { z } from "zod";
 
-export async function logOutAction() {
+const EmailSchema = z.email();
+
+export async function logOutAction(): Promise<ActionResult> {
   const sessionId = await getSessionId();
 
   if (sessionId) {
@@ -11,8 +15,18 @@ export async function logOutAction() {
   }
 
   cookieStore.delete("session");
+
+  return { ok: true, data: null } as const;
 }
 
-export async function requestEmailVerificationAction(email: string) {
-  await createEmailVerificationRequest(email);
+export async function requestEmailVerificationAction(
+  rawEmail: unknown,
+): Promise<ActionResult> {
+  const parsed = EmailSchema.safeParse(rawEmail);
+
+  if (!parsed.success) {
+    return { ok: false, error: "Invalid email" };
+  }
+
+  return await createEmailVerificationRequest(parsed.data);
 }

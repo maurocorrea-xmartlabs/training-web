@@ -9,4 +9,5 @@ export type NewProject = {
 export const ProjectFormSchema = z.object({
   name: z.string().min(1, "Project must have a name"),
   credits: z.number().positive("Project must have credits"),
+  subjectId: z.number().positive("Project must have an associated subject"),
 });
