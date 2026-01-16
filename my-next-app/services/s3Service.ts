@@ -16,7 +16,12 @@ export async function createPresignedUploadUrl(
   sessionId?: string,
 ) {
   const session = await validateUserSession(sessionId);
-  if (!session.user.isVerified) {
+
+  if (!session.ok) {
+    return session;
+  }
+
+  if (!session.data.user.isVerified) {
     throw new Error(
       "You must verify your email before uploading a file, verify it before trying again",
     );
