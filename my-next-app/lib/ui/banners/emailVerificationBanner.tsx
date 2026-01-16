@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { requestEmailVerificationAction } from "@/app/(app)/actions";
-import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 type Props = {
   email: string;
@@ -13,12 +12,15 @@ export function EmailVerificationBanner({ email }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   async function handleSend() {
-    const success = await withErrorHandling(async () => {
-      await requestEmailVerificationAction(email);
-      setSent(true);
-    }, setError);
+    const result = await requestEmailVerificationAction(email);
 
-    return success;
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+
+    setError(null);
+    setSent(true);
   }
 
   return (

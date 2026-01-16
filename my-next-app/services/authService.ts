@@ -8,6 +8,11 @@ import { sendResetPasswordEmail } from "./utils/mail/templates/resetPasswordEmai
 import { sendLogInEmail } from "./utils/mail/templates/logInEmail";
 import { sendEmailVerificationEmail } from "./utils/mail/templates/emailVerificationEmail";
 import { ActionResult } from "@/types/actionResult";
+import { Prisma } from "@/generated/prisma/client";
+
+export type SessionWithUser = Prisma.SessionGetPayload<{
+  include: { user: true };
+}>;
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 const RESET_TOKEN_EXPIRATION_SECONDS = 1000 * 60 * 60;
@@ -67,14 +72,18 @@ export async function logIn(data: UserLogIn): Promise<ActionResult<string>> {
   return { ok: true, data: sessionId } as const;
 }
 
-export async function logOut(sessionId: string) {
+export async function logOut(sessionId: string): Promise<ActionResult> {
   try {
     await prisma.session.delete({
       where: { id: sessionId },
     });
-  } catch (error) {
-    console.error("Error logging out");
-    throw new Error("Error logging out, please try again");
+
+    return { ok: true, data: null } as const;
+  } catch {
+    return {
+      ok: false,
+      error: "Unexpected error when logging out",
+    } as const;
   }
 }
 
@@ -140,13 +149,15 @@ export async function resetPassword(
   return { ok: true, data: null } as const;
 }
 
-export async function createEmailVerificationRequest(email: string) {
+export async function createEmailVerificationRequest(
+  email: string
+): Promise<ActionResult> {
   const user = await prisma.user.findUnique({
     where: { email },
   });
 
-  if (!user) {
-    return;
+  if (!user || user.isVerified) {
+    return { ok: true, data: null } as const;
   }
 
   const token = crypto.randomBytes(32).toString("hex");
@@ -161,6 +172,8 @@ export async function createEmailVerificationRequest(email: string) {
   });
 
   await sendEmailVerificationEmail(user.email, token);
+
+  return { ok: true, data: null } as const;
 }
 
 export async function verifyEmail(token: string): Promise<ActionResult> {
@@ -210,18 +223,20 @@ async function createUserSession(userId: number) {
   return sessionId;
 }
 
-export async function validateUserSession(sessionId?: string) {
+export async function validateUserSession(
+  sessionId?: string
+): Promise<ActionResult<SessionWithUser>> {
   if (!sessionId) {
-    throw new Error("UNAUTHORIZED");
+    return { ok: false, error: "UNAUTHORIZED" };
   }
 
   const session = await getSessionById(sessionId);
 
   if (!session || new Date() > session.expiresAt) {
-    throw new Error("UNAUTHORIZED");
+    return { ok: false, error: "UNAUTHORIZED" };
   }
 
-  return session;
+  return { ok: true, data: session };
 }
 
 export async function getSessionById(sessionId: string) {

@@ -6,7 +6,6 @@ import { PopupForm } from "./popupForm";
 import { TaskFormSchema } from "../../../types/task";
 import styles from "./formAnimations.module.css";
 import { createTaskAction } from "@/app/(app)/todo/actions";
-import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 type AddTaskFormProps = {
   projectId: number;
@@ -21,27 +20,26 @@ export function AddTaskForm({ projectId }: AddTaskFormProps) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const result = TaskFormSchema.safeParse({
+    const parsed = TaskFormSchema.safeParse({
       name: taskName,
       description: taskDescription,
     });
 
-    if (!result.success) {
-      setError(result.error.issues[0].message);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message);
       return;
     }
 
-    const success = await withErrorHandling(
-      () =>
-        createTaskAction({
-          name: taskName,
-          description: taskDescription,
-          projectId,
-        }),
-      setError
-    );
+    const result = await createTaskAction({
+      name: taskName,
+      description: taskDescription,
+      projectId,
+    });
 
-    if (!success) return;
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
 
     setTaskName("");
     setTaskDescription("");

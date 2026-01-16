@@ -31,23 +31,48 @@ export function SimpleDropzone({ subjects }: Props) {
       prev.map((f) => (f.file === file ? { ...f, uploading: true } : f))
     );
 
-    try {
-      const parsed = uploadRequestSchema.safeParse({
-        filename: file.name,
-        contentType: file.type,
-        size: file.size,
-      });
+    const parsed = uploadRequestSchema.safeParse({
+      filename: file.name,
+      contentType: file.type,
+      size: file.size,
+    });
 
-      if (!parsed.success) {
-        throw new Error(
-          parsed.error.issues[0]?.message ?? "Invalid upload request"
-        );
-      }
-
-      const { presignedUrl, key } = await getPresignedUploadUrlAction(
-        parsed.data
+    if (!parsed.success) {
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.file === file
+            ? {
+                ...f,
+                uploading: false,
+                error:
+                  parsed.error.issues[0]?.message ?? "Invalid upload request",
+              }
+            : f
+        )
       );
+      return;
+    }
 
+    const presignedResult = await getPresignedUploadUrlAction(parsed.data);
+
+    if (!presignedResult.ok) {
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.file === file
+            ? {
+                ...f,
+                uploading: false,
+                error: presignedResult.error,
+              }
+            : f
+        )
+      );
+      return;
+    }
+
+    const { presignedUrl, key } = presignedResult.data;
+
+    try {
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
 
@@ -61,16 +86,33 @@ export function SimpleDropzone({ subjects }: Props) {
         };
 
         xhr.onload = () =>
-          xhr.status === 200 || xhr.status === 204 ? resolve() : reject();
+          xhr.status === 200 || xhr.status === 204
+            ? resolve()
+            : reject(new Error("Upload failed"));
 
-        xhr.onerror = reject;
+        xhr.onerror = () => reject(new Error("Network error during upload"));
 
         xhr.open("PUT", presignedUrl);
         xhr.setRequestHeader("Content-Type", file.type);
         xhr.send(file);
       });
 
-      await storeResourceMetadataAction(key, subjectId);
+      const metadataResult = await storeResourceMetadataAction(key, subjectId);
+
+      if (!metadataResult.ok) {
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.file === file
+              ? {
+                  ...f,
+                  uploading: false,
+                  error: metadataResult.error,
+                }
+              : f
+          )
+        );
+        return;
+      }
 
       setFiles((prev) =>
         prev.map((f) =>
@@ -78,31 +120,20 @@ export function SimpleDropzone({ subjects }: Props) {
         )
       );
     } catch (error) {
-      if (error instanceof Error) {
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.file === file
-              ? {
-                  ...f,
-                  uploading: false,
-                  error: error.message,
-                }
-              : f
-          )
-        );
-      } else {
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.file === file
-              ? {
-                  ...f,
-                  uploading: false,
-                  error: "Unexpected error happened, please try again",
-                }
-              : f
-          )
-        );
-      }
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.file === file
+            ? {
+                ...f,
+                uploading: false,
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : "Unexpected error occurred",
+              }
+            : f
+        )
+      );
     }
   }
 
