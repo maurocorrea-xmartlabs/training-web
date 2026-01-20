@@ -18,6 +18,9 @@ model User{
   //subjects Subject[]
   sessions Session[]
 
+  paymentIntents PaymentIntent[]
+  subscriptionExpirationDate DateTime?
+
   passwordResetToken String? @unique
   TokenExpirationDate DateTime?
 
@@ -89,3 +92,9 @@ model ResourceMetadata{
   subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 }
 
+model PaymentIntent{
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status String 
+}

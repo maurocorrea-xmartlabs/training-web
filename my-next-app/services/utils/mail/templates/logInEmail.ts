@@ -9,7 +9,7 @@ export async function sendLogInEmail(userEmail: string) {
     text: "We detected a new access to our website",
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
-            <h2 style="margin-bottom: 8px;">New login to your Uni-Do account 🔐</h2>
+            <h2 style="margin-bottom: 8px;">New login to your Uni-Do account</h2>
 
             <p>
               We detected a new sign-in to your account.
