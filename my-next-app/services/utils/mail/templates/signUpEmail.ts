@@ -2,12 +2,13 @@ import { env } from "@/config/env";
 import { transporter } from "../mailer";
 
 export async function sendSignUpEmail(userEmail: string) {
-  await transporter.sendMail({
-    from: env.MAIL_FROM,
-    to: userEmail,
-    subject: "Welcome to Uni-Do 👋",
-    text: "Your Uni-Do account was created successfully.",
-    html: `
+  try {
+    await transporter.sendMail({
+      from: env.MAIL_FROM,
+      to: userEmail,
+      subject: "Welcome to Uni-Do 👋",
+      text: "Your Uni-Do account was created successfully.",
+      html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
         <h2 style="margin-bottom: 8px;">Welcome to Uni-Do</h2>
 
@@ -29,5 +30,8 @@ export async function sendSignUpEmail(userEmail: string) {
         </p>
       </div>
     `,
-  });
+    });
+  } catch (error) {
+    console.error("[sendSignUpEmail] Error sending email:", error);
+  }
 }

@@ -1,4 +1,5 @@
 import { updateSubscription } from "@/services/subscriptionService";
+import { sendSubscriptionFailedEmail } from "@/services/utils/mail/templates/subscriptionFailedEmail";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -26,6 +27,13 @@ export async function POST(req: NextRequest) {
     const userId = Number(paymentIntent.metadata.userId);
 
     await updateSubscription(userId);
+  }
+
+  if (event.type === "payment_intent.payment_failed") {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent;
+
+    //we use the email directly here because we only need to send a mail
+    await sendSubscriptionFailedEmail(paymentIntent.metadata.userEmail);
   }
 
   return NextResponse.json({ received: true });

@@ -2,12 +2,13 @@ import { env } from "@/config/env";
 import { transporter } from "../mailer";
 
 export async function sendSubscriptionEmail(userEmail: string) {
-  await transporter.sendMail({
-    from: env.MAIL_FROM,
-    to: userEmail,
-    subject: "Your Uni-Do subscription is active",
-    text: "Your subscription has been successfully activated. Thank you for subscribing to Uni-Do.",
-    html: `
+  try {
+    await transporter.sendMail({
+      from: env.MAIL_FROM,
+      to: userEmail,
+      subject: "Your Uni-Do subscription is active",
+      text: "Your subscription has been successfully activated. Thank you for subscribing to Uni-Do.",
+      html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
         <h2 style="margin-bottom: 8px;">
           Thank you for subscribing to Uni-Do!
@@ -34,5 +35,8 @@ export async function sendSubscriptionEmail(userEmail: string) {
         </p>
       </div>
     `,
-  });
+    });
+  } catch (error) {
+    console.error("[sendSubscriptionEmail] Error sending email:", error);
+  }
 }

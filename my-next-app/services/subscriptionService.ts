@@ -1,5 +1,6 @@
 import { prisma } from "@/prisma/prisma";
-//import { sendSubscriptionEmail } from "./utils/mail/templates/subscriptionEmail";
+import { ActionResult } from "@/types/actionResult";
+import { sendSubscriptionEmail } from "./utils/mail/templates/subscriptionEmail";
 
 export async function updateSubscription(userId: number) {
   try {
@@ -23,10 +24,42 @@ export async function updateSubscription(userId: number) {
       },
     });
 
-    //await sendSubscriptionEmail(user.email);
+    await sendSubscriptionEmail(user.email);
 
     return { ok: true, data: null };
   } catch (error) {
     return { ok: false, error: "Error updating user subscription" };
+  }
+}
+
+export async function requireSubscription(
+  userId: number
+): Promise<ActionResult<boolean>> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscriptionExpirationDate: true },
+    });
+
+    if (!user) {
+      return { ok: false, error: "User not found" };
+    }
+
+    if (
+      !user.subscriptionExpirationDate ||
+      user.subscriptionExpirationDate < new Date()
+    ) {
+      return {
+        ok: false,
+        error: "An active subscription is required to perform this action.",
+      };
+    }
+
+    return { ok: true, data: true };
+  } catch {
+    return {
+      ok: false,
+      error: "Error checking subscription status",
+    };
   }
 }

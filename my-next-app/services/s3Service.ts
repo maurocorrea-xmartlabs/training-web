@@ -15,6 +15,7 @@ import { prisma } from "../prisma/prisma";
 import { validateUserSession } from "./authService";
 import { ActionResult } from "@/types/actionResult";
 import { ResourceMetadata } from "@/generated/prisma/client";
+import { requireSubscription } from "./subscriptionService";
 
 export async function createPresignedUploadUrl(
   data: UploadRequest,
@@ -24,6 +25,14 @@ export async function createPresignedUploadUrl(
 
   if (!sessionResult.ok) {
     return sessionResult;
+  }
+
+  const subscriptionResult = await requireSubscription(
+    sessionResult.data.user.id
+  );
+
+  if (!subscriptionResult.ok) {
+    return subscriptionResult;
   }
 
   if (!sessionResult.data.user.isVerified) {
@@ -62,6 +71,14 @@ export async function createPresignedDeleteUrl(
     return sessionResult;
   }
 
+  const subscriptionResult = await requireSubscription(
+    sessionResult.data.user.id
+  );
+
+  if (!subscriptionResult.ok) {
+    return subscriptionResult;
+  }
+
   if (!sessionResult.data.user.isVerified) {
     return {
       ok: false,
@@ -94,6 +111,14 @@ export async function createPresignedDownloadUrl(
 
   if (!sessionResult.ok) {
     return sessionResult;
+  }
+
+  const subscriptionResult = await requireSubscription(
+    sessionResult.data.user.id
+  );
+
+  if (!subscriptionResult.ok) {
+    return subscriptionResult;
   }
 
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
