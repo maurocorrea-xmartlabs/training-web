@@ -9,7 +9,7 @@ export async function sendSignUpEmail(userEmail: string) {
     text: "Your Uni-Do account was created successfully.",
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
-        <h2 style="margin-bottom: 8px;">Welcome to Uni-Do 👋</h2>
+        <h2 style="margin-bottom: 8px;">Welcome to Uni-Do</h2>
 
         <p>
           Your account has been created successfully.

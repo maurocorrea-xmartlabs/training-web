@@ -9,6 +9,8 @@ const envSchema = z.object({
   MAILTRAP_PASS: z.string(),
   MAIL_FROM: z.string(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("production"),
+  NEXT_PUBLIC_STRIPE_PUBLIC_KEY: z.string(),
+  STRIPE_SECRET_KEY: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
