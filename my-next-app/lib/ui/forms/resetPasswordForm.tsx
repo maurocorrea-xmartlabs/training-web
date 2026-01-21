@@ -39,9 +39,8 @@ export function ResetPasswordForm({ token }: Props) {
       return;
     }
 
-    // usign "!" on token to remove warning because it will not be null, as we verified it above
     const success = await withErrorHandling(
-      () => resetPasswordAction(token!, parsed.data),
+      () => resetPasswordAction(token, parsed.data),
       setError
     );
     if (!success) return;
@@ -110,6 +109,20 @@ export function ResetPasswordForm({ token }: Props) {
         />
 
         <label htmlFor="passwordConfirmation"> New password confirmation</label>
+        <ul>
+          <li
+            className={
+              passRules.hasSpecialChar ? "text-green-600" : "text-gray-500"
+            }
+          >
+            {password &&
+            passwordConfirmation &&
+            password == passwordConfirmation
+              ? "✔"
+              : "✗"}{" "}
+            Matching passwords
+          </li>
+        </ul>
         <input
           type="password"
           id="passwordConfirmation"
