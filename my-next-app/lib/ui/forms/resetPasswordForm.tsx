@@ -16,19 +16,14 @@ export function ResetPasswordForm({ token }: Props) {
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const passRules = passwordRules(password);
+  const passRules = {
+    minLength: password.length >= 8,
+    hasUppercase: /[A-Z]/.test(password),
+    hasSpecialChar: /[^A-Za-z0-9]/.test(password),
+  };
 
   if (!token) {
     return <p>Missing token!</p>;
-  }
-
-  // These sets of rules are used to give char by char feedback to user
-  function passwordRules(password: string) {
-    return {
-      minLength: password.length >= 8,
-      hasUppercase: /[A-Z]/.test(password),
-      hasSpecialChar: /[^A-Za-z0-9]/.test(password),
-    };
   }
 
   async function handleSubmit(e: React.FormEvent) {
