@@ -17,7 +17,6 @@ export function ResetPasswordForm({ token }: Props) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const passRules = passwordRules(password);
-  const passConfRules = passwordRules(passwordConfirmation);
 
   if (!token) {
     return <p>Missing token!</p>;
@@ -116,29 +115,6 @@ export function ResetPasswordForm({ token }: Props) {
         />
 
         <label htmlFor="passwordConfirmation"> New password confirmation</label>
-        <ul className="mt-2 text-sm space-y-1">
-          <li
-            className={
-              passConfRules.minLength ? "text-green-600" : "text-gray-500"
-            }
-          >
-            {passConfRules.minLength ? "✔" : "✗"} At least 8 characters
-          </li>
-          <li
-            className={
-              passConfRules.hasUppercase ? "text-green-600" : "text-gray-500"
-            }
-          >
-            {passConfRules.hasUppercase ? "✔" : "✗"} One uppercase letter
-          </li>
-          <li
-            className={
-              passConfRules.hasSpecialChar ? "text-green-600" : "text-gray-500"
-            }
-          >
-            {passConfRules.hasSpecialChar ? "✔" : "✗"} One special character
-          </li>
-        </ul>
         <input
           type="password"
           id="passwordConfirmation"
