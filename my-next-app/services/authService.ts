@@ -4,9 +4,12 @@ import type { UserLogIn, UserSignUp } from "@/types/user";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
+import { sendResetPasswordEmail } from "./utils/mail/templates/resetPasswordEmail";
+import { env } from "@/config/env";
 import { sendLogInEmail } from "./utils/mail/templates/logInEmail";
 
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
+const RESET_TOKEN_EXPIRATION_SECONDS = 1000 * 60 * 60;
 
 export async function signUp(user: UserSignUp) {
   try {
@@ -74,6 +77,61 @@ export async function logOut(sessionId: string) {
     console.error("Error logging out");
     throw new Error("Error logging out, please try again");
   }
+}
+
+export async function forgotPassword(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  // We should not reveal if the user exists or not
+  if (!user) {
+    return;
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const expirationDate = new Date(Date.now() + RESET_TOKEN_EXPIRATION_SECONDS);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordResetToken: token,
+      TokenExpirationDate: expirationDate,
+    },
+  });
+
+  sendResetPasswordEmail(user.email, token);
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  const user = await prisma.user.findFirst({
+    where: {
+      passwordResetToken: token,
+    },
+  });
+
+  if (!user) {
+    throw new Error(
+      "This password reset link is invalid or has expired. Please request a new one."
+    );
+  }
+
+  if (!user.TokenExpirationDate || new Date() > user.TokenExpirationDate) {
+    throw new Error(
+      "This password reset link is invalid or has expired. Please request a new one."
+    );
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashedPassword,
+      passwordResetToken: null,
+      TokenExpirationDate: null,
+    },
+  });
 }
 
 async function createUserSession(userId: number) {

@@ -16,6 +16,15 @@ export default function LogIn() {
             Sign up
           </Link>
         </p>
+
+        <p className="mt-4 text-sm text-gray-600 text-center">
+          <Link
+            href="/forgotpassword"
+            className="text-black hover:underline font-medium"
+          >
+            Forgot your password?{" "}
+          </Link>
+        </p>
       </div>
     </div>
   );

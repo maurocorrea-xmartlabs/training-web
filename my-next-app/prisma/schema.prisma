@@ -16,6 +16,9 @@ model User{
   // I comment this because subjects are global right now, so this relation is not needed
   //subjects Subject[]
   sessions Session[]
+
+  passwordResetToken String?
+  TokenExpirationDate DateTime?
 }
 
 model Session {

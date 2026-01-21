@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const envSchema = z.object({
   DATABASE_URL: z.string(),
+  NEXT_PUBLIC_APP_URL: z.string(),
   MAILTRAP_HOST: z.string(),
   MAILTRAP_PORT: z.coerce.number(),
   MAILTRAP_USER: z.string(),

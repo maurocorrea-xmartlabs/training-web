@@ -1,10 +1,11 @@
 import nodemailer from "nodemailer";
+import { env } from "@/config/env";
 
 export const transporter = nodemailer.createTransport({
-  host: process.env.MAILTRAP_HOST,
-  port: Number(process.env.MAILTRAP_PORT),
+  host: env.MAILTRAP_HOST,
+  port: Number(env.MAILTRAP_PORT),
   auth: {
-    user: process.env.MAILTRAP_USER,
-    pass: process.env.MAILTRAP_PASS,
+    user: env.MAILTRAP_USER,
+    pass: env.MAILTRAP_PASS,
   },
 });

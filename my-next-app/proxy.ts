@@ -12,7 +12,18 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const publicPaths = ["/logIn", "/signUp"];
+  if (req.method !== "GET") {
+    return NextResponse.next();
+  }
+
+  const publicPaths = [
+    "/logIn",
+    "/signUp",
+    "/forgotpassword",
+    "/resetpassword",
+    "/logo.png",
+    "/logoAlt.png",
+  ];
 
   if (publicPaths.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();

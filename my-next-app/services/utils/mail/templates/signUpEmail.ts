@@ -1,8 +1,9 @@
+import { env } from "@/config/env";
 import { transporter } from "../mailer";
 
 export async function sendSignUpEmail(userEmail: string) {
   await transporter.sendMail({
-    from: process.env.MAIL_FROM,
+    from: env.MAIL_FROM,
     to: userEmail,
     subject: "Welcome to Uni-Do 👋",
     text: "Your Uni-Do account was created successfully.",

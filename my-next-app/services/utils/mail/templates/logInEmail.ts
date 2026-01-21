@@ -1,8 +1,9 @@
+import { env } from "@/config/env";
 import { transporter } from "../mailer";
 
 export async function sendLogInEmail(userEmail: string) {
   await transporter.sendMail({
-    from: process.env.MAIL_FROM,
+    from: env.MAIL_FROM,
     to: userEmail,
     subject: "New access to Uni-Do",
     text: "We detected a new access to our website",
