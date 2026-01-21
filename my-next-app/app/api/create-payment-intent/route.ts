@@ -1,4 +1,4 @@
-import { env } from "@/config/env";
+import { env } from "@/config/env.server";
 import { getSession } from "@/lib/auth/session";
 import { NextRequest, NextResponse } from "next/server";
 const stripe = require("stripe")(env.STRIPE_SECRET_KEY);

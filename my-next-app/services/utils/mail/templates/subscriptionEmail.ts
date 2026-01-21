@@ -1,4 +1,4 @@
-import { env } from "@/config/env";
+import { env } from "@/config/env.server";
 import { transporter } from "../mailer";
 
 export async function sendSubscriptionEmail(userEmail: string) {

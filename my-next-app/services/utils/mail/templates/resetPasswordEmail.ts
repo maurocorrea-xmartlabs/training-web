@@ -1,4 +1,4 @@
-import { env, getAppUrl } from "@/config/env";
+import { env, getAppUrl } from "@/config/env.server";
 import { transporter } from "../mailer";
 
 export async function sendResetPasswordEmail(userEmail: string, token: string) {
