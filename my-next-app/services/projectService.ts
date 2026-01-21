@@ -1,6 +1,7 @@
 import { prisma } from "../prisma/prisma";
 import type { Project } from "@/generated/prisma/client";
 import type { NewProject } from "../types/project";
+import { validateUserSession } from "./authService";
 
 export async function getProjectsBySubjectId(
   subjectId: number
@@ -20,7 +21,11 @@ export async function getProjectsBySubjectId(
   }
 }
 
-export async function postProject(project: NewProject): Promise<Project> {
+export async function postProject(
+  project: NewProject,
+  sessionId?: string
+): Promise<Project> {
+  await validateUserSession(sessionId);
   try {
     return await prisma.project.create({
       data: {
@@ -35,7 +40,8 @@ export async function postProject(project: NewProject): Promise<Project> {
   }
 }
 
-export async function deleteProject(projectId: number) {
+export async function deleteProject(projectId: number, sessionId?: string) {
+  await validateUserSession(sessionId);
   try {
     return await prisma.project.delete({
       where: {

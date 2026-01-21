@@ -53,7 +53,7 @@ export function SignUpForm() {
     setName("");
     setEmail("");
     setPassword("");
-    router.push("/login");
+    router.push("/logIn");
   }
 
   return (

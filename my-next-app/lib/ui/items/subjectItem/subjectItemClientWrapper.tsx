@@ -14,8 +14,13 @@ export function SubjectItemClientWrapper({ subjectId, children }: Props) {
 
   function handleDelete() {
     setIsDeleting(true);
-    setTimeout(() => {
-      deleteSubjectAction(subjectId);
+
+    setTimeout(async () => {
+      try {
+        await deleteSubjectAction(subjectId);
+      } catch (error) {
+        setIsDeleting(false);
+      }
     }, 150);
   }
 

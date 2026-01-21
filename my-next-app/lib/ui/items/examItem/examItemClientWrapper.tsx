@@ -15,8 +15,12 @@ export function ExamItemClientWrapper({ examId, children }: Props) {
   function handleDelete() {
     setIsDeleting(true);
 
-    setTimeout(() => {
-      deleteExamAction(examId);
+    setTimeout(async () => {
+      try {
+        await deleteExamAction(examId);
+      } catch (error) {
+        setIsDeleting(false);
+      }
     }, 150);
   }
 

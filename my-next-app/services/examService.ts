@@ -1,6 +1,7 @@
 import { prisma } from "../prisma/prisma";
 import type { Exam } from "@/generated/prisma/client";
 import type { NewExam } from "@/types/exam";
+import { validateUserSession } from "./authService";
 
 export async function getExams(): Promise<Exam[]> {
   try {
@@ -15,7 +16,8 @@ export async function getExams(): Promise<Exam[]> {
   }
 }
 
-export async function postExam(exam: NewExam) {
+export async function postExam(exam: NewExam, sessionId?: string) {
+  await validateUserSession(sessionId);
   try {
     return await prisma.exam.create({
       data: {
@@ -31,7 +33,8 @@ export async function postExam(exam: NewExam) {
   }
 }
 
-export async function deleteExam(examId: number) {
+export async function deleteExam(examId: number, sessionId?: string) {
+  await validateUserSession(sessionId);
   try {
     return await prisma.exam.delete({
       where: {

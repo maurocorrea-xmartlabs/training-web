@@ -1,6 +1,7 @@
 import { prisma } from "../prisma/prisma";
 import type { NewSubject } from "@/types/subject";
 import type { Subject } from "@/generated/prisma/client";
+import { validateUserSession } from "./authService";
 
 export async function getSubjects(): Promise<Subject[]> {
   try {
@@ -13,7 +14,11 @@ export async function getSubjects(): Promise<Subject[]> {
   }
 }
 
-export async function postSubject(subject: NewSubject): Promise<Subject> {
+export async function postSubject(
+  subject: NewSubject,
+  sessionId?: string
+): Promise<Subject> {
+  await validateUserSession(sessionId);
   try {
     return await prisma.subject.create({
       data: {
@@ -27,7 +32,11 @@ export async function postSubject(subject: NewSubject): Promise<Subject> {
   }
 }
 
-export async function deleteSubject(subjectId: number): Promise<Subject> {
+export async function deleteSubject(
+  subjectId: number,
+  sessionId?: string
+): Promise<Subject> {
+  await validateUserSession(sessionId);
   try {
     return await prisma.subject.delete({
       where: { id: subjectId },

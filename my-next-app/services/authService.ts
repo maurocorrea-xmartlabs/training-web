@@ -91,6 +91,22 @@ async function createUserSession(userId: number) {
   return sessionId;
 }
 
+export async function validateUserSession(sessionId?: string) {
+  if (!sessionId) {
+    throw new Error("UNAUTHORIZED");
+  }
+
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+  });
+
+  if (!session || new Date() > session.expiresAt) {
+    throw new Error("UNAUTHORIZED");
+  }
+
+  return session;
+}
+
 export async function getSessionById(sessionId: string) {
   return await prisma.session.findUnique({
     where: { id: sessionId },
