@@ -8,6 +8,7 @@ import {
 } from "@stripe/react-stripe-js";
 
 import { convertToSubcurrency } from "@/lib/convertToSubcurrency";
+import { getAppUrl } from "@/config/env";
 
 export const CheckoutPage = ({ amount }: { amount: number }) => {
   const stripe = useStripe();
@@ -49,7 +50,7 @@ export const CheckoutPage = ({ amount }: { amount: number }) => {
       elements,
       clientSecret,
       confirmParams: {
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/subscription-success`,
+        return_url: `${getAppUrl()}/subscription-success`,
       },
     });
 
