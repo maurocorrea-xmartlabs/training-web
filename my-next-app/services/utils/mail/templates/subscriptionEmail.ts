@@ -1,14 +1,7 @@
-import { env } from "@/config/env.server";
-import { transporter } from "../mailer";
+import { mailQueue } from "@/lib/queue/mail.queue";
 
 export async function sendSubscriptionEmail(userEmail: string) {
-  try {
-    await transporter.sendMail({
-      from: env.MAIL_FROM,
-      to: userEmail,
-      subject: "Your Uni-Do subscription is active",
-      text: "Your subscription has been successfully activated. Thank you for subscribing to Uni-Do.",
-      html: `
+  const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
         <h2 style="margin-bottom: 8px;">
           Thank you for subscribing to Uni-Do!
@@ -34,8 +27,11 @@ export async function sendSubscriptionEmail(userEmail: string) {
           — The Uni-Do team
         </p>
       </div>
-    `,
-    });
+    `;
+  const subject = "Your Uni-Do subscription is active";
+  const to = userEmail;
+  try {
+    await mailQueue.add("send-email", { to, subject, html });
   } catch (error) {
     console.error("[sendSubscriptionEmail] Error sending email:", error);
   }
