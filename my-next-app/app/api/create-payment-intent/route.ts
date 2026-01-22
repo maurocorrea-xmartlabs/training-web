@@ -1,4 +1,4 @@
-import { env } from "@/config/env";
+import { env } from "@/config/env.server";
 import { getSession } from "@/lib/auth/session";
 import { NextRequest, NextResponse } from "next/server";
 const stripe = require("stripe")(env.STRIPE_SECRET_KEY);
@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
       currency: "usd",
-      metadata: { userId: session.user.id.toString() },
+      metadata: {
+        userId: session.user.id.toString(),
+        userEmail: session.user.email,
+      },
       automatic_payment_methods: { enabled: true },
     });
 

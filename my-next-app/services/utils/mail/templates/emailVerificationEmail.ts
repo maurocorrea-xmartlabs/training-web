@@ -1,4 +1,4 @@
-import { env, getAppUrl } from "@/config/env";
+import { env, getAppUrl } from "@/config/env.server";
 import { transporter } from "../mailer";
 
 export async function sendEmailVerificationEmail(
@@ -6,12 +6,12 @@ export async function sendEmailVerificationEmail(
   token: string
 ) {
   const resetUrl = `${getAppUrl()}/emailverification/${token}`;
-
-  await transporter.sendMail({
-    from: env.MAIL_FROM,
-    to: userEmail,
-    subject: "Verify your Uni-Do email",
-    html: `
+  try {
+    await transporter.sendMail({
+      from: env.MAIL_FROM,
+      to: userEmail,
+      subject: "Verify your Uni-Do email",
+      html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111; max-width: 520px; margin: 0 auto;">
         
         <h2 style="margin-bottom: 12px;">Verify your email</h2>
@@ -56,5 +56,8 @@ export async function sendEmailVerificationEmail(
         </p>
       </div>
     `,
-  });
+    });
+  } catch (error) {
+    console.error("[sendEmailVerificationEmail] Error sending email:", error);
+  }
 }

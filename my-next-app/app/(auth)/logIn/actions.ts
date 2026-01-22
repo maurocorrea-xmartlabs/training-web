@@ -3,7 +3,7 @@
 import { logIn } from "@/services/authService";
 import { UserLogInFormSchema } from "@/types/user";
 import { cookies } from "next/headers";
-import { env } from "@/config/env";
+import { env } from "@/config/env.server";
 import { ActionResult } from "@/types/actionResult";
 
 const logInAttempts = new Map<string, number>();

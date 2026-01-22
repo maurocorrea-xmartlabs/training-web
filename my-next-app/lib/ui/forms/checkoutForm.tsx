@@ -8,8 +8,9 @@ import {
 } from "@stripe/react-stripe-js";
 
 import { convertToSubcurrency } from "@/lib/convertToSubcurrency";
+import { getAppUrl } from "@/config/env.client";
 
-export const CheckoutPage = ({ amount }: { amount: number }) => {
+export const CheckoutForm = ({ amount }: { amount: number }) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -49,7 +50,7 @@ export const CheckoutPage = ({ amount }: { amount: number }) => {
       elements,
       clientSecret,
       confirmParams: {
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/subscription-success`,
+        return_url: `${getAppUrl()}/subscription-success`,
       },
     });
 
@@ -86,7 +87,7 @@ export const CheckoutPage = ({ amount }: { amount: number }) => {
       )}
       <button
         disabled={!stripe || loading}
-        className="text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse"
+        className="text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50"
       >
         {!loading ? "Subscribe" : "Processing..."}
       </button>

@@ -3,10 +3,10 @@ import { prisma } from "../prisma/prisma";
 import type { UserLogIn, UserSignUp } from "@/types/user";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-/*import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
+import { sendSignUpEmail } from "./utils/mail/templates/signUpEmail";
 import { sendResetPasswordEmail } from "./utils/mail/templates/resetPasswordEmail";
 import { sendLogInEmail } from "./utils/mail/templates/logInEmail";
-import { sendEmailVerificationEmail } from "./utils/mail/templates/emailVerificationEmail";*/
+import { sendEmailVerificationEmail } from "./utils/mail/templates/emailVerificationEmail";
 import { ActionResult } from "@/types/actionResult";
 import { Prisma } from "@/generated/prisma/client";
 
@@ -29,7 +29,7 @@ export async function signUp(user: UserSignUp): Promise<ActionResult> {
       },
     });
 
-    //await sendSignUpEmail(user.email);
+    await sendSignUpEmail(user.email);
 
     return { ok: true, data: null };
   } catch (error) {
@@ -67,7 +67,7 @@ export async function logIn(data: UserLogIn): Promise<ActionResult<string>> {
 
   const sessionId = await createUserSession(user.id);
 
-  //await sendLogInEmail(data.email);
+  await sendLogInEmail(data.email);
 
   return { ok: true, data: sessionId } as const;
 }
@@ -108,7 +108,7 @@ export async function forgotPassword(email: string): Promise<ActionResult> {
     },
   });
 
-  //await sendResetPasswordEmail(user.email, token);
+  await sendResetPasswordEmail(user.email, token);
 
   return { ok: true, data: null } as const;
 }
@@ -171,7 +171,7 @@ export async function createEmailVerificationRequest(
     },
   });
 
-  //await sendEmailVerificationEmail(user.email, token);
+  await sendEmailVerificationEmail(user.email, token);
 
   return { ok: true, data: null } as const;
 }
