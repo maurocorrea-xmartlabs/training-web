@@ -1,14 +1,9 @@
-import { env, getAppUrl } from "@/config/env.server";
-import { transporter } from "../mailer";
+import { getAppUrl } from "@/config/env.server";
+import { mailQueue } from "@/lib/queue/mail.queue";
 
 export async function sendResetPasswordEmail(userEmail: string, token: string) {
   const resetUrl = `${getAppUrl()}/resetpassword/${token}`;
-  try {
-    await transporter.sendMail({
-      from: env.MAIL_FROM,
-      to: userEmail,
-      subject: "Reset your Uni-Do password",
-      html: `
+  const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111; max-width: 520px; margin: 0 auto;">
         
         <h2 style="margin-bottom: 12px;">Reset your password</h2>
@@ -52,8 +47,11 @@ export async function sendResetPasswordEmail(userEmail: string, token: string) {
           — The Uni-Do team
         </p>
       </div>
-    `,
-    });
+    `;
+  const subject = "Reset your Uni-Do password";
+  const to = userEmail;
+  try {
+    await mailQueue.add("send-email", { to, subject, html });
   } catch (error) {
     console.error("[sendResetPasswordEmail] Error sending email:", error);
   }

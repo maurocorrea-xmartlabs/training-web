@@ -1,14 +1,7 @@
-import { env } from "@/config/env.server";
-import { transporter } from "../mailer";
+import { mailQueue } from "@/lib/queue/mail.queue";
 
 export async function sendLogInEmail(userEmail: string) {
-  try {
-    await transporter.sendMail({
-      from: env.MAIL_FROM,
-      to: userEmail,
-      subject: "New access to Uni-Do",
-      text: "We detected a new access to our website",
-      html: `
+  const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
             <h2 style="margin-bottom: 8px;">New login to your Uni-Do account</h2>
 
@@ -33,8 +26,11 @@ export async function sendLogInEmail(userEmail: string) {
               — The Uni-Do team
             </p>
       </div>
-    `,
-    });
+    `;
+  const subject = "New access to Uni-Do";
+  const to = userEmail;
+  try {
+    await mailQueue.add("send-email", { to, subject, html });
   } catch (error) {
     console.error("[sendLogInEmail] Error sending email:", error);
   }

@@ -1,14 +1,8 @@
-import { env, getAppUrl } from "@/config/env.server";
-import { transporter } from "../mailer";
+import { getAppUrl } from "@/config/env.server";
+import { mailQueue } from "@/lib/queue/mail.queue";
 
 export async function sendSubscriptionFailedEmail(userEmail: string) {
-  try {
-    await transporter.sendMail({
-      from: env.MAIL_FROM,
-      to: userEmail,
-      subject: "There was an issue with your Uni-Do subscription",
-      text: "We couldn't process your subscription payment. Please try again.",
-      html: `
+  const html = `
         <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
           <h2 style="margin-bottom: 8px;">
             We couldn't complete your subscription
@@ -51,8 +45,11 @@ export async function sendSubscriptionFailedEmail(userEmail: string) {
             — The Uni-Do team
           </p>
         </div>
-      `,
-    });
+      `;
+  const subject = "There was an issue with your Uni-Do subscription";
+  const to = userEmail;
+  try {
+    await mailQueue.add("send-email", { to, subject, html });
   } catch (error) {
     console.error("[sendSubscriptionFailedEmail] Error sending email:", error);
   }

@@ -1,17 +1,12 @@
-import { env, getAppUrl } from "@/config/env.server";
-import { transporter } from "../mailer";
+import { getAppUrl } from "@/config/env.server";
+import { mailQueue } from "@/lib/queue/mail.queue";
 
 export async function sendEmailVerificationEmail(
   userEmail: string,
-  token: string
+  token: string,
 ) {
   const resetUrl = `${getAppUrl()}/emailverification/${token}`;
-  try {
-    await transporter.sendMail({
-      from: env.MAIL_FROM,
-      to: userEmail,
-      subject: "Verify your Uni-Do email",
-      html: `
+  const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111; max-width: 520px; margin: 0 auto;">
         
         <h2 style="margin-bottom: 12px;">Verify your email</h2>
@@ -55,8 +50,11 @@ export async function sendEmailVerificationEmail(
           — The Uni-Do team
         </p>
       </div>
-    `,
-    });
+    `;
+  const subject = "Verify your Uni-Do email";
+  const to = userEmail;
+  try {
+    await mailQueue.add("send-email", { to, subject, html });
   } catch (error) {
     console.error("[sendEmailVerificationEmail] Error sending email:", error);
   }
