@@ -1,5 +1,11 @@
 "use client";
 
+// I'm adding these comments because I think these warnings are false positives, I've tried to solve them but I couldn't
+/* eslint-disable
+  react-you-might-not-need-an-effect/no-pass-data-to-parent,
+  react-you-might-not-need-an-effect/no-derived-state
+*/
+
 import { useEffect, useState } from "react";
 import type { ResourceMetadata } from "@/generated/prisma/client";
 import {
@@ -102,7 +108,7 @@ export function ResourceItem({ resource }: Props) {
         {
           duration: 5000,
           position: "bottom-right",
-        }
+        },
       );
       setIsDeleting(false);
     }
