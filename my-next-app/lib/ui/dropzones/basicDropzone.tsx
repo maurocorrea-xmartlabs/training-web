@@ -24,118 +24,124 @@ export function SimpleDropzone({ subjects }: Props) {
   const [files, setFiles] = useState<UploadingFile[]>([]);
   const [subjectId, setSubjectId] = useState<number | null>(null);
 
-  async function uploadFile(file: File) {
-    if (!subjectId) return;
+  const uploadFile = useCallback(
+    async (file: File) => {
+      if (!subjectId) return;
 
-    setFiles((prev) =>
-      prev.map((f) => (f.file === file ? { ...f, uploading: true } : f))
-    );
-
-    const parsed = uploadRequestSchema.safeParse({
-      filename: file.name,
-      contentType: file.type,
-      size: file.size,
-    });
-
-    if (!parsed.success) {
       setFiles((prev) =>
-        prev.map((f) =>
-          f.file === file
-            ? {
-                ...f,
-                uploading: false,
-                error:
-                  parsed.error.issues[0]?.message ?? "Invalid upload request",
-              }
-            : f
-        )
+        prev.map((f) => (f.file === file ? { ...f, uploading: true } : f)),
       );
-      return;
-    }
 
-    const presignedResult = await getPresignedUploadUrlAction(parsed.data);
-
-    if (!presignedResult.ok) {
-      setFiles((prev) =>
-        prev.map((f) =>
-          f.file === file
-            ? {
-                ...f,
-                uploading: false,
-                error: presignedResult.error,
-              }
-            : f
-        )
-      );
-      return;
-    }
-
-    const { presignedUrl, key } = presignedResult.data;
-
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-
-        xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable) {
-            const progress = Math.round((e.loaded / e.total) * 100);
-            setFiles((prev) =>
-              prev.map((f) => (f.file === file ? { ...f, progress } : f))
-            );
-          }
-        };
-
-        xhr.onload = () =>
-          xhr.status === 200 || xhr.status === 204
-            ? resolve()
-            : reject(new Error("Upload failed"));
-
-        xhr.onerror = () => reject(new Error("Network error during upload"));
-
-        xhr.open("PUT", presignedUrl);
-        xhr.setRequestHeader("Content-Type", file.type);
-        xhr.send(file);
+      const parsed = uploadRequestSchema.safeParse({
+        filename: file.name,
+        contentType: file.type,
+        size: file.size,
       });
 
-      const metadataResult = await storeResourceMetadataAction(key, subjectId);
-
-      if (!metadataResult.ok) {
+      if (!parsed.success) {
         setFiles((prev) =>
           prev.map((f) =>
             f.file === file
               ? {
                   ...f,
                   uploading: false,
-                  error: metadataResult.error,
+                  error:
+                    parsed.error.issues[0]?.message ?? "Invalid upload request",
                 }
-              : f
-          )
+              : f,
+          ),
         );
         return;
       }
 
-      setFiles((prev) =>
-        prev.map((f) =>
-          f.file === file ? { ...f, uploading: false, progress: 100 } : f
-        )
-      );
-    } catch (error) {
-      setFiles((prev) =>
-        prev.map((f) =>
-          f.file === file
-            ? {
-                ...f,
-                uploading: false,
-                error:
-                  error instanceof Error
-                    ? error.message
-                    : "Unexpected error occurred",
-              }
-            : f
-        )
-      );
-    }
-  }
+      const presignedResult = await getPresignedUploadUrlAction(parsed.data);
+
+      if (!presignedResult.ok) {
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.file === file
+              ? {
+                  ...f,
+                  uploading: false,
+                  error: presignedResult.error,
+                }
+              : f,
+          ),
+        );
+        return;
+      }
+
+      const { presignedUrl, key } = presignedResult.data;
+
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const progress = Math.round((e.loaded / e.total) * 100);
+              setFiles((prev) =>
+                prev.map((f) => (f.file === file ? { ...f, progress } : f)),
+              );
+            }
+          };
+
+          xhr.onload = () =>
+            xhr.status === 200 || xhr.status === 204
+              ? resolve()
+              : reject(new Error("Upload failed"));
+
+          xhr.onerror = () => reject(new Error("Network error during upload"));
+
+          xhr.open("PUT", presignedUrl);
+          xhr.setRequestHeader("Content-Type", file.type);
+          xhr.send(file);
+        });
+
+        const metadataResult = await storeResourceMetadataAction(
+          key,
+          subjectId,
+        );
+
+        if (!metadataResult.ok) {
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.file === file
+                ? {
+                    ...f,
+                    uploading: false,
+                    error: metadataResult.error,
+                  }
+                : f,
+            ),
+          );
+          return;
+        }
+
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.file === file ? { ...f, uploading: false, progress: 100 } : f,
+          ),
+        );
+      } catch (error) {
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.file === file
+              ? {
+                  ...f,
+                  uploading: false,
+                  error:
+                    error instanceof Error
+                      ? error.message
+                      : "Unexpected error occurred",
+                }
+              : f,
+          ),
+        );
+      }
+    },
+    [subjectId],
+  );
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -150,7 +156,7 @@ export function SimpleDropzone({ subjects }: Props) {
       setFiles((prev) => [...prev, ...mapped]);
       acceptedFiles.forEach(uploadFile);
     },
-    [subjectId]
+    [subjectId, uploadFile],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

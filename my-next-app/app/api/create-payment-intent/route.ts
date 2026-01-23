@@ -1,7 +1,9 @@
 import { env } from "@/config/env.server";
 import { getSession } from "@/lib/auth/session";
 import { NextRequest, NextResponse } from "next/server";
-const stripe = require("stripe")(env.STRIPE_SECRET_KEY);
+import Stripe from "stripe";
+
+const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: `Internal server error: ${error}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

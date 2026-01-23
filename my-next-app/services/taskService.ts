@@ -18,7 +18,7 @@ export async function getTasksByProjectId(projectId: number): Promise<Task[]> {
 
 export async function postTask(
   task: NewTask,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<Task>> {
   const sessionResult = await validateUserSession(sessionId);
   if (!sessionResult.ok) {
@@ -36,13 +36,14 @@ export async function postTask(
 
     return { ok: true, data: result };
   } catch (error) {
+    console.error("Error creating task:", error);
     return { ok: false, error: "Error creating task, please try again" };
   }
 }
 
 export async function deleteTask(
   taskId: number,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<Task>> {
   const sessionResult = await validateUserSession(sessionId);
   if (!sessionResult.ok) {
@@ -56,6 +57,7 @@ export async function deleteTask(
 
     return { ok: true, data: task };
   } catch (error) {
+    console.error("Error deleting task:", error);
     return { ok: false, error: "Error deleting task, please try again" };
   }
 }

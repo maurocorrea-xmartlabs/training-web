@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NewExamSchema } from "../../../types/exam";
 import type { Subject } from "@/generated/prisma/client";
 import { usePopupForm } from "../../../hooks/usePopupForm";
@@ -14,17 +14,13 @@ type AddExamFormProps = {
 
 export function AddExamForm({ subjects }: AddExamFormProps) {
   const { showPopup, open, close, error, setError } = usePopupForm();
-  const [subjectId, setSubjectId] = useState(0);
+  const [subjectId, setSubjectId] = useState(
+    subjects.length > 0 ? subjects[0].id : 0,
+  );
   const [minScore, setMinScore] = useState(0);
   const [maxScore, setMaxScore] = useState(1);
   const [date, setDate] = useState("");
   const [isHidingButton, setIsHidingButton] = useState(false);
-
-  useEffect(() => {
-    if (subjects.length >= 1) {
-      setSubjectId(subjects[0].id);
-    }
-  }, [subjects]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -17,7 +17,7 @@ export async function getSubjects(): Promise<Subject[]> {
 
 export async function postSubject(
   subject: NewSubject,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<Subject>> {
   const sessionResult = await validateUserSession(sessionId);
   if (!sessionResult.ok) {
@@ -34,6 +34,7 @@ export async function postSubject(
 
     return { ok: true, data: result };
   } catch (error) {
+    console.error("Error creating subject:", error);
     return {
       ok: false,
       error: "Error creating subject, please try again",
@@ -43,7 +44,7 @@ export async function postSubject(
 
 export async function deleteSubject(
   subjectId: number,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<Subject>> {
   const sessionResult = await validateUserSession(sessionId);
   if (!sessionResult.ok) {
@@ -57,6 +58,7 @@ export async function deleteSubject(
 
     return { ok: true, data: subject };
   } catch (error) {
+    console.error("Error deleting subject:", error);
     return { ok: false, error: "Error deleting subject, please try again" };
   }
 }

@@ -19,7 +19,7 @@ import { requireSubscription } from "./subscriptionService";
 
 export async function createPresignedUploadUrl(
   data: UploadRequest,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<{ presignedUrl: string; key: string }>> {
   const sessionResult = await validateUserSession(sessionId);
 
@@ -28,7 +28,7 @@ export async function createPresignedUploadUrl(
   }
 
   const subscriptionResult = await requireSubscription(
-    sessionResult.data.user.id
+    sessionResult.data.user.id,
   );
 
   if (!subscriptionResult.ok) {
@@ -63,7 +63,7 @@ export async function createPresignedUploadUrl(
 
 export async function createPresignedDeleteUrl(
   data: DeleteRequest,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<{ presignedUrl: string }>> {
   const sessionResult = await validateUserSession(sessionId);
 
@@ -72,7 +72,7 @@ export async function createPresignedDeleteUrl(
   }
 
   const subscriptionResult = await requireSubscription(
-    sessionResult.data.user.id
+    sessionResult.data.user.id,
   );
 
   if (!subscriptionResult.ok) {
@@ -105,7 +105,7 @@ export async function createPresignedDeleteUrl(
 
 export async function createPresignedDownloadUrl(
   data: DownloadRequest,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<{ presignedUrl: string }>> {
   const sessionResult = await validateUserSession(sessionId);
 
@@ -114,7 +114,7 @@ export async function createPresignedDownloadUrl(
   }
 
   const subscriptionResult = await requireSubscription(
-    sessionResult.data.user.id
+    sessionResult.data.user.id,
   );
 
   if (!subscriptionResult.ok) {
@@ -141,7 +141,7 @@ export async function createPresignedDownloadUrl(
 export async function storeResourceMetadata(
   key: string,
   subjectId: number,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<ResourceMetadata>> {
   const sessionResult = await validateUserSession(sessionId);
 
@@ -161,7 +161,7 @@ export async function storeResourceMetadata(
 
 export async function deleteResourceMetadata(
   key: string,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<ResourceMetadata>> {
   const sessionResult = await validateUserSession(sessionId);
 
@@ -185,7 +185,7 @@ export async function deleteResourceMetadata(
 }
 
 export async function getResourcesBySubject(
-  subjectId: number
+  subjectId: number,
 ): Promise<ActionResult<ResourceMetadata[]>> {
   try {
     const resources = await prisma.resourceMetadata.findMany({
