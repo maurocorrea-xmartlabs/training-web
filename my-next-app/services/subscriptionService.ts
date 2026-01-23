@@ -28,12 +28,13 @@ export async function updateSubscription(userId: number) {
 
     return { ok: true, data: null };
   } catch (error) {
+    console.error("Error updating user subscription:", error);
     return { ok: false, error: "Error updating user subscription" };
   }
 }
 
 export async function requireSubscription(
-  userId: number
+  userId: number,
 ): Promise<ActionResult<boolean>> {
   try {
     const user = await prisma.user.findUnique({
@@ -56,7 +57,8 @@ export async function requireSubscription(
     }
 
     return { ok: true, data: true };
-  } catch {
+  } catch (error) {
+    console.error("Error checking subscription status:", error);
     return {
       ok: false,
       error: "Error checking subscription status",

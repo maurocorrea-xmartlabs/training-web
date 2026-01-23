@@ -19,7 +19,7 @@ export async function getExams(): Promise<Exam[]> {
 
 export async function postExam(
   exam: NewExam,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<Exam>> {
   const sessionResult = await validateUserSession(sessionId);
   if (!sessionResult.ok) {
@@ -38,13 +38,14 @@ export async function postExam(
 
     return { ok: true, data: result };
   } catch (error) {
+    console.error("Error creating exam:", error);
     return { ok: false, error: "Error creating exam, please try again" };
   }
 }
 
 export async function deleteExam(
   examId: number,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<Exam>> {
   const sessionResult = await validateUserSession(sessionId);
   if (!sessionResult.ok) {
@@ -60,6 +61,7 @@ export async function deleteExam(
 
     return { ok: true, data: exam };
   } catch (error) {
+    console.error("Error deleting exam:", error);
     return { ok: false, error: "Error deleting exam, please try again" };
   }
 }

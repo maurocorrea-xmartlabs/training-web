@@ -5,7 +5,7 @@ import { validateUserSession } from "./authService";
 import { ActionResult } from "@/types/actionResult";
 
 export async function getProjectsBySubjectId(
-  subjectId: number
+  subjectId: number,
 ): Promise<Project[]> {
   try {
     return await prisma.project.findMany({
@@ -24,7 +24,7 @@ export async function getProjectsBySubjectId(
 
 export async function postProject(
   project: NewProject,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<Project>> {
   const sessionResult = await validateUserSession(sessionId);
   if (!sessionResult.ok) {
@@ -42,13 +42,14 @@ export async function postProject(
 
     return { ok: true, data: result };
   } catch (error) {
+    console.error("Error creating project:", error);
     return { ok: false, error: "Error creating project, please try again" };
   }
 }
 
 export async function deleteProject(
   projectId: number,
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<Project>> {
   const sessionResult = await validateUserSession(sessionId);
   if (!sessionResult.ok) {
@@ -64,6 +65,7 @@ export async function deleteProject(
 
     return { ok: true, data: project };
   } catch (error) {
+    console.error("Error deleting project:", error);
     return { ok: false, error: "Error deleting project, please try again" };
   }
 }
