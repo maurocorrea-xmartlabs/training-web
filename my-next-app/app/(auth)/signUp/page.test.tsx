@@ -53,6 +53,118 @@ describe("SignUp form + action integration", () => {
     expect(pushMock).toHaveBeenCalledWith("/logIn");
   });
 
+  it("does not submit if username is shorter than 8 chars", async () => {
+    render(<SignUpForm />);
+    const user = userEvent.setup();
+
+    await user.type(screen.getByLabelText(/username/i), "John");
+    await user.type(screen.getByLabelText(/email/i), "john@test.com");
+    await user.type(screen.getByLabelText(/password/i), "Password#1");
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    expect(
+      await screen.findByText(/username must have more than 8 characters/i),
+    ).toBeInTheDocument();
+
+    expect(pushMock).not.toHaveBeenCalled();
+
+    const createdUser = await prisma.user.findUnique({
+      where: { email: "john@test.com" },
+    });
+
+    expect(createdUser).toBeNull();
+  });
+
+  it("does not submit if email is invalid", async () => {
+    render(<SignUpForm />);
+    const user = userEvent.setup();
+
+    await user.type(screen.getByLabelText(/username/i), "John Doe");
+    await user.type(screen.getByLabelText(/email/i), "invalid-email");
+    await user.type(screen.getByLabelText(/password/i), "Password#1");
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    expect(await screen.findByText(/Email must be valid/i)).toBeInTheDocument();
+
+    expect(pushMock).not.toHaveBeenCalled();
+
+    const createdUser = await prisma.user.findUnique({
+      where: { email: "invalid-email" },
+    });
+
+    expect(createdUser).toBeNull();
+  });
+
+  it("does not submit if password is shorter than 8 characters", async () => {
+    render(<SignUpForm />);
+    const user = userEvent.setup();
+
+    await user.type(screen.getByLabelText(/username/i), "John Doe");
+    await user.type(screen.getByLabelText(/email/i), "john@test.com");
+    await user.type(screen.getByLabelText(/password/i), "Pass#1");
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    expect(
+      await screen.findByText(/password must have more than 8 characters/i),
+    ).toBeInTheDocument();
+
+    expect(pushMock).not.toHaveBeenCalled();
+
+    const createdUser = await prisma.user.findUnique({
+      where: { email: "john@test.com" },
+    });
+
+    expect(createdUser).toBeNull();
+  });
+
+  it("does not submit if password has no uppercase letter", async () => {
+    render(<SignUpForm />);
+    const user = userEvent.setup();
+
+    await user.type(screen.getByLabelText(/username/i), "John Doe");
+    await user.type(screen.getByLabelText(/email/i), "john@test.com");
+    await user.type(screen.getByLabelText(/password/i), "password#1");
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    expect(
+      await screen.findByText(
+        /Password must contain at least one uppercase letter/i,
+      ),
+    ).toBeInTheDocument();
+
+    expect(pushMock).not.toHaveBeenCalled();
+
+    const createdUser = await prisma.user.findUnique({
+      where: { email: "john@test.com" },
+    });
+
+    expect(createdUser).toBeNull();
+  });
+
+  it("does not submit if password has no special character", async () => {
+    render(<SignUpForm />);
+    const user = userEvent.setup();
+
+    await user.type(screen.getByLabelText(/username/i), "John Doe");
+    await user.type(screen.getByLabelText(/email/i), "john@test.com");
+    await user.type(screen.getByLabelText(/password/i), "Password1");
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    expect(
+      await screen.findByText(
+        /Password must contain at least one special character/i,
+      ),
+    ).toBeInTheDocument();
+
+    expect(pushMock).not.toHaveBeenCalled();
+
+    const createdUser = await prisma.user.findUnique({
+      where: { email: "john@test.com" },
+    });
+
+    expect(createdUser).toBeNull();
+  });
+
   it("log in link redirects to /logIn", async () => {
     render(<SignUp />);
 
