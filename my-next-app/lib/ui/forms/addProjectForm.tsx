@@ -41,7 +41,9 @@ export function AddProjectForm({ subjectId }: AddProjectFormProps) {
       setError
     );
 
-    if (!success) return;
+    if (!success) {
+      return;
+    }
 
     setError(null);
     setProjectName("");

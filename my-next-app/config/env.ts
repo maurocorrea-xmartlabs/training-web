@@ -8,6 +8,10 @@ const envSchema = z.object({
   MAILTRAP_USER: z.string(),
   MAILTRAP_PASS: z.string(),
   MAIL_FROM: z.string(),
+  AWS_S3_BUCKET_NAME: z.string(),
+  AWS_S3_ACCESS_KEY_ID: z.string(),
+  AWS_S3_SECRET_ACCESS_KEY: z.string(),
+  AWS_S3_REGION: z.string(),
   NODE_ENV: z.enum(["development", "test", "production"]),
 });
 

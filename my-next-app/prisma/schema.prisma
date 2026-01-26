@@ -18,7 +18,7 @@ model User{
   sessions Session[]
 
   passwordResetToken String?
-  TokenExpirationDate DateTime?
+  tokenExpirationDate DateTime?
 }
 
 model Session {
@@ -44,6 +44,7 @@ model Subject {
 
   projects    Project[]
   exams       Exam[]
+  resources ResourceMetadata[]
 }
 
 model Project {
@@ -77,5 +78,10 @@ model Exam {
   subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 }
 
-
+model ResourceMetadata{
+  id Int @id @default(autoincrement())
+  key String @unique
+  subjectId Int
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+}
 

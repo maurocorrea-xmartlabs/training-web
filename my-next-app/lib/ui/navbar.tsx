@@ -33,6 +33,10 @@ export function Navbar() {
         Exams
       </Link>
 
+      <Link href="/resources" className="text-white text-2xl hover:underline">
+        Resources
+      </Link>
+
       <button
         type="button"
         onClick={handleLogout}

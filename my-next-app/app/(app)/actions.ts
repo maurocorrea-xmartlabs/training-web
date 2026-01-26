@@ -1,10 +1,11 @@
 "use server";
 
 import { logOut } from "@/services/authService";
-import { getSessionId } from "@/lib/auth/getSessionId";
+import { cookies } from "next/headers";
 
 export async function logOutAction() {
-  const sessionId = await getSessionId();
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("session")?.value;
 
   if (sessionId) {
     await logOut(sessionId);

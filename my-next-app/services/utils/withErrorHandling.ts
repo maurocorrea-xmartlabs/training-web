@@ -1,7 +1,7 @@
 export async function withErrorHandling<T>(
   fn: () => Promise<T> | void | Promise<void>,
   setError: (msg: string | null) => void,
-  defaultMessage = "Unexpected error occurred"
+  defaultMessage = "Unexpected error occurred",
 ): Promise<T | null | boolean> {
   try {
     const result = await fn();

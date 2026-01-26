@@ -31,7 +31,10 @@ export function AddSubjectForm() {
       () => createSubjectAction(parsed.data),
       setError
     );
-    if (!success) return;
+
+    if (!success) {
+      return;
+    }
 
     setSubjectName("");
     setSubjectCost(0);
