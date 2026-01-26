@@ -6,20 +6,17 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client } from "@/lib/s3/s3Client";
 import { v4 as uuidv4 } from "uuid";
-import {
-  uploadRequest,
-  deleteRequest,
-  downloadRequest,
-} from "@/types/uploadRequest";
+import { UploadRequest, DownloadRequest } from "@/types/uploadRequest";
 import { prisma } from "../prisma/prisma";
 import { validateUserSession } from "./authService";
+import { env } from "@/config/env";
 
 export async function createPresignedUploadUrl(
-  data: uploadRequest,
-  sessionId?: string
+  data: UploadRequest,
+  sessionId?: string,
 ) {
   await validateUserSession(sessionId);
-  const bucketName = process.env.AWS_S3_BUCKET_NAME!;
+  const bucketName = env.AWS_S3_BUCKET_NAME;
 
   const key = `${uuidv4()}#${data.filename}`;
 
@@ -40,32 +37,8 @@ export async function createPresignedUploadUrl(
   };
 }
 
-export async function createPresignedDeleteUrl(
-  data: deleteRequest,
-  sessionId?: string
-) {
-  await validateUserSession(sessionId);
-  const bucketName = process.env.AWS_S3_BUCKET_NAME!;
-
-  const key = data.key;
-
-  const command = new DeleteObjectCommand({
-    Bucket: bucketName,
-    Key: key,
-  });
-
-  const presignedUrl = await getSignedUrl(s3Client, command, {
-    expiresIn: 3600,
-  });
-
-  return {
-    presignedUrl,
-    key,
-  };
-}
-
-export async function createPresignedDownloadUrl(data: downloadRequest) {
-  const bucketName = process.env.AWS_S3_BUCKET_NAME!;
+export async function createPresignedDownloadUrl(data: DownloadRequest) {
+  const bucketName = env.AWS_S3_BUCKET_NAME;
 
   const command = new GetObjectCommand({
     Bucket: bucketName,
@@ -80,7 +53,7 @@ export async function createPresignedDownloadUrl(data: downloadRequest) {
 export async function storeResourceMetadata(
   key: string,
   subjectId: number,
-  sessionId?: string
+  sessionId?: string,
 ) {
   await validateUserSession(sessionId);
   return await prisma.resourceMetadata.create({
@@ -91,8 +64,16 @@ export async function storeResourceMetadata(
   });
 }
 
-export async function deleteResourceMetadata(key: string, sessionId?: string) {
+export async function deleteResource(key: string, sessionId?: string) {
   await validateUserSession(sessionId);
+
+  await s3Client.send(
+    new DeleteObjectCommand({
+      Bucket: env.AWS_S3_BUCKET_NAME,
+      Key: key,
+    }),
+  );
+
   return await prisma.resourceMetadata.delete({
     where: {
       key: key,

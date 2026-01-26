@@ -18,7 +18,7 @@ model User{
   sessions Session[]
 
   passwordResetToken String?
-  TokenExpirationDate DateTime?
+  tokenExpirationDate DateTime?
 }
 
 model Session {

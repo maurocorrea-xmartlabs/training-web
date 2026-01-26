@@ -90,7 +90,7 @@ export async function forgotPassword(email: string) {
     where: { id: user.id },
     data: {
       passwordResetToken: token,
-      TokenExpirationDate: expirationDate,
+      tokenExpirationDate: expirationDate,
     },
   });
 
@@ -110,7 +110,7 @@ export async function resetPassword(token: string, newPassword: string) {
     );
   }
 
-  if (!user.TokenExpirationDate || new Date() > user.TokenExpirationDate) {
+  if (!user.tokenExpirationDate || new Date() > user.tokenExpirationDate) {
     throw new Error(
       "This password reset link is invalid or has expired. Please request a new one.",
     );
@@ -123,7 +123,7 @@ export async function resetPassword(token: string, newPassword: string) {
     data: {
       password: hashedPassword,
       passwordResetToken: null,
-      TokenExpirationDate: null,
+      tokenExpirationDate: null,
     },
   });
 }

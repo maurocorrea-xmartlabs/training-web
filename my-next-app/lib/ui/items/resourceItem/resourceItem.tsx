@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import type { ResourceMetadata } from "@/generated/prisma/client";
 import {
-  deleteResourceMetadataAction,
+  deleteResourceAction,
   getImagePresignedUrlAction,
-  getPresignedDeleteUrlAction,
 } from "@/app/(app)/resources/action";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -34,17 +33,10 @@ export function ResourceItem({ resource }: Props) {
 
   async function handleDelete() {
     if (isDeleting) return;
-
     setIsDeleting(true);
 
     try {
-      const { presignedUrl } = await getPresignedDeleteUrlAction({
-        key: resource.key,
-      });
-
-      await fetch(presignedUrl, { method: "DELETE" });
-      await deleteResourceMetadataAction(resource.key);
-
+      await deleteResourceAction({ key: resource.key });
       router.refresh();
     } catch (error) {
       alert("Error deleting resource, please try again");
