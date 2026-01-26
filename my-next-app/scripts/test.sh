@@ -21,5 +21,13 @@ done
 
 echo "Postgres is ready"
 
+
+echo "Running Prisma migrations (test DB)..."
+export NODE_ENV=test
+export DATABASE_URL=$(grep DATABASE_URL .env.test | cut -d '=' -f2-)
+
+npx prisma migrate deploy
+npx prisma generate
+
 echo "Running integration tests..."
 npm run test

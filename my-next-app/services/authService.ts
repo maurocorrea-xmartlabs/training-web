@@ -115,7 +115,7 @@ export async function forgotPassword(email: string): Promise<ActionResult> {
 
 export async function resetPassword(
   token: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<ActionResult> {
   const user = await prisma.user.findUnique({
     where: {
@@ -150,7 +150,7 @@ export async function resetPassword(
 }
 
 export async function createEmailVerificationRequest(
-  email: string
+  email: string,
 ): Promise<ActionResult> {
   const user = await prisma.user.findUnique({
     where: { email },
@@ -224,7 +224,7 @@ async function createUserSession(userId: number) {
 }
 
 export async function validateUserSession(
-  sessionId?: string
+  sessionId?: string,
 ): Promise<ActionResult<SessionWithUser>> {
   if (!sessionId) {
     return { ok: false, error: "UNAUTHORIZED" };
