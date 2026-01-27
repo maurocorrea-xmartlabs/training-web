@@ -8,6 +8,11 @@ import {
 } from "@/app/(app)/resources/action";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { showToast } from "nextjs-toast-notify";
+import {
+  deleteRequestSchema,
+  downloadRequestSchema,
+} from "@/types/uploadRequest";
 
 type Props = {
   resource: ResourceMetadata;
@@ -18,14 +23,30 @@ export function ResourceItem({ resource }: Props) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadImage() {
-      const presignedUrl = await getImagePresignedUrlAction({
-        key: resource.key,
-      });
+      const parsed = downloadRequestSchema.safeParse({ key: resource.key });
 
-      setImageUrl(presignedUrl);
+      if (!parsed.success) {
+        setImageError("Invalid download request");
+        return;
+      }
+
+      const result = await getImagePresignedUrlAction(parsed.data);
+
+      if (!result.ok) {
+        setImageError(result.error);
+
+        showToast.error(result.error, {
+          duration: 5000,
+          position: "bottom-right",
+        });
+        return;
+      }
+
+      setImageUrl(result.data.presignedUrl);
     }
 
     loadImage();
@@ -35,11 +56,40 @@ export function ResourceItem({ resource }: Props) {
     if (isDeleting) return;
     setIsDeleting(true);
 
+    const parsed = deleteRequestSchema.safeParse({ key: resource.key });
+
+    if (!parsed.success) {
+      showToast.error("Invalid delete request");
+      setIsDeleting(false);
+      return;
+    }
+
     try {
-      await deleteResourceAction({ key: resource.key });
+      const result = await deleteResourceAction(resource.key);
+
+      if (!result.ok) {
+        showToast.error(result.error, {
+          duration: 5000,
+          position: "bottom-right",
+        });
+        setIsDeleting(false);
+        return;
+      }
+
       router.refresh();
     } catch (error) {
-      alert("Error deleting resource, please try again");
+      showToast.error(
+        error instanceof Error
+          ? error.message
+          : "Unexpected error deleting resource",
+        {
+          duration: 5000,
+          position: "bottom-right",
+          transition: "popUp",
+          icon: "",
+          sound: true,
+        },
+      );
       setIsDeleting(false);
     }
   }
@@ -68,9 +118,13 @@ export function ResourceItem({ resource }: Props) {
 
         <div
           className="rounded-md overflow-hidden bg-gray-100 cursor-pointer"
-          onClick={() => imageUrl && setIsOpen(true)}
+          onClick={() => imageUrl && !imageError && setIsOpen(true)}
         >
-          {imageUrl ? (
+          {imageError ? (
+            <div className="h-40 flex items-center justify-center text-xs text-gray-400">
+              Image unavailable
+            </div>
+          ) : imageUrl ? (
             <Image
               src={imageUrl}
               alt="Resource"
@@ -91,7 +145,7 @@ export function ResourceItem({ resource }: Props) {
         </p>
       </div>
 
-      {isOpen && imageUrl && (
+      {isOpen && imageUrl && !imageError && (
         <div
           className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
           onClick={() => setIsOpen(false)}

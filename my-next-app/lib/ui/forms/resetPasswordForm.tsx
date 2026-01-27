@@ -1,6 +1,5 @@
 "use client";
 
-import { withErrorHandling } from "@/services/utils/withErrorHandling";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ResetPasswordSchema } from "@/types/resetPassword";
@@ -39,11 +38,12 @@ export function ResetPasswordForm({ token }: Props) {
       return;
     }
 
-    const success = await withErrorHandling(
-      () => resetPasswordAction(token, parsed.data),
-      setError
-    );
-    if (!success) return;
+    const result = await resetPasswordAction(token, parsed.data);
+
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
 
     setPassword("");
     setPasswordConfirmation("");
@@ -66,13 +66,16 @@ export function ResetPasswordForm({ token }: Props) {
         <div className="space-y-2">
           <p className="text-sm text-red-500">{error}</p>
 
-          <button
-            type="button"
-            onClick={() => router.push("/forgotpassword")}
-            className="text-sm text-black underline hover:text-gray-700 transition"
-          >
-            Request a new password reset
-          </button>
+          {error ==
+            "This password reset link is invalid or has expired, please request a new one." && (
+            <button
+              type="button"
+              onClick={() => router.push("/forgotpassword")}
+              className="text-sm text-black underline hover:text-gray-700 transition"
+            >
+              Request a new password reset
+            </button>
+          )}
         </div>
       )}
 

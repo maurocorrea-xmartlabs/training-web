@@ -1,7 +1,6 @@
 "use server";
 
 import {
-  DeleteRequest,
   deleteRequestSchema,
   DownloadRequest,
   downloadRequestSchema,
@@ -16,48 +15,83 @@ import {
   storeResourceMetadata,
 } from "@/services/s3Service";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { ActionResult } from "@/types/actionResult";
+import { ResourceMetadata } from "@/generated/prisma/client";
+import { getSessionId } from "@/lib/auth/getSessionId";
 
-export async function getPresignedUploadUrlAction(input: UploadRequest) {
+export async function getPresignedUploadUrlAction(
+  input: UploadRequest,
+): Promise<ActionResult<{ presignedUrl: string; key: string }>> {
   const parsed = uploadRequestSchema.safeParse(input);
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get("session")?.value;
 
   if (!parsed.success) {
-    throw new Error(parsed.error.issues[0].message);
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Invalid upload request",
+    };
   }
 
-  return await createPresignedUploadUrl(parsed.data, sessionId);
+  const sessionId = await getSessionId();
+
+  const result = await createPresignedUploadUrl(parsed.data, sessionId);
+
+  if (!result.ok) {
+    return {
+      ok: false,
+      error: result.error,
+    };
+  }
+
+  return result;
 }
 
-export async function getImagePresignedUrlAction(input: DownloadRequest) {
+export async function getImagePresignedUrlAction(
+  input: DownloadRequest,
+): Promise<ActionResult<{ presignedUrl: string }>> {
   const parsed = downloadRequestSchema.safeParse(input);
 
   if (!parsed.success) {
-    throw new Error(parsed.error.issues[0].message);
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Invalid download request",
+    };
   }
-  return createPresignedDownloadUrl(parsed.data);
+
+  const sessionId = await getSessionId();
+
+  return createPresignedDownloadUrl(parsed.data, sessionId);
 }
 
 export async function storeResourceMetadataAction(
   key: string,
-  subjectdId: number,
-) {
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get("session")?.value;
-  await storeResourceMetadata(key, subjectdId, sessionId);
-  revalidatePath("/resources");
-}
+  subjectId: number,
+): Promise<ActionResult<ResourceMetadata>> {
+  const sessionId = await getSessionId();
 
-export async function deleteResourceAction(input: DeleteRequest) {
-  const parsed = deleteRequestSchema.safeParse(input);
+  const result = await storeResourceMetadata(key, subjectId, sessionId);
 
-  if (!parsed.success) {
-    throw new Error(parsed.error.issues[0].message);
+  if (!result.ok) {
+    return result;
   }
 
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get("session")?.value;
+  revalidatePath("/resources");
+
+  return result;
+}
+
+export async function deleteResourceAction(
+  key: string,
+): Promise<ActionResult<ResourceMetadata>> {
+  const parsed = deleteRequestSchema.safeParse({ key: key });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message,
+    };
+  }
+
+  const sessionId = await getSessionId();
   return await deleteResource(parsed.data.key, sessionId);
 }
 

@@ -1,9 +1,9 @@
 "use client";
 
 import { signUpAction } from "@/app/(auth)/signUp/actions";
-import { withErrorHandling } from "@/services/utils/withErrorHandling";
 import { UserSignUpFormSchema } from "@/types/user";
 import { useRouter } from "next/navigation";
+import { showToast } from "nextjs-toast-notify";
 import { useState } from "react";
 
 export function SignUpForm() {
@@ -44,15 +44,26 @@ export function SignUpForm() {
       return;
     }
 
-    const success = await withErrorHandling(
-      () => signUpAction(parsed.data),
-      setError
-    );
-    if (!success) return;
+    const result = await signUpAction(parsed.data);
+
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
 
     setName("");
     setEmail("");
     setPassword("");
+
+    showToast.success("Account successfully created!", {
+      duration: 4000,
+      progress: true,
+      position: "bottom-right",
+      transition: "popUp",
+      icon: "",
+      sound: true,
+    });
+
     router.push("/logIn");
   }
 

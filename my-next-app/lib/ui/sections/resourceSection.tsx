@@ -7,16 +7,18 @@ type Props = {
 };
 
 export async function ResourceSection({ subject }: Props) {
-  const resources = await getResourcesBySubjectAction(subject.id);
+  const result = await getResourcesBySubjectAction(subject.id);
 
-  if (resources.length === 0) return null;
+  if (!result.ok || result.data.length === 0) {
+    return null;
+  }
 
   return (
     <section className="space-y-3">
       <h3 className="font-medium text-lg">{subject.name}</h3>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {resources.map((resource) => (
+        {result.data.map((resource) => (
           <ResourceItem key={resource.id} resource={resource} />
         ))}
       </div>

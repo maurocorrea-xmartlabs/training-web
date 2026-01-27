@@ -2,6 +2,7 @@ import { prisma } from "../prisma/prisma";
 import type { Exam } from "@/generated/prisma/client";
 import type { NewExam } from "@/types/exam";
 import { validateUserSession } from "./authService";
+import { ActionResult } from "@/types/actionResult";
 
 export async function getExams(): Promise<Exam[]> {
   try {
@@ -16,10 +17,17 @@ export async function getExams(): Promise<Exam[]> {
   }
 }
 
-export async function postExam(exam: NewExam, sessionId?: string) {
-  await validateUserSession(sessionId);
+export async function postExam(
+  exam: NewExam,
+  sessionId?: string
+): Promise<ActionResult<Exam>> {
+  const sessionResult = await validateUserSession(sessionId);
+  if (!sessionResult.ok) {
+    return sessionResult;
+  }
+
   try {
-    return await prisma.exam.create({
+    const result = await prisma.exam.create({
       data: {
         minScore: exam.minScore,
         maxScore: exam.maxScore,
@@ -27,22 +35,31 @@ export async function postExam(exam: NewExam, sessionId?: string) {
         subjectId: exam.subjectId,
       },
     });
+
+    return { ok: true, data: result };
   } catch (error) {
-    console.error("Error creating exam:", error);
-    throw new Error("Error creating exam, please try again");
+    return { ok: false, error: "Error creating exam, please try again" };
   }
 }
 
-export async function deleteExam(examId: number, sessionId?: string) {
-  await validateUserSession(sessionId);
+export async function deleteExam(
+  examId: number,
+  sessionId?: string
+): Promise<ActionResult<Exam>> {
+  const sessionResult = await validateUserSession(sessionId);
+  if (!sessionResult.ok) {
+    return sessionResult;
+  }
+
   try {
-    return await prisma.exam.delete({
+    const exam = await prisma.exam.delete({
       where: {
         id: examId,
       },
     });
+
+    return { ok: true, data: exam };
   } catch (error) {
-    console.error("Delete error:", error);
-    throw new Error("Error deleting exam, please try again");
+    return { ok: false, error: "Error deleting exam, please try again" };
   }
 }

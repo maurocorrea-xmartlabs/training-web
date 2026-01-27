@@ -16,9 +16,9 @@ export function SubjectItemClientWrapper({ subjectId, children }: Props) {
     setIsDeleting(true);
 
     setTimeout(async () => {
-      try {
-        await deleteSubjectAction(subjectId);
-      } catch (error) {
+      const result = await deleteSubjectAction(subjectId);
+
+      if (!result.ok) {
         setIsDeleting(false);
       }
     }, 150);

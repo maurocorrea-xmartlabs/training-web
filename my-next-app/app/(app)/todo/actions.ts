@@ -2,51 +2,116 @@
 
 import { revalidatePath } from "next/cache";
 import { postSubject, deleteSubject } from "@/services/subjectService";
-import type { NewSubject } from "@/types/subject";
-import { NewProject } from "@/types/project";
+import { SubjectFormSchema } from "@/types/subject";
+import { ProjectFormSchema } from "@/types/project";
 import { deleteProject, postProject } from "@/services/projectService";
 import { deleteTask, postTask } from "@/services/taskService";
-import { NewTask } from "@/types/task";
+import { TaskFormSchema } from "@/types/task";
 import { getSessionId } from "@/lib/auth/getSessionId";
+import { ActionResult } from "@/types/actionResult";
+import { Project, Subject, Task } from "@/generated/prisma/client";
 
-export async function createSubjectAction(data: NewSubject) {
+export async function createSubjectAction(
+  rawData: unknown
+): Promise<ActionResult<Subject>> {
+  const parsed = SubjectFormSchema.safeParse(rawData);
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0].message,
+    };
+  }
+
   const sessionId = await getSessionId();
-  await postSubject(data, sessionId);
+  const result = await postSubject(parsed.data, sessionId);
+
+  if (!result.ok) {
+    return result;
+  }
+
   revalidatePath("/todo");
-  return true;
+
+  return result;
 }
 
-export async function createProjectAction(data: NewProject) {
+export async function createProjectAction(
+  rawData: unknown
+): Promise<ActionResult<Project>> {
+  const parsed = ProjectFormSchema.safeParse(rawData);
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0].message,
+    };
+  }
+
   const sessionId = await getSessionId();
-  await postProject(data, sessionId);
+  const result = await postProject(parsed.data, sessionId);
+
+  if (!result.ok) {
+    return result;
+  }
+
   revalidatePath("/todo");
-  return true;
+
+  return result;
 }
 
-export async function createTaskAction(data: NewTask) {
+export async function createTaskAction(
+  rawData: unknown
+): Promise<ActionResult<Task>> {
+  const parsed = TaskFormSchema.safeParse(rawData);
+
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0].message };
+  }
+
   const sessionId = await getSessionId();
-  await postTask(data, sessionId);
+  const result = await postTask(parsed.data, sessionId);
+
+  if (!result.ok) {
+    return result;
+  }
+
   revalidatePath("/todo");
-  return true;
+  return result;
 }
 
-export async function deleteSubjectAction(subjectId: number) {
+export async function deleteSubjectAction(
+  subjectId: number
+): Promise<ActionResult<Subject>> {
   const sessionId = await getSessionId();
-  await deleteSubject(subjectId, sessionId);
+  const result = await deleteSubject(subjectId, sessionId);
+
+  if (!result.ok) {
+    return result;
+  }
   revalidatePath("/todo");
-  return true;
+  return result;
 }
 
-export async function deleteProjectAction(projectId: number) {
+export async function deleteProjectAction(
+  projectId: number
+): Promise<ActionResult<Project>> {
   const sessionId = await getSessionId();
-  await deleteProject(projectId, sessionId);
+  const result = await deleteProject(projectId, sessionId);
+
+  if (!result.ok) {
+    return result;
+  }
   revalidatePath("/todo");
-  return true;
+  return result;
 }
 
 export async function deleteTaskAction(taskId: number) {
   const sessionId = await getSessionId();
-  await deleteTask(taskId, sessionId);
+  const result = await deleteTask(taskId, sessionId);
+
+  if (!result.ok) {
+    return result;
+  }
   revalidatePath("/todo");
-  return true;
+  return result;
 }

@@ -7,7 +7,6 @@ import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import { createExamAction } from "@/app/(app)/exams/actions";
 import styles from "./formAnimations.module.css";
-import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 type AddExamFormProps = {
   subjects: Subject[];
@@ -35,30 +34,22 @@ export function AddExamForm({ subjects }: AddExamFormProps) {
       return;
     }
 
-    const result = NewExamSchema.safeParse({
+    const parsed = NewExamSchema.safeParse({
       minScore: minScore,
       maxScore: maxScore,
       date: new Date(date),
       subjectId: subjectId,
     });
 
-    if (!result.success) {
-      setError(result.error.issues[0].message);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message);
       return;
     }
 
-    const success = await withErrorHandling(
-      () =>
-        createExamAction({
-          minScore,
-          maxScore,
-          date: new Date(date),
-          subjectId,
-        }),
-      setError
-    );
+    const result = await createExamAction(parsed.data);
 
-    if (!success) {
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
 

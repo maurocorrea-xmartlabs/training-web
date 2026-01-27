@@ -7,6 +7,7 @@ import {
   storeResourceMetadataAction,
 } from "@/app/(app)/resources/action";
 import { Subject } from "@/generated/prisma/browser";
+import { uploadRequestSchema } from "@/types/uploadRequest";
 
 type UploadingFile = {
   file: File;
@@ -27,16 +28,51 @@ export function SimpleDropzone({ subjects }: Props) {
     if (!subjectId) return;
 
     setFiles((prev) =>
-      prev.map((f) => (f.file === file ? { ...f, uploading: true } : f))
+      prev.map((f) => (f.file === file ? { ...f, uploading: true } : f)),
     );
 
-    try {
-      const { presignedUrl, key } = await getPresignedUploadUrlAction({
-        filename: file.name,
-        contentType: file.type,
-        size: file.size,
-      });
+    const parsed = uploadRequestSchema.safeParse({
+      filename: file.name,
+      contentType: file.type,
+      size: file.size,
+    });
 
+    if (!parsed.success) {
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.file === file
+            ? {
+                ...f,
+                uploading: false,
+                error:
+                  parsed.error.issues[0]?.message ?? "Invalid upload request",
+              }
+            : f
+        )
+      );
+      return;
+    }
+
+    const presignedResult = await getPresignedUploadUrlAction(parsed.data);
+
+    if (!presignedResult.ok) {
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.file === file
+            ? {
+                ...f,
+                uploading: false,
+                error: presignedResult.error,
+              }
+            : f
+        )
+      );
+      return;
+    }
+
+    const { presignedUrl, key } = presignedResult.data;
+
+    try {
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
 
@@ -44,27 +80,44 @@ export function SimpleDropzone({ subjects }: Props) {
           if (e.lengthComputable) {
             const progress = Math.round((e.loaded / e.total) * 100);
             setFiles((prev) =>
-              prev.map((f) => (f.file === file ? { ...f, progress } : f))
+              prev.map((f) => (f.file === file ? { ...f, progress } : f)),
             );
           }
         };
 
         xhr.onload = () =>
-          xhr.status === 200 || xhr.status === 204 ? resolve() : reject();
+          xhr.status === 200 || xhr.status === 204
+            ? resolve()
+            : reject(new Error("Upload failed"));
 
-        xhr.onerror = reject;
+        xhr.onerror = () => reject(new Error("Network error during upload"));
 
         xhr.open("PUT", presignedUrl);
         xhr.setRequestHeader("Content-Type", file.type);
         xhr.send(file);
       });
 
-      await storeResourceMetadataAction(key, subjectId);
+      const metadataResult = await storeResourceMetadataAction(key, subjectId);
+
+      if (!metadataResult.ok) {
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.file === file
+              ? {
+                  ...f,
+                  uploading: false,
+                  error: metadataResult.error,
+                }
+              : f
+          )
+        );
+        return;
+      }
 
       setFiles((prev) =>
         prev.map((f) =>
-          f.file === file ? { ...f, uploading: false, progress: 100 } : f
-        )
+          f.file === file ? { ...f, uploading: false, progress: 100 } : f,
+        ),
       );
     } catch (error) {
       if (error instanceof Error) {
@@ -76,8 +129,8 @@ export function SimpleDropzone({ subjects }: Props) {
                   uploading: false,
                   error: error.message,
                 }
-              : f
-          )
+              : f,
+          ),
         );
       } else {
         setFiles((prev) =>
@@ -88,8 +141,8 @@ export function SimpleDropzone({ subjects }: Props) {
                   uploading: false,
                   error: "Unexpected error happened, please try again",
                 }
-              : f
-          )
+              : f,
+          ),
         );
       }
     }
@@ -108,7 +161,7 @@ export function SimpleDropzone({ subjects }: Props) {
       setFiles((prev) => [...prev, ...mapped]);
       acceptedFiles.forEach(uploadFile);
     },
-    [subjectId]
+    [subjectId],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -159,7 +212,7 @@ export function SimpleDropzone({ subjects }: Props) {
           <li key={file.name} className="text-sm">
             <div className="flex justify-between">
               <span className="truncate">{file.name}</span>
-              <span>
+              <span className={error ? "text-red-600" : ""}>
                 {error ? `✗ ${error}` : uploading ? `${progress}%` : "✔"}
               </span>
             </div>

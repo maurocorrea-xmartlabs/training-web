@@ -1,6 +1,5 @@
 "use client";
 
-import { withErrorHandling } from "@/services/utils/withErrorHandling";
 import { useState } from "react";
 import { forgotPasswordAction } from "@/app/(auth)/forgotpassword/actions";
 import { ForgotPasswordFormSchema } from "@/types/forgotPassword";
@@ -23,11 +22,12 @@ export function ForgotPasswordForm() {
       return;
     }
 
-    const result = await withErrorHandling(
-      () => forgotPasswordAction(parsed.data),
-      setError
-    );
-    if (!result) return;
+    const result = await forgotPasswordAction(parsed.data);
+
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
 
     setEmail("");
     setSuccess(

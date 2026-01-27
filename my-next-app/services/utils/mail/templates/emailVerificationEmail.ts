@@ -1,24 +1,27 @@
 import { env, getAppUrl } from "@/config/env";
 import { transporter } from "../mailer";
 
-export async function sendResetPasswordEmail(userEmail: string, token: string) {
-  const resetUrl = `${getAppUrl()}/resetpassword/${token}`;
+export async function sendEmailVerificationEmail(
+  userEmail: string,
+  token: string
+) {
+  const resetUrl = `${getAppUrl()}/emailverification/${token}`;
 
   await transporter.sendMail({
     from: env.MAIL_FROM,
     to: userEmail,
-    subject: "Reset your Uni-Do password",
+    subject: "Verify your Uni-Do email",
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111; max-width: 520px; margin: 0 auto;">
         
-        <h2 style="margin-bottom: 12px;">Reset your password</h2>
+        <h2 style="margin-bottom: 12px;">Verify your email</h2>
 
         <p>
-          We received a request to reset the password for your Uni-Do account.
+          We received a request to verify the email of your Uni-Do account.
         </p>
 
         <p>
-          Click the button below to choose a new password:
+          Click the button below to verify it:
         </p>
 
         <div style="margin: 24px 0;">
@@ -34,7 +37,7 @@ export async function sendResetPasswordEmail(userEmail: string, token: string) {
               font-weight: 600;
             "
           >
-            Reset password
+            Verify your email
           </a>
         </div>
 
@@ -43,7 +46,7 @@ export async function sendResetPasswordEmail(userEmail: string, token: string) {
         </p>
 
         <p style="font-size: 14px; color: #555; margin-top: 16px;">
-          If you didn't request a password reset, you can safely ignore this email.
+          If you didn't request an email verification, you can safely ignore this email.
         </p>
 
         <hr style="margin: 32px 0; border: none; border-top: 1px solid #eee;" />

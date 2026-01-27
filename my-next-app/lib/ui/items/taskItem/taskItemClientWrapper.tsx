@@ -16,9 +16,9 @@ export function TaskItemClientWrapper({ taskId, children }: Props) {
     setIsDeleting(true);
 
     setTimeout(async () => {
-      try {
-        await deleteTaskAction(taskId);
-      } catch (error) {
+      const result = await deleteTaskAction(taskId);
+
+      if (!result.ok) {
         setIsDeleting(false);
       }
     }, 150);

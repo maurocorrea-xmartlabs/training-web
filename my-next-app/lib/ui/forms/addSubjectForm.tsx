@@ -6,7 +6,6 @@ import { usePopupForm } from "../../../hooks/usePopupForm";
 import { PopupForm } from "./popupForm";
 import styles from "./formAnimations.module.css";
 import { createSubjectAction } from "@/app/(app)/todo/actions";
-import { withErrorHandling } from "@/services/utils/withErrorHandling";
 
 export function AddSubjectForm() {
   const { showPopup, open, close, error, setError } = usePopupForm();
@@ -27,12 +26,10 @@ export function AddSubjectForm() {
       return;
     }
 
-    const success = await withErrorHandling(
-      () => createSubjectAction(parsed.data),
-      setError
-    );
+    const result = await createSubjectAction(parsed.data);
 
-    if (!success) {
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
 
