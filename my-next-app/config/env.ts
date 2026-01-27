@@ -18,3 +18,11 @@ if (!parsedEnv.success) {
 }
 
 export const env = parsedEnv.data;
+
+export function getAppUrl() {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  return env.NEXT_PUBLIC_APP_URL;
+}
