@@ -17,6 +17,16 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
+// Cookies mock
+vi.mock("next/headers", () => ({
+  cookies: () =>
+    Promise.resolve({
+      set: vi.fn(),
+      get: vi.fn(),
+      delete: vi.fn(),
+    }),
+}));
+
 afterEach(() => {
   cleanup();
 });
