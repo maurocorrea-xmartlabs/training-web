@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.test" });
 
-import { vi, expect } from "vitest";
+import { vi, expect, afterEach } from "vitest";
 import * as matchers from "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
 
 expect.extend(matchers);
 
@@ -15,3 +16,17 @@ vi.mock("next/navigation", () => ({
   }),
   redirect: vi.fn(),
 }));
+
+// Cookies mock
+vi.mock("next/headers", () => ({
+  cookies: () =>
+    Promise.resolve({
+      set: vi.fn(),
+      get: vi.fn(),
+      delete: vi.fn(),
+    }),
+}));
+
+afterEach(() => {
+  cleanup();
+});
